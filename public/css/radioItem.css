@@ -1,0 +1,58 @@
+
+.tabItem { 
+    margin: 0px;
+    position: relative;
+    padding-left: 0px
+}
+ 
+.tabItem li {
+    list-style: none;
+}
+.tabItem label:hover { /*przy najechaniu to :hover*/
+    background: #3498db;
+}
+.tabItem input[type=radio] {
+    display:none;
+}
+ 
+[id^=tab]:checked ~ div[id^=radioItem] {
+    display: block;
+}
+
+[id^=tab]:checked ~ [id^=label]  {
+    background: #08C;
+    color: white;
+}
+.btnFd{
+    display:flex;
+    height: 75px;
+    width: 100%;
+    line-height:normal;
+    margin-left: 0px;
+    padding-left: 0px;
+}
+.tabItem label {
+    height:75px;
+    width: 33%;
+    color: #FFFFFF;
+    font-size: 15px;
+    background: #2f1196;
+    margin:auto;
+
+}
+.contentFd {
+    display: none;
+    border: 3px solid black;
+    border-left: 0px;
+    border-right:0px;
+    padding-top: 0px;
+    width: 100%;
+
+}
+.headerFd{
+    margin-top:0px;   
+    height: 100px;  
+    margin-right: 5px;
+    text-align: right;
+    font-size: 20px;
+}

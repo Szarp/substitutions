@@ -1,0 +1,51 @@
+
+.chart {
+  background: white;
+  width: 500px;
+  height: 100px;
+}
+
+.graph .labels.x-labels {
+  text-anchor: middle;
+}
+
+.graph .labels.y-labels {
+  text-anchor: end;
+}
+.text{
+    text-anchor: middle;
+    font-size: 15px;
+    
+}
+
+.graph {
+  height: 200px;
+  width: 200px;
+}
+
+.grid {
+  stroke: #FFF;
+  stroke-dasharray: 0;
+  stroke-width: 3;
+}
+.labelY{
+    stroke: #FFF;
+  stroke-dasharray: 0;
+  stroke-width: 1;
+}
+
+.labels {
+  font-size: 13px;
+}
+
+.label-title {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  fill: black;
+}
+
+.data {
+  fill: blue;
+  stroke-width: 1; 
+}
