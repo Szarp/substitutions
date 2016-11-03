@@ -77,7 +77,8 @@ app.use(function (req, res, next) {
 
 app.get('/', function (req, res) {
    // asf();
-        res.sendFile( __dirname + '/public/substitutionPage.htm');
+        res.redirect('https://www.facebook.com/v2.8/dialog/oauth?')
+        //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
 app.post('/getData',function(req,res){
@@ -109,7 +110,8 @@ app.get('/test', function (req, res) {
 });
 app.post('/', function (req, res) {
     console.log(req.body);
-    res.sendFile( __dirname + '/public/fbIndex.html');
+    res.redirect('https://www.facebook.com/v2.8/dialog/oauth?')
+    //res.sendFile( __dirname + '/public/fbIndex.html');
     //var a=userMod.changes();
     //us.changes();
    // asd();
