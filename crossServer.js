@@ -74,11 +74,11 @@ app.use(function (req, res, next) {
     next(); // <-- important!
 });
 
-1082740245094082
+//1082740245094082
 app.get('/', function (req, res) {
    // asf();
         res.redirect(
-            'https://www.facebook.com/v2.8/dialog/oauth?client_id={1082740245094082}&redirect_uri={https://192.166.213.253:8088/redirect}');
+            'https://www.facebook.com/v2.8/dialog/oauth?client_id={'1082740245094082'}&redirect_uri={}');
         //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
