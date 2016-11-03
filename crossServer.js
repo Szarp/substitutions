@@ -77,8 +77,7 @@ app.use(function (req, res, next) {
 //1082740245094082
 app.get('/', function (req, res) {
    // asf();
-        res.redirect(
-            'https://www.facebook.com/v2.8/dialog/oauth?client_id={'1082740245094082'}&redirect_uri={}');
+        res.redirect('https://www.facebook.com/v2.8/dialog/oauth?client_id={1082740245094082}&redirect_uri={}');
         //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
