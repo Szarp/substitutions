@@ -241,9 +241,9 @@ function appSetting(){
     //this.clientId=1082740245094082;
     //this.redirectUri='https://muwbackup.emadar.eu:8088/redirect'
     //this.oauth = 'https://www.facebook.com/v2.8/dialog/oauth?'
-    this.clientId=parsed['clientId'];
-    this.url=parsed['redirectUrl'];
-    this.appSecret=parsed['appSecret'];
+    this.clientId=data['clientId'];
+    this.url=data['redirectUrl'];
+    this.appSecret=data['appSecret'];
     
     
     
