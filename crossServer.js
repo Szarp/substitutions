@@ -238,7 +238,7 @@ app.get('/redirect_codeAcces', function(req, res){
 
 app.get('/redirect_login', function(req, res){
         console.log('login reqest');
-    var code=req.query['code']);
+    var code=req.query['code'];
     
         request(x.codeForAcces(code), function (error, response, body) {
   if (!error && response.statusCode == 200) {
