@@ -236,6 +236,7 @@ app.get('/redirect_login', function(req, res){
 
 function appSetting(){
     var data=fs.readFileSync('/home/madar/2016/config.json');
+    console.log(data);
     //var parsed=JSON.parse(data);
     //this.clientId=1082740245094082;
     //this.redirectUri='https://muwbackup.emadar.eu:8088/redirect'
