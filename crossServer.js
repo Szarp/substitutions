@@ -33,6 +33,7 @@ POST /{recipient_userid}/notifications?
      
 */
 var x=new createReqest();
+appSetting();
 var opts = {
    
   // Specify the key file for the server
