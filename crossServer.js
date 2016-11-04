@@ -27,19 +27,22 @@ POST /{recipient_userid}/notifications?
      access_token=...& 
      href=...& 
      template=You have people waiting to play with you, play now!
+     /home/madar/2016/wsskey.pem
+     /home/madar/2016/wsscert.pem
+     /home/madar/2016/cacert.pem
      
 */
 
 var opts = {
    
   // Specify the key file for the server
-  key: fs.readFileSync('/home/madar/2016/wsskey.pem'),
+  key: fs.readFileSync('/Users/bartek/Documents/2016/wsskey.pem'),
    
   // Specify the certificate file
-  cert: fs.readFileSync('/home/madar/2016/wsscert.pem'),
+  cert: fs.readFileSync('/Users/bartek/Documents/2016/wsscert.pem'),
    
   // Specify the Certificate Authority certificate
-  ca: fs.readFileSync('/home/madar/2016/cacert.pem'),
+  ca: fs.readFileSync('/Users/bartek/Documents/2016/cacert.pem'),
    
   // This is where the magic happens in Node.  All previous
   // steps simply setup SSL (except the CA).  By requesting
@@ -131,7 +134,8 @@ app.post('/redirect', function(req, res){
 });
     app.get('/redirect', function(req, res){
         console.log('i get response, ok');
-    console.log(req.body);
+    console.log('query' ,req.query);
+    console.log(req.params);
     //console.log(req.cookies.cookieName);
 
     //console.log(res.headers);
