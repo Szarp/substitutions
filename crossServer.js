@@ -9,7 +9,7 @@ var express = require('express'),
     myFunc = require(__dirname+'/myModules/serverReqests.js'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
-    request= require('request'),
+        request= require('request'),
     //MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
@@ -239,12 +239,14 @@ app.get('/redirect_codeAcces', function(req, res){
 app.get('/redirect_login', function(req, res){
         console.log('login reqest');
     var code=req.query['code'];
-    
-        request(x.codeForAcces(code), function (error, response, body) {
+    console.log(code);
+        request.get(x.codeForAcces(code), function (error, response, body) {
   if (!error && response.statusCode == 200) {
     console.log(body) // Show the HTML for the Google homepage.
   }
 })
+        
+
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
