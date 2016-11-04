@@ -12,7 +12,7 @@ var express = require('express'),
     //request= require('request'),
     //MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
-    mongo=require(__dirname+'/myModules/mongoFunctions.js');
+    mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js');
    // querystring = require('querystring');
 ///Users/bartek/gitrepo/node/substitution/myModules/serverReqest.js'
@@ -32,7 +32,7 @@ POST /{recipient_userid}/notifications?
      /home/madar/2016/cacert.pem
      
 */
-
+var x=new createReqest();
 var opts = {
    
   // Specify the key file for the server
@@ -216,7 +216,7 @@ myFunc.subs('2016-10-07',function(y){
 })
 */
 //myFunc.getCookie(function(){});//mongoTest();
-var x=new createReqest();
+
 
 
 app.get('/redirect_login', function(req, res){
@@ -234,7 +234,7 @@ app.get('/redirect_login', function(req, res){
 
 
 function appSetting(){
-    var data=fs.readFileSync('/home/madar/2016/config.json')  
+    var data=fs.readFileSync('/home/madar/2016/config.json');
     var parsed=JSON.parse(data);
     //this.clientId=1082740245094082;
     //this.redirectUri='https://muwbackup.emadar.eu:8088/redirect'
