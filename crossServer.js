@@ -36,13 +36,13 @@ POST /{recipient_userid}/notifications?
 var opts = {
    
   // Specify the key file for the server
-  key: fs.readFileSync('/Users/bartek/Documents/2016/wsskey.pem'),
+  key: fs.readFileSync('/home/madar/2016/wsskey.pem'),
    
   // Specify the certificate file
-  cert: fs.readFileSync('/Users/bartek/Documents/2016/wsscert.pem'),
+  cert: fs.readFileSync('/home/madar/2016/wsscert.pem'),
    
   // Specify the Certificate Authority certificate
-  ca: fs.readFileSync('/Users/bartek/Documents/2016/cacert.pem'),
+  ca: fs.readFileSync('/home/madar/2016/cacert.pem'),
    
   // This is where the magic happens in Node.  All previous
   // steps simply setup SSL (except the CA).  By requesting
