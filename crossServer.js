@@ -257,7 +257,7 @@ function createReqest (){
     
     this.loginLink=function(){
         var redirect='/redirect_login';
-        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_url='+config.url+redirect;
+        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
         /*
         
         https://www.facebook.com/v2.8/dialog/oauth?
