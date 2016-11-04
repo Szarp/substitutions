@@ -219,11 +219,12 @@ myFunc.subs('2016-10-07',function(y){
 */
 //myFunc.getCookie(function(){});//mongoTest();
 
-
-
-app.get('/redirect_login', function(req, res){
+app.get('/redirect_codeAcces', function(req, res){
         console.log('login reqest');
-    console.log('query' ,req.query);
+    var code=req.query;
+    console.log(code);
+    
+    //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
 
@@ -235,21 +236,26 @@ app.get('/redirect_login', function(req, res){
 });
 
 
-function appSetting(){
-    var data=fs.readFileSync('/home/madar/2016/appConfig.txt');
+app.get('/redirect_login', function(req, res){
+        console.log('login reqest');
+    var code=req.query['code']);
     
-    console.log('hi',JSON.stringify(data));
-    var parsed=JSON.parse(data);
-    //this.clientId=1082740245094082;
-    //this.redirectUri='https://muwbackup.emadar.eu:8088/redirect'
-    //this.oauth = 'https://www.facebook.com/v2.8/dialog/oauth?'
-    this.clientId=parsed['clientId'];
-    this.url=parsed['redirectUrl'];
-    this.appSecret=parsed['appSecret'];
+        request(x.codeForAcces(code), function (error, response, body) {
+  if (!error && response.statusCode == 200) {
+    console.log(body) // Show the HTML for the Google homepage.
+  }
+})
+    //res.redirect(x.codeForAcces(code));
+    //console.log(req.params);
+    //console.log(req.cookies.cookieName);
+
+    //console.log(res.headers);
     
-    
-    
-}
+    res.send('ok');
+	//es.sendFile( __dirname + '/public/css/webPage.css');
+
+});
+
 
 
 function createReqest (){
@@ -268,7 +274,7 @@ function createReqest (){
     }
     this.codeForAcces=function(code){
         var redirect='/redirect_codeAcces';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&code='+code;
+        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
        
