@@ -13,7 +13,8 @@ var express = require('express'),
     //MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
-    setTime = require(__dirname+'/myModules/setTime.js');
+    setTime = require(__dirname+'/myModules/setTime.js'),
+    config = require('/home/madar/2016/config');
    // querystring = require('querystring');
 ///Users/bartek/gitrepo/node/substitution/myModules/serverReqest.js'
 //var substitution =new jsonFromHtml();
@@ -33,7 +34,7 @@ POST /{recipient_userid}/notifications?
      
 */
 var x=new createReqest();
-appSetting();
+//appSetting();
 var opts = {
    
   // Specify the key file for the server
@@ -252,11 +253,11 @@ function appSetting(){
 
 
 function createReqest (){
-    appSetting.call(this);
+   // appSetting.call(this);
     
     this.loginLink=function(){
         var redirect='/redirect_login';
-        return  this.oauth+'client_id='+this.clientId+'&redirect_url='+this.url+redirect;
+        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_url='+config.url+redirect;
         /*
         
         https://www.facebook.com/v2.8/dialog/oauth?
@@ -267,7 +268,7 @@ function createReqest (){
     }
     this.codeForAcces=function(code){
         var redirect='/redirect_codeAcces';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+'client_id='+this.clientId+'&redirect_uri='+this.url+redirect+'&code='+code;
+        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&code='+code;
         
        /*
        
@@ -281,7 +282,7 @@ function createReqest (){
     }
     this.appSecret=function(){
         var redirect='/redirect_appSecret';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?client_id='+this.clientId+'&client_secret='+this.appSecret+'&grant_type=client_credentials';
+        return 'https://graph.facebook.com/v2.8/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=client_credentials';
         
         /*
         
