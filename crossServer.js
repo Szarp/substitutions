@@ -235,15 +235,15 @@ app.get('/redirect_login', function(req, res){
 
 
 function appSetting(){
-    var data=fs.readFileSync('/home/madar/2016/config.json');
-    console.log(JSON.stringify(data));
-    //var parsed=JSON.parse(data);
+    var data=fs.readFileSync('/home/madar/2016/appConfig.json');
+    console.log(JSON.parse(data));
+    var parsed=JSON.parse(data);
     //this.clientId=1082740245094082;
     //this.redirectUri='https://muwbackup.emadar.eu:8088/redirect'
     //this.oauth = 'https://www.facebook.com/v2.8/dialog/oauth?'
-    this.clientId=data['clientId'];
-    this.url=['redirectUrl'];
-    this.appSecret=['appSecret'];
+    this.clientId=parsed['clientId'];
+    this.url=parsed['redirectUrl'];
+    this.appSecret=parsed['appSecret'];
     
     
     
