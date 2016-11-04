@@ -192,6 +192,7 @@ setTimeout(function () {
 }, 1000);
 */
 https.createServer(opts, app).listen(8088);
+console.log('hi im alive');
 //app.listen(8090);
 // some places where save
 //place /zso11
