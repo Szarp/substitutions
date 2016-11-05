@@ -144,6 +144,26 @@ app.post('/redirect', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
+app.get('/appSecretTest', function(req, res){
+    var link=x.createAppSecret();
+    console.log('link secret',link);
+     request(link, function (error, response, body) {
+    if(err){console.log('some problems with req fb');}
+        console.log('body',body); // Show the HTML for the Modulus homepage.
+        });
+    //    console.log('GETtest, ok');
+    //    console.log('req',req);
+    //    console.log('query' ,req.query);
+      //  console.log('params',req.params);
+    //    console.log('body',req.body);
+    //console.log(req.cookies.cookieName);
+
+    //console.log(res.headers);
+    
+    res.send('okk');
+	//es.sendFile( __dirname + '/public/css/webPage.css');
+
+});
 app.get('/testLogin', function(req, resp){
     z=0
     var login=x.loginLink()
@@ -236,8 +256,6 @@ app.get('/redirect_codeAcces', function(req, res){
 var z=0
 
 app.get('/redirect', function(req, res){
-    
-    
         console.log('redirect');
     if(req.query['code'] !== undefined){
         console.log('this user dialog');
@@ -291,8 +309,7 @@ function onDialog(reqBody){
             var code=reqBody['code'];
     console.log(code);
         request(x.codeForAcces(code), function (error, response, body) {
-    console.log('err',error);
-    console.log('resp',response);
+    if(err){console.log('some problems with req fb');}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         });
         
@@ -333,8 +350,7 @@ function createReqest (){
        
        */
     }
-    this.appSecret=function(){
-        var redirect='/redirect_appSecret';
+    this.createAppSecret=function(){
         return 'https://graph.facebook.com/v2.8/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=client_credentials';
         
         /*
