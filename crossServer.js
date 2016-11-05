@@ -237,9 +237,9 @@ app.get('/redirect_codeAcces', function(req, res){
 
 
 app.get('/redirect_login', function(req, res){
-        console.log('login reqest');
+      //  console.log('login reqest');
     var code=req.query['code'];
-    console.log(code);
+    //console.log(code);
     
     
     
