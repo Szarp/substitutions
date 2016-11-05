@@ -145,7 +145,7 @@ app.post('/redirect', function(req, res){
 
     //console.log(res.headers);
     
-    res.send('ok');
+    res.send('okk');
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
