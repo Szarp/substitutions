@@ -240,7 +240,7 @@ app.get('/redirect', function(req, res){
     
         console.log('redirect');
     if(req.query['code'] !== undefined){
-        console.log('this. user dialog');
+        console.log('this user dialog');
         onDialog(req.query)
     }
     if(req.query['access_token'] !== undefined){
@@ -291,7 +291,7 @@ function onDialog(reqBody){
             var code=reqBody['code'];
     console.log(code);
         request(x.codeForAcces(code), function (error, response, body) {
-    console.log(body);
+    //console.log(body);
     //console.log(response);
     if (!error && response.statusCode == 200) {
         console.log(body); // Show the HTML for the Modulus homepage.
