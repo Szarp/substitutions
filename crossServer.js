@@ -238,33 +238,35 @@ app.get('/redirect_login', function(req, res){
         console.log('login reqest');
     var code=req.query['code'];
     //console.log(code);
-    var path=x.codeForAcces()
+    
     var form= { 
         'client_id':+config.clientId,
          redirect_uri:config.url+'/redirect_codeAcces',
          client_secret:config.appSecret,
          code:code
     }
-    var options = {
-    rejectUnauthorized: false,
-  hostname: 'graph.facebook.com',
-  port: 8088,
-  path: '/v2.8/oauth/access_token?'+path,
-  method: 'GET'
-};
-
-var req = https.request(options, (res) => {
-  console.log('statusCode:', res.statusCode);
-  console.log('headers:', res.headers);
-
-  res.on('data', (d) => {
-    process.stdout.write(d);
-  });
+    request({
+    //rejectUnauthorized: false,
+    url: 'https://www.facebook.com/v2.8/dialog/oauth/access_token', //URL to hit
+    qs: form, //Query string data
+    method: 'GET', //Specify the method
+    headers: { //We can define headers too
+        'Content-Type': 'MyContentType',
+        'Custom-Header': 'Custom Value'
+    }
+}, function(error, response, body){
+    if(error) {
+        console.log(error);
+    } else {
+        console.log(response.statusCode);
+    }
 });
-req.end();
-
-req.on('error', (e) => {
-  console.error(e);
+    request(x.codeForAcces(code), function (error, response, body) {
+    console.log(body);
+    console.log(response);
+    if (!error && response.statusCode == 200) {
+        console.log(body); // Show the HTML for the Modulus homepage.
+    }
 });
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
@@ -295,7 +297,7 @@ function createReqest (){
     }
     this.codeForAcces=function(code){
         var redirect='/redirect_codeAcces';
-        return 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
+        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
        
