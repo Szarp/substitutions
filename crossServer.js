@@ -134,10 +134,13 @@ app.post('/redirect', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-    app.get('/redirect', function(req, res){
-        console.log('i get response, ok');
-    console.log('query' ,req.query);
-    console.log(req.params);
+    app.get('/test', function(req, res){
+        
+        
+        console.log('GETtest, ok');
+        console.log('query' ,req.query);
+        console.log('params',req.params);
+        console.log('body',req.body);
     //console.log(req.cookies.cookieName);
 
     //console.log(res.headers);
