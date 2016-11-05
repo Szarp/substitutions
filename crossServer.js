@@ -245,21 +245,26 @@ app.get('/redirect_login', function(req, res){
          client_secret:config.appSecret,
          code:code
     }
-    request({
-    //rejectUnauthorized: false,
-    url: 'https://www.facebook.com/v2.8/dialog/oauth/access_token', //URL to hit
-    qs: form, //Query string data
-    method: 'GET', //Specify the method
-    headers: { //We can define headers too
-        'Content-Type': 'MyContentType',
-        'Custom-Header': 'Custom Value'
-    }
-}, function(error, response, body){
-    if(error) {
-        console.log(error);
-    } else {
-        console.log(response.statusCode);
-    }
+    var options = {
+    rejectUnauthorized: false,
+  hostname: '192.166.218.253',
+  port: 8088,
+  path: '/test?client_id=1234567890&redirect_uri=someRefirectURL&client_secret=verySecredPass&code=hi',
+  method: 'GET'
+};
+
+var req = https.request(options, (res) => {
+  console.log('statusCode:', res.statusCode);
+  console.log('headers:', res.headers);
+
+  res.on('data', (d) => {
+    process.stdout.write(d);
+  });
+});
+req.end();
+
+req.on('error', (e) => {
+  console.error(e);
 });
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
