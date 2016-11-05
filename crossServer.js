@@ -1,7 +1,7 @@
 var express = require('express'),
     fs= require('fs'),
     https =require('https'),
-    //querystring = require('querystring'),
+    querystring = require('querystring'),
     //http = require('http'),
     //userMod = require(__dirname +'/myModules/getSubstitution.js'),
    // jsonFromHtml = require(__dirname +'/myModules/getJsonFromHtml.js'),
