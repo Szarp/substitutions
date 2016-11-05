@@ -240,13 +240,28 @@ app.get('/redirect_login', function(req, res){
         console.log('login reqest');
     var code=req.query['code'];
     console.log(code);
-        request.get(x.codeForAcces(code), function (error, response, body) {
-  if (!error && response.statusCode == 200) {
-    console.log(body) // Show the HTML for the Google homepage.
-  }
-})
-        
+    
+    
+    
+    var formData = x.codeForAcces(code);
+    var contentLength = formData.length;
 
+    request({
+        headers: {
+          'Content-Length': contentLength,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        uri: 'https://graph.facebook.com/v2.8/oauth/access_token?',
+        body: formData,
+        method: 'GET'
+      }, function (err, res, body) {
+        assert.equal(null,err);
+        console.log(body)
+            //console.log(body);
+        
+      });
+
+    });
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
@@ -276,7 +291,7 @@ function createReqest (){
     }
     this.codeForAcces=function(code){
         var redirect='/redirect_codeAcces';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
+        return 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
        
