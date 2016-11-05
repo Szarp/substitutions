@@ -132,6 +132,7 @@ app.post('/redirect', function(req, res){
         
         
         console.log('GETtest, ok');
+        console.log('req',req);
         console.log('query' ,req.query);
         console.log('params',req.params);
         console.log('body',req.body);
