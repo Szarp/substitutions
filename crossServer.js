@@ -288,7 +288,7 @@ app.get('/redirect', function(req, res){
 
 });
 function onDialog(reqBody){
-            var code=reqbody['code'];
+            var code=reqBody['code'];
     console.log(code);
         request(x.codeForAcces(code), function (error, response, body) {
     console.log(body);
