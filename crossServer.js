@@ -145,6 +145,7 @@ app.post('/redirect', function(req, res){
 
 });
 app.get('/testLogin', function(req, resp){
+    z=0
     var login=x.loginLink()
     
     resp.redirect(login);
@@ -232,10 +233,11 @@ app.get('/redirect_codeAcces', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-
+var z=0
 
 app.get('/redirect_login', function(req, res){
         console.log('login reqest');
+    
     var code=req.query['code'];
     console.log(code);
     
@@ -263,6 +265,7 @@ app.get('/redirect_login', function(req, res){
     }
 });
 */
+    if(z==0){
     request(x.codeForAcces(code), function (error, response, body) {
     console.log(body);
     //console.log(response);
@@ -270,6 +273,8 @@ app.get('/redirect_login', function(req, res){
         console.log(body); // Show the HTML for the Modulus homepage.
     }
 });
+        z=1;
+    }
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
@@ -298,7 +303,7 @@ function createReqest (){
         */
     }
     this.codeForAcces=function(code){
-        var redirect='/redirect_codeAcces';
+        var redirect='/redirect_login';
         return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
