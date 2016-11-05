@@ -148,7 +148,7 @@ app.get('/appSecretTest', function(req, res){
     var link=x.createAppSecret();
     console.log('link secret',link);
      request(link, function (error, response, body) {
-    if(err){console.log('some problems with req fb');}
+    if(error){console.log('some problems with req fb');}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         });
     //    console.log('GETtest, ok');
