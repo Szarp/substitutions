@@ -247,7 +247,7 @@ app.get('/redirect_login', function(req, res){
     }
     request({
     //rejectUnauthorized: false,
-    url: 'https://www.facebook.com/v2.8/dialog/oauth', //URL to hit
+    url: 'https://www.facebook.com/v2.8/dialog/oauth/access_token', //URL to hit
     qs: form, //Query string data
     method: 'GET', //Specify the method
     headers: { //We can define headers too
