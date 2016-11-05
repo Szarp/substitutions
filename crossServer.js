@@ -235,18 +235,29 @@ app.get('/redirect_codeAcces', function(req, res){
 });
 var z=0
 
-app.get('/redirect_login', function(req, res){
-        console.log('login reqest');
+app.get('/redirect', function(req, res){
     
-    var code=req.query['code'];
-    console.log(code);
     
+        console.log('redirect');
+    if(req.query['code'] !== undefined){
+        console.log('this. user dialog');
+        onDialog(req.query)
+    }
+    if(req.query['access_token'] !== undefined){
+        console.log('this is acces token request');
+        onToken(req.query);
+    }
+    
+
+/*    
     var form= { 
         'client_id':+config.clientId,
          redirect_uri:config.url+'/redirect_codeAcces',
          client_secret:config.appSecret,
          code:code
     }
+  */  
+    
     /*
     request({
     //rejectUnauthorized: false,
@@ -265,34 +276,42 @@ app.get('/redirect_login', function(req, res){
     }
 });
 */
-    if(z==0){
-    request(x.codeForAcces(code), function (error, response, body) {
-    console.log(body);
-    //console.log(response);
-    if (!error && response.statusCode == 200) {
-        console.log(body); // Show the HTML for the Modulus homepage.
-    }
-});
-        z=1;
-    }
+
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
 
     //console.log(res.headers);
     
-   // res.send('ok');
+    res.send('ok');
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-
+function onDialog(body){
+            var code=req.query['code'];
+    console.log(code);
+        request(x.codeForAcces(code), function (error, response, body) {
+    console.log(body);
+    //console.log(response);
+    if (!error && response.statusCode == 200) {
+        console.log(body); // Show the HTML for the Modulus homepage.
+    }
+        });
+        
+        
+    }
+    function onToken(body){
+        var access=req.query['access_token'];
+        console.log(access);
+        
+    }
 
 
 function createReqest (){
    // appSetting.call(this);
     
     this.loginLink=function(){
-        var redirect='/redirect_login';
+        var redirect='/redirect';
         return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
         /*
         
@@ -303,7 +322,7 @@ function createReqest (){
         */
     }
     this.codeForAcces=function(code){
-        var redirect='/redirect_login';
+        var redirect='/redirect';
         return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
