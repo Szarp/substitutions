@@ -241,30 +241,26 @@ app.get('/redirect_login', function(req, res){
     
     var form= { 
         'client_id':+config.clientId,
-               redirect_uri:config.url+'/redirect_codeAcces',
-               client_secret:config.appSecret,
-               code:code
-        
+         redirect_uri:config.url+'/redirect_codeAcces',
+         client_secret:config.appSecret,
+         code:code
     }
-    
-    var formData =querystring.stringify(form);
-    var contentLength = formData.length;
-
     request({
-        headers: {
-          'Content-Length': contentLength,
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        uri: 'https://graph.facebook.com/v2.8/oauth/access_token?',
-        body: formData,
-        method: 'GET'
-      }, function (err, res, body) {
-        assert.equal(null,err);
-        console.log(body)
-            //console.log(body);
-        
-      });
-
+    //rejectUnauthorized: false,
+    url: 'https://www.facebook.com/v2.8/dialog/oauth', //URL to hit
+    qs: form, //Query string data
+    method: 'GET', //Specify the method
+    headers: { //We can define headers too
+        'Content-Type': 'MyContentType',
+        'Custom-Header': 'Custom Value'
+    }
+}, function(error, response, body){
+    if(error) {
+        console.log(error);
+    } else {
+        console.log(response.statusCode, body);
+    }
+});
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
