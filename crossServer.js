@@ -322,7 +322,7 @@ function createReqest (){
         */
     }
     this.codeForAcces=function(code){
-        var redirect='/redirect';
+        var redirect='/redirectt';
         return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
        /*
