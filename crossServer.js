@@ -245,6 +245,7 @@ app.get('/redirect_login', function(req, res){
          client_secret:config.appSecret,
          code:code
     }
+    /*
     request({
     //rejectUnauthorized: false,
     url: 'https://www.facebook.com/v2.8/dialog/oauth/access_token', //URL to hit
@@ -261,6 +262,7 @@ app.get('/redirect_login', function(req, res){
         console.log(response.statusCode);
     }
 });
+*/
     request(x.codeForAcces(code), function (error, response, body) {
     console.log(body);
     console.log(response);
