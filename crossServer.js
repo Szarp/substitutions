@@ -287,8 +287,8 @@ app.get('/redirect', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-function onDialog(body){
-            var code=req.query['code'];
+function onDialog(reqBody){
+            var code=reqbody['code'];
     console.log(code);
         request(x.codeForAcces(code), function (error, response, body) {
     console.log(body);
@@ -300,8 +300,8 @@ function onDialog(body){
         
         
     }
-    function onToken(body){
-        var access=req.query['access_token'];
+    function onToken(reqBody){
+        var access=reqBody['access_token'];
         console.log(access);
         
     }
