@@ -291,7 +291,7 @@ function onDialog(reqBody){
             var code=reqBody['code'];
     console.log(code);
         request(x.codeForAcces(code), function (error, response, body) {
-    console.log('err',err);
+    console.log('err',error);
     console.log('resp',response);
         console.log('body',body); // Show the HTML for the Modulus homepage.
         });
