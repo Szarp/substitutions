@@ -199,7 +199,7 @@ setTimeout(function () {
 }, 1000);
 */
 https.createServer(opts, app).listen(8088);
-console.log('hi im alive');
+console.log('Started');
 //app.listen(8090);
 // some places where save
 //place /zso11
@@ -218,12 +218,12 @@ myFunc.subs('2016-10-07',function(y){
 //myFunc.getCookie(function(){});//mongoTest();
 
 app.get('/redirect_codeAcces', function(req, res){
-        console.log('login reqest');
+        console.log('codeAcces answer');
     var code=req.query;
     console.log(code);
     
     //res.redirect(x.codeForAcces(code));
-    //console.log(req.params);
+    console.log(req.params);
     //console.log(req.cookies.cookieName);
 
     //console.log(res.headers);
@@ -235,7 +235,7 @@ app.get('/redirect_codeAcces', function(req, res){
 
 
 app.get('/redirect_login', function(req, res){
-      //  console.log('login reqest');
+        console.log('login reqest');
     var code=req.query['code'];
     //console.log(code);
     
@@ -258,7 +258,7 @@ app.get('/redirect_login', function(req, res){
     if(error) {
         console.log(error);
     } else {
-        console.log(response.statusCode, body);
+       // console.log(response.statusCode, body);
     }
 });
     //res.redirect(x.codeForAcces(code));
@@ -267,7 +267,7 @@ app.get('/redirect_login', function(req, res){
 
     //console.log(res.headers);
     
-    res.send('ok');
+   // res.send('ok');
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
