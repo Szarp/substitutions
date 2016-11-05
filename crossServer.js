@@ -254,13 +254,15 @@ app.get('/redirect_login', function(req, res){
         'Content-Type': 'MyContentType',
         'Custom-Header': 'Custom Value'
     }
-}, function(error, response, body){
+}
+           /* , function(error, response, body){
     if(error) {
         console.log(error);
     } else {
        // console.log(response.statusCode, body);
     }
-});
+}*/
+           );
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
