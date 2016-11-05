@@ -261,7 +261,6 @@ app.get('/redirect_login', function(req, res){
         
       });
 
-    });
     //res.redirect(x.codeForAcces(code));
     //console.log(req.params);
     //console.log(req.cookies.cookieName);
