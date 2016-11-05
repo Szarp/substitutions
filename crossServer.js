@@ -243,7 +243,7 @@ app.get('/redirect_login', function(req, res){
     
     var form= { 
         'client_id':+config.clientId,
-               redirect_uri:config.url+redirect,
+               redirect_uri:config.url+'/redirect_codeAcces',
                client_secret:config.appSecret,
                code:code
         
