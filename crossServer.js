@@ -241,9 +241,15 @@ app.get('/redirect_login', function(req, res){
     var code=req.query['code'];
     //console.log(code);
     
+    var form= { 
+        'client_id':+config.clientId,
+               redirect_uri:config.url+redirect,
+               client_secret:config.appSecret,
+               code:code
+        
+    }
     
-    
-    var formData = x.codeForAcces(code);
+    var formData =querystring.stringify(form);
     var contentLength = formData.length;
 
     request({
