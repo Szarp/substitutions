@@ -238,7 +238,7 @@ app.get('/redirect_login', function(req, res){
         console.log('login reqest');
     var code=req.query['code'];
     //console.log(code);
-    
+    var path=x.codeForAcces()
     var form= { 
         'client_id':+config.clientId,
          redirect_uri:config.url+'/redirect_codeAcces',
@@ -247,9 +247,9 @@ app.get('/redirect_login', function(req, res){
     }
     var options = {
     rejectUnauthorized: false,
-  hostname: '192.166.218.253',
+  hostname: 'graph.facebook.com',
   port: 8088,
-  path: '/test?client_id=1234567890&redirect_uri=someRefirectURL&client_secret=verySecredPass&code=hi',
+  path: '/v2.8/oauth/access_token?'+path,
   method: 'GET'
 };
 
