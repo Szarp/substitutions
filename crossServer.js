@@ -166,7 +166,7 @@ app.get('/appSecretTest', function(req, res){
 });
 app.get('/testLogin', function(req, resp){
     z=0
-    var login=x.loginLink()
+    var login=x.linkToCreateCode();
     
     resp.redirect(login);
     //console.log('hi');
@@ -222,11 +222,6 @@ setTimeout(function () {
 https.createServer(opts, app).listen(8088);
 console.log('Started');
 //app.listen(8090);
-// some places where save
-//place /zso11
-//colections users
-//login, password, data
-// substitutions
 /*
 myFunc.subs('2016-10-07',function(y){
     //console.log(y);
@@ -237,22 +232,6 @@ myFunc.subs('2016-10-07',function(y){
 })
 */
 //myFunc.getCookie(function(){});//mongoTest();
-
-app.get('/redirect_codeAcces', function(req, res){
-        console.log('codeAcces answer');
-    var code=req.query;
-    console.log(code);
-    
-    //res.redirect(x.codeForAcces(code));
-    console.log(req.params);
-    //console.log(req.cookies.cookieName);
-
-    //console.log(res.headers);
-    
-    res.send('ok');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-
-});
 
 app.get('/redirect', function(req, res){
         console.log('redirect');
