@@ -240,10 +240,10 @@ app.get('/redirect', function(req, res){
         //console
         createPersonToken(req.query['code'],function(x){
             
-           // getInfoOfToken(x,function(y){
+            getInfoOfToken(x,function(y){
              //   console.log(y);
-            //})
-            console.log(x);
+            })
+            //console.log(x);
             
         })
     }
@@ -275,7 +275,7 @@ function getInfoOfToken(accessToken,callback){
         if(e){console.log('req problem: '+e);}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
-                callback(body);
+                callback(JSON.parse(body));
         });
     });
 }
