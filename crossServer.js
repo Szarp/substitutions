@@ -263,9 +263,9 @@ function createPersonToken(code,callback){
     
     request(x.linkToUserAccesToken(code), function (e, r, body){
         if(e){console.log('req problem: '+e);}
-        console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
+        //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
-                callback(body['access_token']);
+                callback(JSON.parse(body)['access_token']);
         });
     });
 }
