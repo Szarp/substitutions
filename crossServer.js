@@ -109,8 +109,7 @@ app.post('/getData',function(req,res){
 
 app.post('/', function (req, res) {
     console.log(req.body);
-        res.redirect('https://www.facebook.com/v2.8/dialog/oauth?client_id=1082740245094082&redirect_uri=https://192.166.213.253:8088/redirect');
-    //res.sendFile( __dirname + '/public/fbIndex.html');
+    res.sendFile( __dirname + '/public/fbIndex.html');
     //var a=userMod.changes();
     //us.changes();
    // asd();
@@ -118,18 +117,8 @@ app.post('/', function (req, res) {
     //res.send('ok');
 });
 
-app.post('/redirect', function(req, res){
-    console.log(req.body);
-    //console.log(req.cookies.cookieName);
 
-    //console.log(res.headers);
-    
-    res.send('ok');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-
-});
     app.get('/test', function(req, res){
-        
         
         console.log('GETtest, ok');
         console.log('req',req);
@@ -144,43 +133,15 @@ app.post('/redirect', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-app.get('/appSecretTest', function(req, res){
-    var link=x.createAppSecret();
-    console.log('link secret',link);
-     request(link, function (error, response, body) {
-    if(error){console.log('some problems with req fb');}
-        console.log('body',body); // Show the HTML for the Modulus homepage.
-        });
-    //    console.log('GETtest, ok');
-    //    console.log('req',req);
-    //    console.log('query' ,req.query);
-      //  console.log('params',req.params);
-    //    console.log('body',req.body);
-    //console.log(req.cookies.cookieName);
 
-    //console.log(res.headers);
-    
-    res.send('okk');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-
-});
 app.get('/testLogin', function(req, resp){
     z=0
     var login=x.linkToCreateCode();
     
     resp.redirect(login);
-    //console.log('hi');
-    //var a=new setDate();
-    //a.todayIs();
-    //console.log(a.dispalyTime());
-    //getDateFromGcall();
-    // getCookie();
-    //a.getGPIDandGSH()
-    //console.log(a.z);
-    //console.log(a.params);
-    //asd();
+    
     //resp.send('ok');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
+	//resp.sendFile( __dirname + '/public/css/webPage.css');
 
 });
 //hi 7594161 6a5e61df [ 'PHPSESSID=856sgp5ehj7to5f6khsme58pc4; path=/' ]
@@ -313,36 +274,6 @@ function authorizationFacebook(){
     }
     
 }
-
-
-
-    function onToken(reqBody){
-        var access=reqBody['access_token'];
-        console.log(access);
-        
-    }
-
-
-function createReqest (){
-   // appSetting.call(this);
-    
-    
-    this.createAppSecret=function(){
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=client_credentials';
-        
-        /*
-        
-        https://graph.facebook.com/v2.8/oauth/access_token
-        ?client_id={app-id}
-        &client_secret={app-secret}
-        &grant_type=client_credentials
-        
-        */
-    }
-}
-
-
-
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
 
