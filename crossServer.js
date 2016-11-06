@@ -33,7 +33,7 @@ POST /{recipient_userid}/notifications?
      /home/madar/2016/cacert.pem
      
 */
-var x=new createReqest();
+var x=new authorizationFacebook();
 //appSetting();
 var opts = {
    
@@ -253,13 +253,16 @@ app.get('/redirect_codeAcces', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-var z=0
 
 app.get('/redirect', function(req, res){
         console.log('redirect');
     if(req.query['code'] !== undefined){
         console.log('this user dialog');
-        onDialog(req.query)
+        //console
+        createPersonToken(req.query['code'],function(x){
+            console.log(x);
+            
+        })
     }
     if(req.query['access_token'] !== undefined){
         console.log('this is acces token request');
@@ -267,54 +270,62 @@ app.get('/redirect', function(req, res){
     }
     
 
-/*    
-    var form= { 
-        'client_id':+config.clientId,
-         redirect_uri:config.url+'/redirect_codeAcces',
-         client_secret:config.appSecret,
-         code:code
-    }
-  */  
-    
-    /*
-    request({
-    //rejectUnauthorized: false,
-    url: 'https://www.facebook.com/v2.8/dialog/oauth/access_token', //URL to hit
-    qs: form, //Query string data
-    method: 'GET', //Specify the method
-    headers: { //We can define headers too
-        'Content-Type': 'MyContentType',
-        'Custom-Header': 'Custom Value'
-    }
-}, function(error, response, body){
-    if(error) {
-        console.log(error);
-    } else {
-        console.log(response.statusCode);
-    }
-});
-*/
 
-    //res.redirect(x.codeForAcces(code));
-    //console.log(req.params);
-    //console.log(req.cookies.cookieName);
-
-    //console.log(res.headers);
     
     res.send('ok');
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-function onDialog(reqBody){
-            var code=reqBody['code'];
-    console.log(code);
-        request(x.codeForAcces(code), function (error, response, body) {
-    if(err){console.log('some problems with req fb');}
+function getInfoAboutPerson(code,callback){
+    
+    
+}
+function createPersonToken(code,callback){
+    
+    request(x.linkToUserAccesToken(code), function (e, r, body){
+        if(error){console.log('some problems with req fb');}
         console.log('body',body); // Show the HTML for the Modulus homepage.
+        setImmediate(function() {
+                callback(body);
         });
-        
-        
+    });
+}
+function authorizationFacebook(){
+    
+    this.linkToCreateCode=function(){
+        var redirect='/redirect';
+        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
+        /*
+            https://www.facebook.com/v2.8/dialog/oauth?
+            client_id={app-id}
+            &redirect_uri={redirect-uri}
+        */
     }
+    this.linkToUserAccesToken=function(code){
+        var redirect='/redirect';
+        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
+        
+       /*
+           GET https://graph.facebook.com/v2.8/oauth/access_token?
+           client_id={app-id}
+           &redirect_uri={redirect-uri}
+           &client_secret={app-secret}
+           &code={code-parameter}
+       */
+    }
+    this.LinkToInfoAboutToken=function(token){
+        return 'graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
+        /*
+             GET graph.facebook.com/debug_token?
+             input_token={token-to-inspect}
+             &access_token={app-token-or-admin-token}
+        */
+    }
+    
+}
+
+
+
     function onToken(reqBody){
         var access=reqBody['access_token'];
         console.log(access);
@@ -325,31 +336,7 @@ function onDialog(reqBody){
 function createReqest (){
    // appSetting.call(this);
     
-    this.loginLink=function(){
-        var redirect='/redirect';
-        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
-        /*
-        
-        https://www.facebook.com/v2.8/dialog/oauth?
-        client_id={app-id}
-        &redirect_uri={redirect-uri}
-        
-        */
-    }
-    this.codeForAcces=function(code){
-        var redirect='/redirectt';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
-        
-       /*
-       
-           GET https://graph.facebook.com/v2.8/oauth/access_token?
-       client_id={app-id}
-       &redirect_uri={redirect-uri}
-       &client_secret={app-secret}
-       &code={code-parameter}
-       
-       */
-    }
+    
     this.createAppSecret=function(){
         return 'https://graph.facebook.com/v2.8/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=client_credentials';
         
