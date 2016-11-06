@@ -275,7 +275,7 @@ function getInfoOfToken(accessToken,callback){
         if(e){console.log('req problem: '+e);}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
-                callback(JSON.parse(body));
+                callback(body);
         });
     });
 }
@@ -304,7 +304,7 @@ function authorizationFacebook(){
        */
     }
     this.linkToInfoAboutToken=function(token){
-        return 'graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
+        return 'https://graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
         /*
              GET graph.facebook.com/debug_token?
              input_token={token-to-inspect}
