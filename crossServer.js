@@ -240,10 +240,10 @@ app.get('/redirect', function(req, res){
         //console
         createPersonToken(req.query['code'],function(x){
             
-            getInfoOfToken(x,function(y){
-                console.log(y);
-            })
-            //console.log(x);
+           // getInfoOfToken(x,function(y){
+             //   console.log(y);
+            //})
+            console.log(x);
             
         })
     }
