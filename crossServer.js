@@ -262,7 +262,7 @@ function getInfoAboutPerson(code,callback){
 function createPersonToken(code,callback){
     
     request(x.linkToUserAccesToken(code), function (e, r, body){
-        if(error){console.log('some problems with req fb');}
+        if(e){console.log('req problem: '+e);}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
                 callback(body);
