@@ -239,7 +239,11 @@ app.get('/redirect', function(req, res){
         console.log('this user dialog');
         //console
         createPersonToken(req.query['code'],function(x){
-            console.log(x);
+            
+            getInfoOfToken(x,function(y){
+                console.log(y);
+            })
+            //console.log(x);
             
         })
     }
@@ -255,13 +259,19 @@ app.get('/redirect', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-function getInfoAboutPerson(code,callback){
-    
-    
-}
 function createPersonToken(code,callback){
     
     request(x.linkToUserAccesToken(code), function (e, r, body){
+        if(e){console.log('req problem: '+e);}
+        console.log('body',body); // Show the HTML for the Modulus homepage.
+        setImmediate(function() {
+                callback(body['access_token']);
+        });
+    });
+}
+function getInfoOfToken(accessToken,callback){
+    
+    request(x.linkToInfoAboutToken(accessToken), function (e, r, body){
         if(e){console.log('req problem: '+e);}
         console.log('body',body); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
@@ -269,6 +279,7 @@ function createPersonToken(code,callback){
         });
     });
 }
+
 function authorizationFacebook(){
     
     this.linkToCreateCode=function(){
@@ -292,7 +303,7 @@ function authorizationFacebook(){
            &code={code-parameter}
        */
     }
-    this.LinkToInfoAboutToken=function(token){
+    this.linkToInfoAboutToken=function(token){
         return 'graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
         /*
              GET graph.facebook.com/debug_token?
