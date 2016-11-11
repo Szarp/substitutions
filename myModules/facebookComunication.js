@@ -1,5 +1,5 @@
-//var config = require('/home/madar/2016/config');
-var config = require('./config');
+var config = require('/home/bartek/2016/config');
+var request = require('request');
 var mongo = require('./mongoFunctions.js');
 
 var link = links();
