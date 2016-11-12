@@ -2,18 +2,41 @@
 var set=new settings();
 var z = new translateChanges();
 z.className='1b'
+
+function paramsFromServer(){
+    
+}
 function getForm(){
     //console.log('hi');
-    var a = document.getElementById(set.formId).value;
-    z.className=a;
-   // z.className="1gb";
-    z.displayData();
-    //var b = document.getElementById('fillPropertySpecie').value;
-    //b.value='no';
+    var a = document.getElementById('setClass').value;
+    var b = document.getElementById('setNotification').value;
+    b.value='no';
+    var val = "1b";
+    var sel = document.getElementById('setClass');
+    var opts = sel.options;
+    for(var opt, j = 0; opt = opts[j]; j++) {
+        if(opt.value == val) {
+            sel.selectedIndex = j;
+            break;
+        }
+    }
     //b.value='no';
     //document.getElementById('fillPropertySpecie').value='no';
-    console.log('param from form',a);
+    console.log('param from form',a,b);
 }
+function loginToFacebook(){
+    var q= new Date;
+    console.log(1484085053-1478901053);
+    var url ='/facebokLogin';
+     sendObj(url,{},function(obj){
+        //var json = JSON.parse(obj);
+        //set.saveData(json);
+        //console.log(obj,json);
+        //console.log(obj);
+    });
+    
+}
+
 function reqestForData(type){
     var url = 'getData'
     var form={};
@@ -248,7 +271,8 @@ var event={
         saveBtn:getForm,
         tommorowBtn:function(){reqestForData('tommorow')},
         todayBtn:function(){reqestForData('today')},
-        chooseBtn:''
+        chooseBtn:'',
+        toFacebook:loginToFacebook
 
     }
 }
@@ -266,43 +290,3 @@ function fieldsToFill(){
         substitution_types:'rodzaj'
     }
 }
-///facebook
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '1082740245094082',
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-
-    // ADD ADDITIONAL FACEBOOK CODE HERE
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-
-function onLogin(response) {
-  if (response.status == 'connected') {
-    FB.api('/me?fields=first_name', function(data) {
-      var welcomeBlock = document.getElementById('fb-welcome');
-      welcomeBlock.innerHTML = 'Hello, ' + data.first_name + '!';
-    });
-  }
-}
-
-FB.getLoginStatus(function(response) {
-  // Check login status on load, and if the user is
-  // already logged in, go directly to the welcome message.
-  if (response.status == 'connected') {
-    onLogin(response);
-  } else {
-    // Otherwise, show Login dialog first.
-    FB.login(function(response) {
-      onLogin(response);
-    }, {scope: 'user_friends, email'});
-  }
-});

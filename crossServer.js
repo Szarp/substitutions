@@ -9,12 +9,14 @@ var express = require('express'),
     myFunc = require(__dirname+'/myModules/serverReqests.js'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
-        request= require('request'),
+        //request= require('request'),
     //MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js'),
-    config = require('/home/madar/2016/config');
+    facebook = require(__dirname+'/myModules/facebookComunication.js'),
+    link = require(__dirname+'/myModules/fbLinks.js'),
+    config = require('/home/bartek/2016/config');
    // querystring = require('querystring');
 ///Users/bartek/gitrepo/node/substitution/myModules/serverReqest.js'
 //var substitution =new jsonFromHtml();
@@ -33,18 +35,19 @@ POST /{recipient_userid}/notifications?
      /home/madar/2016/cacert.pem
      
 */
-var x=new authorizationFacebook();
+//var link=new facebook.links();
+
 //appSetting();
 var opts = {
    
   // Specify the key file for the server
-  key: fs.readFileSync('/home/madar/2016/wsskey.pem'),
+  key: fs.readFileSync('/home/bartek/2016/wsskey.pem'),
    
   // Specify the certificate file
-  cert: fs.readFileSync('/home/madar/2016/wsscert.pem'),
+  cert: fs.readFileSync('/home/bartek/2016/wsscert.pem'),
    
   // Specify the Certificate Authority certificate
-  ca: fs.readFileSync('/home/madar/2016/cacert.pem'),
+  ca: fs.readFileSync('/home/bartek/2016/cacert.pem'),
    
   // This is where the magic happens in Node.  All previous
   // steps simply setup SSL (except the CA).  By requesting
@@ -62,6 +65,9 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
+/*
+
+//setting cookie on first login
 app.use(function (req, res, next) {
   // check if client sent cookie
     var cookie = req.cookies.cookieName;
@@ -79,15 +85,26 @@ app.use(function (req, res, next) {
     next(); // <-- important!
 });
 
-//1082740245094082
+*/
 app.get('/', function (req, res) {
    // asf();
         //res.redirect('https://www.facebook.com/v2.8/dialog/oauth?client_id=1082740245094082&redirect_uri=https://192.166.213.253:8088/redirect');
         res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
-app.post('/getData',function(req,res){
+
+app.post('/', function (req, res) {
     console.log(req.body);
+    res.sendFile( __dirname + '/public/fbIndex.html');
+    //var a=userMod.changes();
+    //us.changes();
+   // asd();
+    //console.log(a);
+    //res.send('ok');
+});
+app.post('/getData',function(req,res){
+    console.log('asking for changesfor '+req.body['mode']);
+    //console.log(req.body);
     if(req.body['mode']=='today'){
         time.todayIs();
         
@@ -101,24 +118,8 @@ app.post('/getData',function(req,res){
     mongo.findById(getChangesToSend,'substitutions',function(obj){
        res.send(JSON.stringify(obj['substitution'])); 
     });
-    //console.log('hi');
-    
-    //console.log(req.body);
-    //res.send(JSON.stringify(exData));
 })
-
-app.post('/', function (req, res) {
-    console.log(req.body);
-    res.sendFile( __dirname + '/public/fbIndex.html');
-    //var a=userMod.changes();
-    //us.changes();
-   // asd();
-    //console.log(a);
-    //res.send('ok');
-});
-
-
-    app.get('/test', function(req, res){
+app.get('/test', function(req, res){
         
         console.log('GETtest, ok');
         console.log('req',req);
@@ -134,23 +135,57 @@ app.post('/', function (req, res) {
 
 });
 
-app.get('/testLogin', function(req, resp){
-    z=0
-    var login=x.linkToCreateCode();
+app.get('/facebokLogin', function(req, resp){
+    console.log('Asking for login');
+    var login=link.linkToCreateCode();
     
+    //check cookie or something
     resp.redirect(login);
     
     //resp.send('ok');
 	//resp.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-//hi 7594161 6a5e61df [ 'PHPSESSID=856sgp5ehj7to5f6khsme58pc4; path=/' ]
 
+
+app.get('/redirect', function(req, res){
+        console.log('redirect');
+    res.sendFile( __dirname + '/public/substitutionPage.htm');
+    if(req.query['code'] !== undefined){
+        console.log('this user dialog');
+        //console
+        facebook.createPersonToken(req.query['code'],function(token){
+            
+            facebook.getInfoOfToken(token,function(returnData){
+                var id=returnData['data'].user_id;
+                console.log('id: '+id);
+                console.log('token: '+token);
+                //data['user_id']=returnData['data'].user_id;
+                //facebook.saveIdAndAccesToken
+                
+            /*
+            {"data":{"app_id":"1082740245094082","application":"Bartek Mazur","expires_at":1484085053,"is_valid":true,"issued_at":1478901053,"scopes":["user_friends","email","public_profile"],"user_id":"869953916469086"}}
+            */
+                
+                
+            });
+            //console.log(x);
+            
+        })
+    }
+    if(req.query['access_token'] !== undefined){
+        console.log('this is acces token request');
+        onToken(req.query);
+    }
+    
+	//es.sendFile( __dirname + '/public/css/webPage.css');
+
+});
 setInterval(function () { 
     var updateTime=[];
     time.todayIs();
     updateTime[0]=time.displayTime();
-    time.tommorowIs()
+    time.tommorowIs();
     updateTime[1]=time.displayTime();
     for(var i=0;i<updateTime.length;i++){
         myFunc.subs(updateTime[i],function(y){
@@ -194,86 +229,8 @@ myFunc.subs('2016-10-07',function(y){
 */
 //myFunc.getCookie(function(){});//mongoTest();
 
-app.get('/redirect', function(req, res){
-        console.log('redirect');
-    if(req.query['code'] !== undefined){
-        console.log('this user dialog');
-        //console
-        createPersonToken(req.query['code'],function(x){
-            
-            getInfoOfToken(x,function(y){
-             //   console.log(y);
-            })
-            //console.log(x);
-            
-        })
-    }
-    if(req.query['access_token'] !== undefined){
-        console.log('this is acces token request');
-        onToken(req.query);
-    }
-    
 
 
-    
-    res.send('ok');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-
-});
-function createPersonToken(code,callback){
-    
-    request(x.linkToUserAccesToken(code), function (e, r, body){
-        if(e){console.log('req problem: '+e);}
-        //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
-        setImmediate(function() {
-                callback(JSON.parse(body)['access_token']);
-        });
-    });
-}
-function getInfoOfToken(accessToken,callback){
-    
-    request(x.linkToInfoAboutToken(accessToken), function (e, r, body){
-        if(e){console.log('req problem: '+e);}
-        console.log('body',body); // Show the HTML for the Modulus homepage.
-        setImmediate(function() {
-                callback(body);
-        });
-    });
-}
-
-function authorizationFacebook(){
-    
-    this.linkToCreateCode=function(){
-        var redirect='/redirect';
-        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
-        /*
-            https://www.facebook.com/v2.8/dialog/oauth?
-            client_id={app-id}
-            &redirect_uri={redirect-uri}
-        */
-    }
-    this.linkToUserAccesToken=function(code){
-        var redirect='/redirect';
-        return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
-        
-       /*
-           GET https://graph.facebook.com/v2.8/oauth/access_token?
-           client_id={app-id}
-           &redirect_uri={redirect-uri}
-           &client_secret={app-secret}
-           &code={code-parameter}
-       */
-    }
-    this.linkToInfoAboutToken=function(token){
-        return 'https://graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
-        /*
-             GET graph.facebook.com/debug_token?
-             input_token={token-to-inspect}
-             &access_token={app-token-or-admin-token}
-        */
-    }
-    
-}
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
 
