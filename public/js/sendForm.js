@@ -26,9 +26,11 @@ function getForm(){
 }
 function loginToFacebook(){
     var q= new Date;
-    console.log(1484085053-1478901053);
-    var url ='/facebokLogin';
+    //q.
+    console.log(q.getTime()-5113963000);
+    var url ='/facebookLogin';
      sendObj(url,{},function(obj){
+         console.log(JSON.parse(obj));
         //var json = JSON.parse(obj);
         //set.saveData(json);
         //console.log(obj,json);

@@ -87,9 +87,14 @@ app.use(function (req, res, next) {
 
 */
 app.get('/', function (req, res) {
+    console.log('Asking for login');
+    var login=link.linkToCreateCode();
+    
+    //check cookie or something
+    res.redirect(login);
    // asf();
         //res.redirect('https://www.facebook.com/v2.8/dialog/oauth?client_id=1082740245094082&redirect_uri=https://192.166.213.253:8088/redirect');
-        res.sendFile( __dirname + '/public/substitutionPage.htm');
+        //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
 
@@ -120,13 +125,15 @@ app.post('/getData',function(req,res){
     });
 })
 app.get('/test', function(req, res){
-        
-        console.log('GETtest, ok');
-        console.log('req',req);
-        console.log('query' ,req.query);
-        console.log('params',req.params);
-        console.log('body',req.body);
-    //console.log(req.cookies.cookieName);
+
+facebook.personalData(token,function(q){
+    console.log(q);
+    
+})
+//        facebook.createNotification(idd,token,function(z){
+  //          console.log(z);
+    //    })
+       //console.log(req.cookies.cookieName);
 
     //console.log(res.headers);
     
@@ -134,20 +141,6 @@ app.get('/test', function(req, res){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-
-app.get('/facebokLogin', function(req, resp){
-    console.log('Asking for login');
-    var login=link.linkToCreateCode();
-    
-    //check cookie or something
-    resp.redirect(login);
-    
-    //resp.send('ok');
-	//resp.sendFile( __dirname + '/public/css/webPage.css');
-
-});
-
-
 app.get('/redirect', function(req, res){
         console.log('redirect');
     res.sendFile( __dirname + '/public/substitutionPage.htm');
@@ -155,11 +148,28 @@ app.get('/redirect', function(req, res){
         console.log('this user dialog');
         //console
         facebook.createPersonToken(req.query['code'],function(token){
-            
             facebook.getInfoOfToken(token,function(returnData){
                 var id=returnData['data'].user_id;
                 console.log('id: '+id);
                 console.log('token: '+token);
+                //facebook.saveIdAndToken(id,token,function(){})
+                facebook.checkIfLongTokenExist(id,function(comunicat){
+                    if(comunicat != 'ok'){
+                        facebook.tokenToLongLife(token,function(x){
+                            console.log('some long');
+                            console.log(x);
+                        
+                            mongo.modifyById(id,'person',{longToken:x},function(){})    
+                            
+                        });
+                        
+                        mongo.findById(id,'person',function(z){
+                            console.log(z);
+                        })
+                    }
+                    
+                });
+                
                 //data['user_id']=returnData['data'].user_id;
                 //facebook.saveIdAndAccesToken
                 

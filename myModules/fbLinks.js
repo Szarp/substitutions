@@ -29,8 +29,19 @@ var config=require('/home/bartek/2016/config');
              &access_token={app-token-or-admin-token}
         */
     }
+function linkInfoAboutUser(token){
+    return 'https://graph.facebook.com/v2.8/me?access_token='+token+'&debug=all&fields=id%2Cname%2Cemail&format=json&method=get&pretty=0&suppress_http_code=1';
+    
+    
+    /*
+    https://graph.facebook.com/v2.8/me?access_token=EAACEdEose0cBABvfHPvsavysXLoutiwZBHg6D60OrZAz5PpG0LUK9befRluY574XWuC18JeRyTUxLvaTIQMrgcqvHwWnePAZA34AIjGKFXCcIc5NTtJ3OdhxB678Moc0nNFk1rlkEn2ZBDQM6MubNxEZBigJZBJmrh5m0tgBq2iwZDZD&debug=all&fields=id%2Cname&format=json&method=get&pretty=0&suppress_http_code=1
+    
+    */
+}
 function linkLongLifeToken(shortToken){
-    return 'https://graph.facebook.com/oauth/access_token?  grant_type=fb_exchange_token&amp;client_id='+config.clientId+'&amp;client_secret='+config.appSecret+'&amp;fb_exchange_token='+shortToken;
+    var link = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&amp;client_id='+config.clientId+'&amp;client_secret='+config.appSecret+'&amp;fb_exchange_token='+shortToken;
+    console.log(link);
+    return link;
     
     /*
     GET /oauth/access_token?  
@@ -40,8 +51,24 @@ function linkLongLifeToken(shortToken){
     fb_exchange_token={short-lived-token} 
     */
 }
+function linkNotification(id,tokenn){
+    return 'https://graph.facebook.com/v2.8/'+id+'/notifications?access_token='+config.appToken+'&href=http://192.166.218.253:8088/&template=You have people waiting to play with you, play now!';
     
+    
+}
+function link2(token){
+    return 'https://graph.facebook.com/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=fb_exchange_token&fb_exchange_token='+token;
+    /*
+    https://graph.facebook.com/oauth/access_token?             
+    client_id=APP_ID&
+    client_secret=APP_SECRET&
+    grant_type=fb_exchange_token&
+    fb_exchange_token=EXISTING_ACCESS_TOKEN 
+    */
+}   
+    exports.linkInfoAboutUser = linkInfoAboutUser;
+    exports.linkNotifcation = linkNotification;
     exports.linkToCreateCode = linkToCreateCode;
     exports.linkToUserAccesToken = linkToUserAccesToken;
     exports.linkToInfoAboutToken = linkToInfoAboutToken;
-    exports.linkLongLifeToken = linkLongLifeToken;
+    exports.linkLongLifeToken = link2;//linkLongLifeToken;

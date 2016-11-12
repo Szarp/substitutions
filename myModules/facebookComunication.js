@@ -13,7 +13,28 @@ function createPersonToken(code,callback){
         });
     });
 }
-
+function checkIfLongTokenExist(id,callback){
+    mongo.findById(id,'person',function(personInfo){
+        var returnInfo='sas';
+        /*
+        if(personInfo['long-token']){
+            var time =new Date.time;
+            if(personInfo['expiration']-time>0){
+            returnInfo='ok';
+            }
+        }
+        else{ returnInfo='create long token'}
+        
+        //console.log(personInfo);
+        */
+        setImmediate(function() {
+                callback(returnInfo);
+        });
+        
+    })
+    
+    
+}
 function saveIdAndAccesToken(id,token,callback){
     var collection = 'person';
     mongo.save([collection,{_id:id,token:token}],function(){
@@ -24,20 +45,50 @@ function saveIdAndAccesToken(id,token,callback){
     
 }
 function tokenToLongLife(shortToken,callback){
-     request(link.linkLongLifeToke(shortToken), function (e, r, body){
+   // console.log(link.linkLongLifeToken(shortToken));
+     request(link.linkLongLifeToken(shortToken), function (e, r, body){
         if(e){console.log('req problem: '+e);}
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
+
         setImmediate(function() {
-                callback(JSON.parse(body));
+                callback(body);
         });
     });
     
 }
+function personalData(token,callback){
+    request(link.linkInfoAboutUser(token), function (e, r, body){
+        if(e){console.log('req problem: '+e);}
+        //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
 
-function createNotification(){
-    
-    
+        setImmediate(function() {
+                callback(body);
+        });
+    });
+}
+function createNotification(id,token,callback){
+    var url=link.linkNotifcation(id,token);
+    request({
+        headers: {
+          'Content-Length': 0,
+          'Content-Type': 'application/x-www-form-urlencoded'
+            
+        },
+        uri: url,
+        body: '',
+        method: 'POST'
+      }, function (err, res, body) {
+        //assert.equal(null,err);
+            setImmediate(function() {
+                callback(body);
+            });
+            //console.log(body);
+        
+      });
     //https://graph.facebook.com/v2.8/
+    
+    
+    
     /*
 POST /{recipient_userid}/notifications?
      access_token=...& 
@@ -59,8 +110,10 @@ function getInfoOfToken(accessToken,callback){
         });
     });
 }
-
-
+exports.personalData = personalData;
+exports.createNotification = createNotification;
+exports.tokenToLongLife = tokenToLongLife;
+exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoOfToken=getInfoOfToken;
 exports.saveIdAndToken=saveIdAndAccesToken;
 exports.createPersonToken=createPersonToken;
