@@ -1,46 +1,32 @@
-
-var set=new settings();
+var settings1 = {'asd':12};
+var settings2={};
+var set=new traslateSettings();
 var z = new translateChanges();
-z.className='1b'
 
-function paramsFromServer(){
-    
-}
-function getForm(){
-    //console.log('hi');
-    var a = document.getElementById('setClass').value;
-    var b = document.getElementById('setNotification').value;
-    b.value='no';
-    var val = "1b";
-    var sel = document.getElementById('setClass');
-    var opts = sel.options;
-    for(var opt, j = 0; opt = opts[j]; j++) {
-        if(opt.value == val) {
-            sel.selectedIndex = j;
-            break;
+//z.className='1b'
+
+function setValuesToForm(params){
+    var formList=['setClass','setNotification'];
+    for(var i=0;i<params.length;i++){
+        var sel = document.getElementById(formList[i]);
+        var opts = sel.options;
+        for(var opt, j = 0; opt = opts[j]; j++) {
+            if(opt.value == params[i]) {
+                sel.selectedIndex = j;
+                break;
+            }
         }
     }
-    //b.value='no';
-    //document.getElementById('fillPropertySpecie').value='no';
-    console.log('param from form',a,b);
 }
-function loginToFacebook(){
-    var q= new Date;
-    //q.
-    console.log(q.getTime()-5113963000);
-    var url ='/facebookLogin';
-     sendObj(url,{},function(obj){
-         console.log(JSON.parse(obj));
-        //var json = JSON.parse(obj);
-        //set.saveData(json);
-        //console.log(obj,json);
-        //console.log(obj);
-    });
-    
+function takeValuesFromForm(){
+    //console.log('hi');
+    var classParam = document.getElementById('setClass').value;
+    var notifcationParam = document.getElementById('setNotification').value;
+    //console.log('param from form',a,b);
 }
 
-function reqestForData(type){
-    var url = 'getData'
+function requestForChanges(type){
+    var url = 'getChanges'
     var form={};
     if(type =='today'){
         form['mode']='today';
@@ -56,7 +42,7 @@ function reqestForData(type){
         console.log(obj,json);
         z.data=json;
         if(obj =='"no substitutions"'){
-            console.log('ji');
+            //console.log('ji');
             z.data=[{"cancelled":[true],"note":["brak zmian"],
                     classes:[z.className]}];
             console.log(z.data);
@@ -68,7 +54,7 @@ function reqestForData(type){
 var events = ['homePage','substitutionList','settingsMenu'];
 
 
-function settings(){
+function traslateSettings(){
     this.formId = 'setClass';
     this.saveData = function(data){
         this.changeDisplayEvents = data['changeDisplayEvents'];
@@ -84,7 +70,7 @@ function settings(){
         console.log(key[0]);    
         var el = document.getElementById(key[0]);
         //console.log(el);
-        el.addEventListener('click',function(){ goTo(key[1])},false);
+        el.addEventListener('click',function(){ homePosition(key[1])},false);
     }
     this.addClicks=function(){
         for(k in this.btnEvents){
@@ -96,11 +82,11 @@ function settings(){
     }
 }
 
-function goTo(id){
+function homePosition(id){
         var el;
-        for(var i=0; i<events.length;i++){
-            el = document.getElementById(events[i]);
-            if(events[i]==id){
+        for(var i=0; i<settings1.events.length;i++){
+            el = document.getElementById(settings1.events[i]);
+            if(settings1.events[i]==id){
                 el.style.display='block';
             }
             else{
@@ -110,11 +96,30 @@ function goTo(id){
     }
 
 function onLoadFunc(){
-    set.saveData(event);
-    set.addChangeClick();
-    set.addClicks();
+        getSettings();
+  //  console.log(settings1);
+    
+    
 }
 
+function getSettings(){
+    var url='settings';
+    var form={};
+    sendObj(url,form,function(obj){
+    //    console.log(JSON.parse(obj));
+        settings1 = JSON.parse(obj);
+        console.log(settings1);
+        //set.saveData(settings1);
+       
+    });
+    console.log(settings1);
+}
+setTimeout(function(){set.saveData(settings1.event);
+    set.addChangeClick();
+    set.addClicks();
+    setValuesToForm(settings1['formValues'])
+    }, 1000);
+//console.log(settings1);
 
 //var obj={'hey':'my name is skrilex','hey2':89};
     var sendObj = function(url,json_obj,callback){
@@ -131,14 +136,14 @@ function onLoadFunc(){
     }
     http.send(string_obj);
 }
-
 function translateChanges(){
     //this.data
-    this.divId='someId';
+    this.divId='changesContainer';
     this.parsedData="";
     this.finalTables="";
     //this.className=null;
-    fieldsToFill.call(this);
+    //fieldsToFill.call(this);
+    this.fields=settings1['fields'];
     this.displayData=function(){
         console.log(this.className);
         this.finalTables="";
@@ -158,7 +163,6 @@ function translateChanges(){
             }
             //console.log(fi//);
         }
-
     }
     this.changeContainsClass = function(oneChange){
     if(this.className==null||this.className==undefined){return true};
@@ -169,8 +173,6 @@ function translateChanges(){
             }
         }
     return false;
-    
-    
 }
     this.addToArray=function(keyText,keyValue,tabs){
         var text = this.createElement(keyText,keyValue,tabs);
@@ -205,8 +207,7 @@ function translateChanges(){
                     keyValue=changesIn[l];   
                     this.addToArray(keyText,keyValue,1);
                     //console.log(keyText,keyValue);
-                }
-                
+                }   
                 //keyText=undefined;
                 //console.log('some changes');
             }
@@ -214,14 +215,8 @@ function translateChanges(){
                 keyText=this.fields[k];
                 keyValue=oneChange[k];
                 this.addToArray(keyText,keyValue,0);
-            }
-            
-            
-            
-            
+            }   
         }
-        
-        
     }
     this.getType= function(value){
         if(value=='true'){
@@ -270,11 +265,10 @@ var event={
         'settings':['navbar_settings','settingsMenu']
     },
         btnEvents :{
-        saveBtn:getForm,
-        tommorowBtn:function(){reqestForData('tommorow')},
-        todayBtn:function(){reqestForData('today')},
-        chooseBtn:'',
-        toFacebook:loginToFacebook
+        saveBtn:takeValuesFromForm,
+        tommorowBtn:function(){requestForChanges('tommorow')},
+        todayBtn:function(){requestForChanges('today')},
+        chooseBtn:''
 
     }
 }
