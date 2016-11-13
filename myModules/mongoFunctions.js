@@ -1,6 +1,9 @@
 var MongoClient = require('mongodb').MongoClient,
     assert = require('assert');
+    /*
+    Module to comunicate with mongo
     
+    */
     
 function saveToCollection(params,callback){
         //[collection,{data}]
@@ -55,8 +58,8 @@ function saveToCollection(params,callback){
         MongoClient.connect(url, function(err, db) {
             assert.equal(null,err);
             var collection=db.collection(collectionName);
-            collection.findOne({_id:id},function(err, doc) {
-            assert.equal(null, err);
+            collection.findOne({_id:id},function(err1, doc) {
+            assert.equal(null, err1);
             //assert.equal(null, doc);
             //assert.equal(2, doc.b);
                 setImmediate(function() {
@@ -70,4 +73,4 @@ function saveToCollection(params,callback){
     }
 exports.findById=findById;
 exports.modifyById=modifyById;
-exports.modisfyById=saveToCollection;
+exports.save=saveToCollection;

@@ -1,15 +1,22 @@
-var config=require('/home/bartek/2016/config');
+var config=require('./config');
+/*
+This module contains functions to generate 
+links to some facebook reqests
+
+*/
+
     
-    function linkToCreateCode(){
+    function loginAttempt(permissions){ //opens a facebook dialog window, returns code 
         var redirect='/redirect';
-        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect;
+        return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&scope='+permissions;
         /*
             https://www.facebook.com/v2.8/dialog/oauth?
             client_id={app-id}
             &redirect_uri={redirect-uri}
+            &scopes={what u want to get permissions for}
         */
     }
-    function linkToUserAccesToken(code){
+    function userAccesToken(code){ //exchange code for Token
         var redirect='/redirect';
         return 'https://graph.facebook.com/v2.8/oauth/access_token?'+ 'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&client_secret='+config.appSecret+'&code='+code;
         
@@ -21,7 +28,7 @@ var config=require('/home/bartek/2016/config');
            &code={code-parameter}
        */
     }
-    function linkToInfoAboutToken(token){
+    function tokenInfo(token){ //information about token 
         return 'https://graph.facebook.com/debug_token?input_token='+token+'&access_token='+config.appToken;
         /*
              GET graph.facebook.com/debug_token?
@@ -29,35 +36,40 @@ var config=require('/home/bartek/2016/config');
              &access_token={app-token-or-admin-token}
         */
     }
-function linkInfoAboutUser(token){
-    return 'https://graph.facebook.com/v2.8/me?access_token='+token+'&debug=all&fields=id%2Cname%2Cemail&format=json&method=get&pretty=0&suppress_http_code=1';
+function userInfo(token,params){  //information about user
+    return 'https://graph.facebook.com/v2.8/me?access_token='+token+'&debug=all&fields='+params+'&format=json&method=get&pretty=0&suppress_http_code=1';
     
     
     /*
-    https://graph.facebook.com/v2.8/me?access_token=EAACEdEose0cBABvfHPvsavysXLoutiwZBHg6D60OrZAz5PpG0LUK9befRluY574XWuC18JeRyTUxLvaTIQMrgcqvHwWnePAZA34AIjGKFXCcIc5NTtJ3OdhxB678Moc0nNFk1rlkEn2ZBDQM6MubNxEZBigJZBJmrh5m0tgBq2iwZDZD&debug=all&fields=id%2Cname&format=json&method=get&pretty=0&suppress_http_code=1
+    https://graph.facebook.com/v2.8/me?
+    access_token={user-token}&
+    debug=all&
+    fields=id,name& //A comma separated list of fields u want to know
+    format=json&  
+    method=get&   
+    pretty=0&  //don't know what is it
+    suppress_http_code=1  //don't know what is it
     
     */
 }
-function linkLongLifeToken(shortToken){
-    var link = 'https://graph.facebook.com/oauth/access_token?grant_type=fb_exchange_token&amp;client_id='+config.clientId+'&amp;client_secret='+config.appSecret+'&amp;fb_exchange_token='+shortToken;
-    console.log(link);
-    return link;
+
+
+function notification(id,message,redirect){ //send notification to user
+    return 'https://graph.facebook.com/v2.8/'+id+'/notifications?access_token='+config.appToken+'&href='+redirect+'&template='+message;
+     /*
+     POST /{recipient_userid}/notifications?
+     access_token={appToken}& 
+     href={redirect}& 
+     template={message}
+     
+     */
     
-    /*
-    GET /oauth/access_token?  
-    grant_type=fb_exchange_token&amp;           
-    client_id={app-id}&amp;
-    client_secret={app-secret}&amp;
-    fb_exchange_token={short-lived-token} 
-    */
-}
-function linkNotification(id,tokenn){
-    return 'https://graph.facebook.com/v2.8/'+id+'/notifications?access_token='+config.appToken+'&href=http://192.166.218.253:8088/&template=You have people waiting to play with you, play now!';
     
     
 }
-function link2(token){
-    return 'https://graph.facebook.com/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=fb_exchange_token&fb_exchange_token='+token;
+
+function tokenToLong(shortToken){ //exchange short to long-life token
+    return 'https://graph.facebook.com/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=fb_exchange_token&fb_exchange_token='+shortToken;
     /*
     https://graph.facebook.com/oauth/access_token?             
     client_id=APP_ID&
@@ -66,9 +78,9 @@ function link2(token){
     fb_exchange_token=EXISTING_ACCESS_TOKEN 
     */
 }   
-    exports.linkInfoAboutUser = linkInfoAboutUser;
-    exports.linkNotifcation = linkNotification;
-    exports.linkToCreateCode = linkToCreateCode;
-    exports.linkToUserAccesToken = linkToUserAccesToken;
-    exports.linkToInfoAboutToken = linkToInfoAboutToken;
-    exports.linkLongLifeToken = link2;//linkLongLifeToken;
+    exports.loginAttempt = loginAttempt;
+    exports.userAccesToken = userAccesToken;
+    exports.tokenInfo = tokenInfo;
+    exports.userInfo = userInfo;
+    exports.notification = notification;
+    exports.tokenToLong = tokenToLong;
