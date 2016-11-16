@@ -186,7 +186,7 @@ function convertToSubstitutions(data,callback){
         //console.log('mi');
         var gshString='gsh';
         var a=data.indexOf('gsh');
-        var gpid=data.slice(a-8,a-1);
+        var gpid=data.slice(a-9,a-1);
         var gsh=data.slice(a+4,a+12);
         setImmediate(function() {
             callback([gpid,gsh]);
@@ -199,4 +199,4 @@ exports.downloadData = downloadData;
 exports.getCookie = getCookie;
 exports.convert = convertToSubstitutions;
 exports.save = saveSubstitutions;
-//exports.getGPIDandGSH = getGPIDandGSH;
+exports.getGPIDandGSH = getGPIDandGSH;

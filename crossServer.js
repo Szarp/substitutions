@@ -1,7 +1,7 @@
 var express = require('express'),
     fs= require('fs'),
     https =require('https'),
-    querystring = require('querystring'),
+    //querystring = require('querystring'),
     //http = require('http'),
     //userMod = require(__dirname +'/myModules/getSubstitution.js'),
    // jsonFromHtml = require(__dirname +'/myModules/getJsonFromHtml.js'),
@@ -11,43 +11,32 @@ var express = require('express'),
     cookieParser = require('cookie-parser'),
         //request= require('request'),
     //MongoClient = require('mongodb').MongoClient,
-    assert = require('assert'),
+    //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js'),
     facebook = require(__dirname+'/myModules/facebookComunication.js'),
-    link = require(__dirname+'/myModules/fbLinks.js'),
-    config = require('/home/bartek/2016/config');
+    link = require(__dirname+'/myModules/fbLinks.js');
+    //config = require(__dirname+'/myModules/config');
    // querystring = require('querystring');
-///Users/bartek/gitrepo/node/substitution/myModules/serverReqest.js'
-//var substitution =new jsonFromHtml();
+//var substitution = new jsonFromHtml();
 //var user= new userMod();
 var app = express();
-//'Users/bartek/Documents/2016/
-//var https = require('https');
+
 //var app = express();
-/*
-POST /{recipient_userid}/notifications?
-     access_token=...& 
-     href=...& 
-     template=You have people waiting to play with you, play now!
-     /home/madar/2016/wsskey.pem
-     /home/madar/2016/wsscert.pem
-     /home/madar/2016/cacert.pem
-     
-*/
+
 //var link=new facebook.links();
 
 //appSetting();
 var opts = {
    
   // Specify the key file for the server
-  key: fs.readFileSync('/home/bartek/2016/wsskey.pem'),
+  key: fs.readFileSync('cert/wsskey.pem'),
    
   // Specify the certificate file
-  cert: fs.readFileSync('/home/bartek/2016/wsscert.pem'),
+  cert: fs.readFileSync('cert/wsscert.pem'),
    
   // Specify the Certificate Authority certificate
-  ca: fs.readFileSync('/home/bartek/2016/cacert.pem'),
+  ca: fs.readFileSync('cert/cacert.pem'),
    
   // This is where the magic happens in Node.  All previous
   // steps simply setup SSL (except the CA).  By requesting
@@ -88,13 +77,11 @@ app.use(function (req, res, next) {
 */
 app.get('/', function (req, res) {
     console.log('Asking for login');
-    var login=link.linkToCreateCode();
-    
+    var login=link.loginAttempt();
     //check cookie or something
-    res.redirect(login);
-   // asf();
-        //res.redirect('https://www.facebook.com/v2.8/dialog/oauth?client_id=1082740245094082&redirect_uri=https://192.166.213.253:8088/redirect');
-        //res.sendFile( __dirname + '/public/substitutionPage.htm');
+    //res.redirect(login);
+    // asf();
+    res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
 
@@ -103,12 +90,12 @@ app.post('/', function (req, res) {
     res.sendFile( __dirname + '/public/fbIndex.html');
     //var a=userMod.changes();
     //us.changes();
-   // asd();
+    // asd();    
     //console.log(a);
     //res.send('ok');
 });
-app.post('/getData',function(req,res){
-    console.log('asking for changesfor '+req.body['mode']);
+app.post('/getChanges',function(req,res){
+    console.log('asking for changes for '+req.body['mode']);
     //console.log(req.body);
     if(req.body['mode']=='today'){
         time.todayIs();
@@ -123,6 +110,44 @@ app.post('/getData',function(req,res){
     mongo.findById(getChangesToSend,'substitutions',function(obj){
        res.send(JSON.stringify(obj['substitution'])); 
     });
+})
+app.post('/settings',function(req,res){
+    //console.log('asking for changes for '+req.body['mode']);
+    //console.log(req.body);
+    var settings1 = {
+    fields:{
+        cancelled:'typ',
+        note:'komentarz',
+        periods:'lekcja',
+        subjects:'przedmiot',
+        teachers:'nauczyciel',
+        classes:'klasa',
+        classrooms:'sala',
+        groupnames:'grupa',
+        changes:'zmiany',
+        substitution_types:'rodzaj'  
+    },
+    event:{
+        changeDisplayEvents :{
+            'home':['navbar_home','homePage'],
+            'substitution':['navbar_substitution','substitutionList'],
+            'settings':['navbar_settings','settingsMenu']
+        },
+        btnEvents :{
+            saveBtn:function(){takeValuesFromForm()},
+            tommorowBtn:function(){requestForChanges('tommorow')},
+            todayBtn:function(){requestForChanges('today')},
+            chooseBtn:''
+        }
+    },
+    events:['homePage','substitutionList','settingsMenu'],
+    formValues:['1b','yes']
+    
+}
+    res.send(JSON.stringify(settings1));
+  //  mongo.findById(getChangesToSend,'substitutions',function(obj){
+    //   res.send(JSON.stringify(obj['substitution'])); 
+    //});
 })
 app.get('/test', function(req, res){
 
