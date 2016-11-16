@@ -40,7 +40,7 @@ function saveToCollection(params,callback){
                   if (err){
                       //console.warn(err.message);  // returns error if no matching object found
                   }else{
-                      console.dir(object);
+                     // console.log(object);
                   }
               });
         

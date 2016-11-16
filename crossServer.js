@@ -10,7 +10,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
         //request= require('request'),
-    //MongoClient = require('mongodb').MongoClient,
+    MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js'),
@@ -27,6 +27,7 @@ var app = express();
 //var link=new facebook.links();
 
 //appSetting();
+var sessionList = {};
 var opts = {
    
   // Specify the key file for the server
@@ -54,7 +55,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
-/*
+
 
 //setting cookie on first login
 app.use(function (req, res, next) {
@@ -64,17 +65,17 @@ app.use(function (req, res, next) {
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2,randomNumber.length);
-        res.cookie('cookieName',randomNumber, { maxAge: 900000, httpOnly: true });
-        //console.log('cookie created successfully');
+        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*120, httpOnly: false });
+        console.log('cookie created successfully');
     } 
     else{
     // yes, cookie was already present 
-       // console.log('cookie exists', cookie);
+        console.log('cookie exists', cookie);
     } 
     next(); // <-- important!
 });
 
-*/
+
 app.get('/', function (req, res) {
     console.log('Asking for login');
     var login=link.loginAttempt();
@@ -94,27 +95,7 @@ app.post('/', function (req, res) {
     //console.log(a);
     //res.send('ok');
 });
-app.post('/getChanges',function(req,res){
-    console.log('asking for changes for '+req.body['mode']);
-    //console.log(req.body);
-    if(req.body['mode']=='today'){
-        time.todayIs();
-        
-    }
-    if(req.body['mode']=='tommorow'){
-        time.tommorowIs();
-        
-    }
-    var getChangesToSend=time.displayTime();
-    //console.log('time',getChangesToSend);
-    mongo.findById(getChangesToSend,'substitutions',function(obj){
-       res.send(JSON.stringify(obj['substitution'])); 
-    });
-})
-app.post('/settings',function(req,res){
-    //console.log('asking for changes for '+req.body['mode']);
-    //console.log(req.body);
-    var settings1 = {
+var settings1 = {
     fields:{
         cancelled:'typ',
         note:'komentarz',
@@ -132,22 +113,42 @@ app.post('/settings',function(req,res){
             'home':['navbar_home','homePage'],
             'substitution':['navbar_substitution','substitutionList'],
             'settings':['navbar_settings','settingsMenu']
-        },
-        btnEvents :{
-            saveBtn:function(){takeValuesFromForm()},
-            tommorowBtn:function(){requestForChanges('tommorow')},
-            todayBtn:function(){requestForChanges('today')},
-            chooseBtn:''
         }
     },
     events:['homePage','substitutionList','settingsMenu'],
     formValues:['1b','yes']
     
 }
-    res.send(JSON.stringify(settings1));
-  //  mongo.findById(getChangesToSend,'substitutions',function(obj){
-    //   res.send(JSON.stringify(obj['substitution'])); 
-    //});
+app.post('/postCall',function(req,res){
+    console.log('Mode: '+req.body['mode']);
+    var body=req.body;
+    
+        if(body.mode=='getSettings'){
+             console.log('response Settings')
+        res.send(JSON.stringify(settings1));    
+        }
+        if(body.mode=='getChanges'){
+                console.log('response Changes')
+            if(req.body['param']=='today'){
+                time.todayIs();
+            }
+            else{
+                time.tommorowIs();
+            }
+            console.log(time.displayTime());
+            mongo.findById(time.displayTime(),'substitutions',function(obj){
+            res.send(JSON.stringify(obj['substitution'])); 
+            });
+        }        
+        if(body.mode=='message'){
+            console.log('message')
+            
+        }
+    
+    
+
+    //console.log('time',getChangesToSend);
+
 })
 app.get('/test', function(req, res){
 
@@ -198,9 +199,7 @@ app.get('/redirect', function(req, res){
                 //data['user_id']=returnData['data'].user_id;
                 //facebook.saveIdAndAccesToken
                 
-            /*
-            {"data":{"app_id":"1082740245094082","application":"Bartek Mazur","expires_at":1484085053,"is_valid":true,"issued_at":1478901053,"scopes":["user_friends","email","public_profile"],"user_id":"869953916469086"}}
-            */
+ 
                 
                 
             });
@@ -231,8 +230,9 @@ setInterval(function () {
     }
     
     console.log('second passed'); 
-}, 1000*60*6);
-/*
+}, 1000*60*60*6);
+
+
 setTimeout(function () { 
     var updateTime=[];
     time.todayIs();
@@ -249,12 +249,72 @@ setTimeout(function () {
     
     console.log('second passed'); 
 }, 1000);
+//*/
+/*
+var x = new sessionCreator();
+x.addNewSession('abc','cdf');
+x.addNewSession('cd','sada');
+x.addNewSession('cdds','sadaaa');
+console.log(sessionList)
 */
+function sessionCreator(){
+    this.sessionId='sessionList';
+    
+    this.findIfSessionExist=function(cookie){
+        var obj = this.getSessionElement();
+        for(var i=0;i<obj.length;i++){
+            if(obj[i].cookie == cookie){
+                return obj[i].id;
+            }
+        }
+        return null;
+    }
+    this.addNewSession=function(id,cookie){
+        //var list = this.getSessionElement();
+        var sessionEl = new session(id,cookie);
+        var newElement = sessionEl.returnParams();
+        sessionList[newElement[0]]=newElement[1];
+        console.log(sessionEl.returnParams());
+        
+        
+    }
+    this.getSessionElement=function(){
+        return sessionList;
+    }
+    
+    
+}
+
+function session(id,cookie){
+    this.cookie = cookie;
+    this.id = id;
+    this.expirationTime = '';
+    
+    this.returnParams=function(){
+        this.expirationTime=this.setExTime();
+        var obj = []
+        obj[0] = this.cookie 
+        obj[1] = {id:this.id,
+                exTime:this.expirationTime}
+        return obj; 
+            
+        
+    }
+    this.setExTime=function(){
+        var time = new Date()
+        return time.getTime()+1000*60*180;
+        
+    }
+    
+    
+}
+
+
 https.createServer(opts, app).listen(8088);
 console.log('Started');
 //app.listen(8090);
 /*
-myFunc.subs('2016-10-07',function(y){
+myFunc.subs('2016-11-16',function(y){
     //console.log(y);
    // y[]
     var a=JSON.stringify(y);
@@ -264,7 +324,7 @@ myFunc.subs('2016-10-07',function(y){
 */
 //myFunc.getCookie(function(){});//mongoTest();
 
-
+//mongoTest();
 
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
@@ -274,7 +334,7 @@ function mongoTest(){
         db.collections(function(err, collections){
          // console.log(collections);
       }); 
-        collection.find({_id:'2016-10-06'}).forEach(function(f){console.log(f)});
+        collection.find({_id:'2016-11-06'}).forEach(function(f){console.log(f)});
             //collection.update({_id:'2016-10-04'}, {$set:{substitution:'hey'}},{upsert:true});
         collection.find({},{}).forEach(function(f){
             //console.log(f)

@@ -14,6 +14,8 @@
         <link rel="stylesheet" href="css/gCode.css">
         <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
         <script type="text/javascript" src="js/sendForm.js"></script>
+        <script type="text/javascript" src="js/faktury.js"></script>
+        
 
         
     </head>
@@ -36,7 +38,7 @@
                             <ul>
                                 <li id="todayBtn" >today</li>
                                 <li id="tommorowBtn"  >tomorrow</li>
-                                <li id="chooseBtn">choose</li>
+                                <li id="chooseBtn" onclick="">choose</li>
                             </ul>
                         </div>
                         <div class="scrollableList" id='elementsList'>
@@ -60,7 +62,7 @@
                     <div class="boxed-group-inner">
                       Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi aby umożliwić ich naprawę.
                         <div  id=""><textarea id="messageArea" maxlength="1000" cols="" rows="10"></textarea>'  </div>
-                        <a id="sendMessage" class="edit-btn btn" onclick="">SendMessage</a>
+                        <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">SendMessage</a>
 
                     </div>
                     

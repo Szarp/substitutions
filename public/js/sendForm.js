@@ -4,7 +4,12 @@ var set=new traslateSettings();
 var z = new translateChanges();
 
 //z.className='1b'
-
+var btnEvents ={
+            saveBtn:function(){takeValuesFromForm()},
+            tommorowBtn:function(){requestForChanges('tommorow')},
+            todayBtn:function(){requestForChanges('today')},
+            //chooseBtn:''
+        }
 function setValuesToForm(params){
     var formList=['setClass','setNotification'];
     for(var i=0;i<params.length;i++){
@@ -26,39 +31,40 @@ function takeValuesFromForm(){
 }
 
 function requestForChanges(type){
-    var url = 'getChanges'
+    console.log('hi');
+    var url = 'postCall'
     var form={};
+    form['mode']='getChanges'
     if(type =='today'){
-        form['mode']='today';
+        form['param']='today';
         
     }
     if(type == 'tommorow'){
-        form['mode']='tommorow';
+        form['param']='tommorow';
     }
     //console.log(form);
     sendObj(url,form,function(obj){
         var json = JSON.parse(obj);
         //set.saveData(json);
-        console.log(obj,json);
+        //console.log(obj,json);
         z.data=json;
         if(obj =='"no substitutions"'){
-            //console.log('ji');
+            console.log('ji');
             z.data=[{"cancelled":[true],"note":["brak zmian"],
                     classes:[z.className]}];
             console.log(z.data);
         }
         z.displayData(); 
-        //console.log(obj);
+        console.log(obj);
     });
 }
-var events = ['homePage','substitutionList','settingsMenu'];
 
 
 function traslateSettings(){
     this.formId = 'setClass';
     this.saveData = function(data){
         this.changeDisplayEvents = data['changeDisplayEvents'];
-        this.btnEvents=data['btnEvents'];
+        this.btnEvents=btnEvents;
     }
     this.addChangeClick=function(){
         for(k in this.changeDisplayEvents){
@@ -96,29 +102,33 @@ function homePosition(id){
     }
 
 function onLoadFunc(){
-        getSettings();
+        beginSettings();
   //  console.log(settings1);
     
     
 }
 
-function getSettings(){
-    var url='settings';
+function beginSettings(){
+    console.log('hi2');
+    var url='postCall';
     var form={};
+    form['mode']='getSettings';
     sendObj(url,form,function(obj){
     //    console.log(JSON.parse(obj));
         settings1 = JSON.parse(obj);
-        console.log(settings1);
+        console.log('hi',settings1);
+        set.saveData(settings1.event);
+    set.addChangeClick();
+    set.addClicks();
+        z.setFields(settings1['fields']);
+        z.setClassName(settings1.formValues[0]);
+    setValuesToForm(settings1['formValues'])
         //set.saveData(settings1);
        
     });
     console.log(settings1);
 }
-setTimeout(function(){set.saveData(settings1.event);
-    set.addChangeClick();
-    set.addClicks();
-    setValuesToForm(settings1['formValues'])
-    }, 1000);
+
 //console.log(settings1);
 
 //var obj={'hey':'my name is skrilex','hey2':89};
@@ -136,14 +146,35 @@ setTimeout(function(){set.saveData(settings1.event);
     }
     http.send(string_obj);
 }
+    function sendMessage(){
+        var url = 'postCall';
+        var form = {};
+        form['mode']='message';
+        var el = document.getElementById('messageArea');
+        form['param']=el.value;
+        //console.log(el.value);
+       sendObj(url,form,function(responeText){
+            
+            el.innerHTML=responeText;
+        })
+        //el.innerHTML='hi';
+        
+    }
 function translateChanges(){
     //this.data
     this.divId='changesContainer';
     this.parsedData="";
     this.finalTables="";
+    this.setClassName=function(className){
+        this.className= className;
+    }
     //this.className=null;
     //fieldsToFill.call(this);
-    this.fields=settings1['fields'];
+    this.setFields = function(fields){
+        this.fields=fields;
+        
+    }
+    //this.fields=settings1['fields'];
     this.displayData=function(){
         console.log(this.className);
         this.finalTables="";
@@ -256,33 +287,4 @@ function translateChanges(){
         return '</tbody></table>';
     }
     
-}
-    
-var event={
-        changeDisplayEvents :{
-        'home':['navbar_home','homePage'],
-        'substitution':['navbar_substitution','substitutionList'],
-        'settings':['navbar_settings','settingsMenu']
-    },
-        btnEvents :{
-        saveBtn:takeValuesFromForm,
-        tommorowBtn:function(){requestForChanges('tommorow')},
-        todayBtn:function(){requestForChanges('today')},
-        chooseBtn:''
-
-    }
-}
-function fieldsToFill(){
-    this.fields={
-        cancelled:'typ',
-        note:'komentarz',
-        periods:'lekcja',
-        subjects:'przedmiot',
-        teachers:'nauczyciel',
-        classes:'klasa',
-        classrooms:'sala',
-        groupnames:'grupa',
-        changes:'zmiany',
-        substitution_types:'rodzaj'
-    }
 }
