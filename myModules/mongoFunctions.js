@@ -59,11 +59,11 @@ function saveToCollection(params,callback){
             assert.equal(null,err);
             var collection=db.collection(collectionName);
             collection.findOne({_id:id},function(err1, doc) {
-            assert.equal(null, err1);
+            //assert.equal(null, err1);
             //assert.equal(null, doc);
             //assert.equal(2, doc.b);
                 setImmediate(function() {
-                callback(doc);
+                callback(err1,doc);
             });   
         db.close();
       });

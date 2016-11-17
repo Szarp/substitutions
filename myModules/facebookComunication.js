@@ -35,17 +35,45 @@ function checkIfLongTokenExist(id,callback){
                 callback(returnInfo);
         });
         
-    })
-    
-    
+    })   
 }
+function readPersonalSettings(id,callback){
+    var collection = 'person';
+    console.log(id);
+        mongo.findById(id,collection,function(err,doc){
+            console.log('err',err);
+            console.log('doc',doc);
+            setImmediate(function() {
+                callback(doc['settings']);
+            });
+        });
+}
+function savePersonalSettings(id,params,callback){
+    var collection = 'person';
+        mongo.modifyById(id,collection,params,function(){})
+}
+
+
 function savePerson(id,token,callback){
     var collection = 'person';
-    mongo.save([collection,{_id:id,token:token}],function(){
-        setImmediate(function() {
+    mongo.findById(id,collection,function(err,doc){
+        console.log('doc',doc);
+        if(err){
+            mongo.save([collection,{_id:id,token:token,settings:'',name:''}],function(){
+                console.log('person saved');
+                setImmediate(function() {
+                    callback();
+                });    
+            });
+        }
+        else{
+            console.log('person was before');
+            setImmediate(function() {
                 callback();
-        });    
+            });  
+        }
     });
+
     
 }
 function tokenToLongLife(shortToken,callback){
@@ -104,4 +132,6 @@ exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoAboutToken=getInfoAboutToken;
 exports.savePerson=savePerson;
 exports.createPersonToken=createPersonToken;
+exports.savePersonalSettings=savePersonalSettings
+exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
