@@ -6,7 +6,7 @@ var express = require('express'),
     //userMod = require(__dirname +'/myModules/getSubstitution.js'),
    // jsonFromHtml = require(__dirname +'/myModules/getJsonFromHtml.js'),
     //setDate = require(__dirname +'/myModules/setDate.js'),
-    myFunc = require(__dirname+'/myModules/serverReqests.js'),
+    myFunc = require(__dirname+'/myModules/zsoServerComunication.js'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
         //request= require('request'),
@@ -15,6 +15,7 @@ var express = require('express'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js'),
     facebook = require(__dirname+'/myModules/facebookComunication.js'),
+    mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
     link = require(__dirname+'/myModules/fbLinks.js');
     //config = require(__dirname+'/myModules/config');
    // querystring = require('querystring');
@@ -120,7 +121,14 @@ var settings1 = {
     
 }
 app.post('/postCall',function(req,res){
+    var reqCookie=req.cookies.cookieName;
+    var userId=cookie.findIfSessionExist(reqCookie);    
     console.log('Mode: '+req.body['mode']);
+    mangeUsers.postCall(userId,req.body,function(resText){
+        console.log('resText',resText);
+        res.send(resText);
+    })
+    /*
     var body=req.body;
     
         if(body.mode=='getSettings'){
@@ -143,8 +151,18 @@ app.post('/postCall',function(req,res){
         if(body.mode=='message'){
             console.log('message')
             
+            
         }
-    
+        if(body.mode=='saveSettings'){
+            var form={};
+            form['setClass'] = body.setClass;
+            form['notification'] = body.notification;
+            console.log('saving chnges to: '+JSON.stringify(form));
+            //save with id
+            res.send('ok');
+            
+        }
+    */
     
 
     //console.log('time',getChangesToSend);
@@ -167,8 +185,11 @@ facebook.personalData(token,function(q){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
+facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
+    res.sendFile( __dirname + '/public/substitutionPage.htm');
         console.log('redirect');
+     var reqCookie=req.cookies.cookieName;
     res.sendFile( __dirname + '/public/substitutionPage.htm');
     if(req.query['code'] !== undefined){
         console.log('this user dialog');
@@ -176,6 +197,7 @@ app.get('/redirect', function(req, res){
         facebook.createPersonToken(req.query['code'],function(token){
             facebook.getInfoOfToken(token,function(returnData){
                 var id=returnData['data'].user_id;
+                cookie.addNewSession(id,reqCookie);
                 console.log('id: '+id);
                 console.log('token: '+token);
                 //facebook.saveIdAndToken(id,token,function(){})
@@ -250,13 +272,19 @@ setTimeout(function () {
     console.log('second passed'); 
 }, 1000);
 //*/
-/*
-var x = new sessionCreator();
-x.addNewSession('abc','cdf');
-x.addNewSession('cd','sada');
-x.addNewSession('cdds','sadaaa');
+
+var cookie = new sessionCreator();
+cookie.addNewSession('abc','cdf');
+cookie.addNewSession('cd','sada');
+cookie.addNewSession('cdds','sadaaa');
 console.log(sessionList)
-*/
+
+setTimeout(function(){
+    
+cookie.deleteOld();    
+},4*1000);
+
+
 function sessionCreator(){
     this.sessionId='sessionList';
     
@@ -267,7 +295,7 @@ function sessionCreator(){
                 return obj[i].id;
             }
         }
-        return null;
+        return '0000';
     }
     this.addNewSession=function(id,cookie){
         //var list = this.getSessionElement();
@@ -281,7 +309,17 @@ function sessionCreator(){
     this.getSessionElement=function(){
         return sessionList;
     }
-    
+    this.deleteOld = function(){
+        var time = new Date().getTime();
+        //console.log('time: ',time);
+        for(k in sessionList){
+            if(sessionList[k].exTime < time){
+                //console.log('deleting: ',sessionList[k]);
+                delete sessionList[k];
+            }
+        }
+        //console.log('actualList',sessionList);
+    }
     
 }
 
@@ -302,7 +340,7 @@ function session(id,cookie){
     }
     this.setExTime=function(){
         var time = new Date()
-        return time.getTime()+1000*60*180;
+        return time.getTime()+1000*60*60*2;
         
     }
     
@@ -329,17 +367,25 @@ myFunc.subs('2016-11-16',function(y){
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
 
-    var collection = db.collection('substitutions');
+    //var collection = db.collection('messages');
+           db.collections(function(err, collections){
+      console.log(collections);
+                    //    db.close();
+  });
+            /*
+db.createCollection("messages", function(err, collectiona){
+	   if (err) throw err;
 
-        db.collections(function(err, collections){
-         // console.log(collections);
-      }); 
-        collection.find({_id:'2016-11-06'}).forEach(function(f){console.log(f)});
+	   	console.log("Created testCollection");
+	 		console.log(collectiona);
+	});
+    */
+        //collection.find({}).forEach(function(f){console.log(f)});
             //collection.update({_id:'2016-10-04'}, {$set:{substitution:'hey'}},{upsert:true});
-        collection.find({},{}).forEach(function(f){
+        //collection.find({},{}).forEach(function(f){
             //console.log(f)
-        });
-          db.close();
+        //});
+        //  db.close();
     });
 
 }
