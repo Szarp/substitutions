@@ -3,12 +3,10 @@ var settings2={};
 var set=new traslateSettings();
 var z = new translateChanges();
 
-//z.className='1b'
 var btnEvents ={
             saveBtn:function(){takeValuesFromForm()},
             tommorowBtn:function(){requestForChanges('tommorow')},
             todayBtn:function(){requestForChanges('today')},
-            //chooseBtn:''
         }
 function setValuesToForm(params){
     var formList=['setClass','setNotification'];
@@ -25,8 +23,18 @@ function setValuesToForm(params){
 }
 function takeValuesFromForm(){
     //console.log('hi');
-    var classParam = document.getElementById('setClass').value;
-    var notifcationParam = document.getElementById('setNotification').value;
+    var form={};
+    form['setClass'] = document.getElementById('setClass').value;
+    form['notification'] = document.getElementById('setNotification').value;
+    var url = 'postCall';
+    form['mode'] = 'saveSettings';
+    //console.log(form);
+    z.setClassName(form.setClass);
+    z.displayData();
+    sendObj(url,form,function(obj){
+        //var json = JSON.parse(obj); 
+        console.log('saveSettings',obj);
+    });
     //console.log('param from form',a,b);
 }
 
@@ -55,7 +63,7 @@ function requestForChanges(type){
             console.log(z.data);
         }
         z.displayData(); 
-        console.log(obj);
+       // console.log(obj);
     });
 }
 
@@ -99,16 +107,8 @@ function homePosition(id){
                 el.style.display='none';
             }
         }
-    }
-
-function onLoadFunc(){
-        beginSettings();
-  //  console.log(settings1);
-    
-    
 }
-
-function beginSettings(){
+function onLoadFunc(){
     console.log('hi2');
     var url='postCall';
     var form={};
@@ -129,14 +129,12 @@ function beginSettings(){
     console.log(settings1);
 }
 
-//console.log(settings1);
 
-//var obj={'hey':'my name is skrilex','hey2':89};
     var sendObj = function(url,json_obj,callback){
     var http = new XMLHttpRequest();
     //var url = "get_data";
     var string_obj = JSON.stringify(json_obj);
-        console.log(string_obj);
+       // console.log(string_obj);
     http.open("POST", url, true);
     http.setRequestHeader("Content-type", "application/json");
     http.onreadystatechange = function() {//Call a function when the state changes.
@@ -196,10 +194,14 @@ function translateChanges(){
         }
     }
     this.changeContainsClass = function(oneChange){
-    if(this.className==null||this.className==undefined){return true};
+    if(this.className =='all'||this.className==""){
+        console.log('null on change');
+        return true;
+    };
     var classId=oneChange['classes'];
         for(var i=0;i<classId.length;i++){
             if(this.className == classId[i]){
+                console.log('full on change');
                 return true;
             }
         }
