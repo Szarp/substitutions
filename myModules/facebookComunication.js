@@ -58,7 +58,7 @@ function savePerson(id,token,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(err,doc){
         console.log('doc',doc);
-        if(err){
+        if(!doc){
             mongo.save([collection,{_id:id,token:token,settings:'',name:''}],function(){
                 console.log('person saved');
                 setImmediate(function() {

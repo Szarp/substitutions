@@ -153,7 +153,7 @@ function onLoadFunc(){
         //console.log(el.value);
        sendObj(url,form,function(responeText){
             
-            el.innerHTML=responeText;
+            el.value=responeText;
         })
         //el.innerHTML='hi';
         

@@ -20,7 +20,7 @@ var getSomeSubstitution = function(date,callback){
         convertToSubstitutions(data,function(convertedData){
             saveSubstitutions(date,convertedData,function(){
                     
-                mongo.findById(date,'substitutions',function(x){
+                mongo.findById(date,'substitutions',function(err,x){
 
 
                    // console.log(x);
@@ -40,7 +40,7 @@ var getData = function(date,callback){
     downloadData(date,function(err,body){
         if(err){
             getCookie(function(){
-                downloadData(date,function(err,newBody){
+                downloadData(date,function(err1,newBody){
                     setImmediate(function() {
                         callback(newBody);
                     });
@@ -84,7 +84,7 @@ var getData = function(date,callback){
     }
 function downloadData(date,callback){
     var url1='http://zso11.edupage.org/gcall';
-    mongo.findById('params','testCollection',function(err,params){    
+    mongo.findById('params','testCollection',function(err1,params){    
      //var gDate=['7593327', '1dc1b4b7'];
     var cookie=params['cookie'];
     var form = {

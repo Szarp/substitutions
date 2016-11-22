@@ -78,7 +78,8 @@ var getData = function(date,callback){
     }
 function downloadData(date,callback){
     var url1='http://zso11.edupage.org/gcall';
-    mongo.findById('params','testCollection',function(params){    
+    mongo.findById('params','testCollection',function(err,params){
+console.log(params);    
      //var gDate=['7593327', '1dc1b4b7'];
     var cookie=params['cookie'];
     var form = {

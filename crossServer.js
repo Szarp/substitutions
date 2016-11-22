@@ -79,11 +79,12 @@ app.use(function (req, res, next) {
 
 app.get('/', function (req, res) {
     console.log('Asking for login');
-    var login=link.loginAttempt();
+    var login=link.loginAttempt('');
     //check cookie or something
-    //res.redirect(login);
+    console.log(login);
+    res.redirect(login);
     // asf();
-    res.sendFile( __dirname + '/public/substitutionPage.htm');
+    //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
 
@@ -190,7 +191,7 @@ app.get('/redirect', function(req, res){
     res.sendFile( __dirname + '/public/substitutionPage.htm');
         console.log('redirect');
      var reqCookie=req.cookies.cookieName;
-    res.sendFile( __dirname + '/public/substitutionPage.htm');
+    //res.sendFile( __dirname + '/public/substitutionPage.htm');
     if(req.query['code'] !== undefined){
         console.log('this user dialog');
         //console
@@ -367,20 +368,22 @@ myFunc.subs('2016-11-16',function(y){
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
 
-    //var collection = db.collection('messages');
+    var collection = db.collection('testCollection');
            db.collections(function(err, collections){
       console.log(collections);
                     //    db.close();
   });
-            /*
-db.createCollection("messages", function(err, collectiona){
+
+//    mongo.save(["testCollection",{_id:'params',gpid:'',gsh:'',cookie:''}],function(){});
+    /*        
+db.createCollection("testCollection", function(err, collectiona){
 	   if (err) throw err;
 
 	   	console.log("Created testCollection");
 	 		console.log(collectiona);
 	});
     */
-        //collection.find({}).forEach(function(f){console.log(f)});
+        collection.find({}).forEach(function(f){console.log("hi",f)});
             //collection.update({_id:'2016-10-04'}, {$set:{substitution:'hey'}},{upsert:true});
         //collection.find({},{}).forEach(function(f){
             //console.log(f)
