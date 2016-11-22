@@ -22,6 +22,7 @@ var express = require('express'),
 //var substitution = new jsonFromHtml();
 //var user= new userMod();
 var app = express();
+var cookie = new sessionCreator();
 
 //var app = express();
 
@@ -87,16 +88,19 @@ app.get('/', function (req, res) {
     //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
+app.get('/index', function (req, res) {
+    res.sendFile( __dirname + '/public/substitutionPage.htm');
+    
+});
 
 app.post('/', function (req, res) {
-    console.log(req.body);
-    res.sendFile( __dirname + '/public/fbIndex.html');
-    //var a=userMod.changes();
-    //us.changes();
-    // asd();    
-    //console.log(a);
-    //res.send('ok');
+   console.log('Asking for login');
+    var login=link.loginAttempt('');
+    //check cookie or something
+    console.log(login);
+    res.redirect(login);
 });
+/*
 var settings1 = {
     fields:{
         cancelled:'typ',
@@ -121,14 +125,15 @@ var settings1 = {
     formValues:['1b','yes']
     
 }
+*/
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
-    console.log('user session: ',userId);
-    console.log('seesionList: ',sessionList);
+    //console.log('user session: ',userId);
+    //console.log('seesionList: ',sessionList);
     console.log('Mode: '+req.body['mode']);
     mangeUsers.postCall(userId,req.body,function(resText){
-        console.log('resText',resText);
+        //console.log('resText',resText);
         res.send(resText);
     })
     /*
@@ -190,7 +195,7 @@ facebook.personalData(token,function(q){
 });
 //facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
-    res.sendFile( __dirname + '/public/substitutionPage.htm');
+    res.redirect('/index');
         var reqCookie=req.cookies.cookieName;
         console.log('redirect');
      //var reqCookie=req.cookies.cookieName;
@@ -284,16 +289,16 @@ setTimeout(function () {
 }, 1000);
 //*/
 
-var cookie = new sessionCreator();
-cookie.addNewSession('abc','cdf');
-cookie.addNewSession('cd','sada');
-cookie.addNewSession('cdds','sadaaa');
-console.log(sessionList)
+
+//cookie.addNewSession('abc','cdf');
+//cookie.addNewSession('cd','sada');
+//cookie.addNewSession('cdds','sadaaa');
+//console.log(sessionList)
 
 setTimeout(function(){
     
-//cookie.deleteOld();    
-},4*1000);
+cookie.deleteOld();    
+},1000*60*60*3);
 
 
 function sessionCreator(){
