@@ -186,11 +186,19 @@ function translateChanges(){
             if(findParam){
             this.assignParams(this.data[j]);
             string=this.beginOfTable()+this.parsedData+this.endOfTable();
-            //
+            //console.log(string);
             this.finalTables+=string;
             this.parsedData="";
             }
             //console.log(fi//);
+        }
+        if(this.finalTables ==""){
+            this.addToArray('brak','zastępstw',0);
+            string=this.beginOfTable()+this.parsedData+this.endOfTable();
+            //
+            this.finalTables+=string;
+            this.parsedData="";
+            //this.finalTables==
         }
     }
     this.changeContainsClass = function(oneChange){
