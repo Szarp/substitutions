@@ -1,4 +1,4 @@
-//some USers Module
+//some Users Module
     var facebook = require('./facebookComunication.js'),
          setTime = require('./setTime.js'),
         mongo = require('./mongoFunctions.js');
@@ -6,7 +6,7 @@
 
 var time = new setTime();
 function redirect(req,callback){
-    console.log('redirect');
+    //console.log('redirect');
      //var reqCookie=req.cookies.cookieName; //cookie
        // console.log('this user dialog');
         //console
@@ -58,7 +58,8 @@ var pageSettings = {
         classrooms:'sala',
         groupnames:'grupa',
         changes:'zmiany',
-        substitution_types:'rodzaj'  
+        //brak:'brak',
+        substitution_types:'rodzaj'
     },
     event:{
         changeDisplayEvents :{
@@ -81,7 +82,11 @@ function postCall(userId,body,callback){
     //var body=req.body;
     
         if(body.mode=='getSettings'){
-            facebook.readPersonalSettings(userId,function(params){
+            //console.log(id);
+            mongo.findById(userId,'person',function(err,doc){
+                if (err){console.log('prolem with settings: ',userId)};
+                console.log('Settings file: ',doc);
+                var params = (doc['settings']);
                 if(params == ''){params={setClass:'all',notification:'no'}}
                 var table=[];
                 table[0]=params.setClass;
@@ -95,16 +100,17 @@ function postCall(userId,body,callback){
             })        
         }
         else if(body.mode=='getChanges'){
-                console.log('response Changes')
+                //console.log('response Changes')
             if(body['param']=='today'){
                 time.todayIs();
             }
             else{
                 time.tommorowIs();
             }
-            console.log(time.displayTime());
+            console.log('requested date: ',time.displayTime());
             mongo.findById(time.displayTime(),'substitutions',function(err,obj){
-                console.log(err,obj);
+                //console.log(err,obj);
+                if(err){console.log('err in sending substitutions')}
                 res = JSON.stringify(obj['substitution']);
                 setImmediate(function() {
                     callback(res);
@@ -114,7 +120,6 @@ function postCall(userId,body,callback){
         else if(body.mode=='message'){
             
             mongo.save(['messages',{id:userId,message:body.param,time:new Date()}],function(){
-                
                 res = 'thanks for your message, we will read it soon';
                 setImmediate(function() {
                     callback(res);
@@ -126,23 +131,23 @@ function postCall(userId,body,callback){
             var form={};
             form['setClass'] = body.setClass;
             form['notification'] = body.notification;
-            
-            facebook.savePersonalSettings(userId,form,function(){
+             mongo.modifyById(userId,'person',{settings:form},function(){
                 res = 'ok';
                 setImmediate(function() {
                     callback(res);
                 });
-                
-            })
-            
+                 
+             })
         }
+            
+        
         else{
             res = 'err'
             setImmediate(function() {
                 callback(res);
             });
         };
-        console.log('hi',res);
+        //console.log('hi',res);
 
     
 }

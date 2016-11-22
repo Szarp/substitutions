@@ -37,6 +37,7 @@ function checkIfLongTokenExist(id,callback){
         
     })   
 }
+/*
 function readPersonalSettings(id,callback){
     var collection = 'person';
     console.log(id);
@@ -48,11 +49,12 @@ function readPersonalSettings(id,callback){
             });
         });
 }
+
 function savePersonalSettings(id,params,callback){
     var collection = 'person';
         mongo.modifyById(id,collection,{settings:params},function(){})
 }
-
+*/
 
 function savePerson(id,token,callback){
     var collection = 'person';
@@ -132,6 +134,6 @@ exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoAboutToken=getInfoAboutToken;
 exports.savePerson=savePerson;
 exports.createPersonToken=createPersonToken;
-exports.savePersonalSettings=savePersonalSettings
-exports.readPersonalSettings=readPersonalSettings
+//exports.savePersonalSettings=savePersonalSettings
+//exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
