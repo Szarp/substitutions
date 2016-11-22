@@ -50,7 +50,7 @@ function readPersonalSettings(id,callback){
 }
 function savePersonalSettings(id,params,callback){
     var collection = 'person';
-        mongo.modifyById(id,collection,params,function(){})
+        mongo.modifyById(id,collection,{settings:params},function(){})
 }
 
 

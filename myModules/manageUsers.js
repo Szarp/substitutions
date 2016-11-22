@@ -7,13 +7,13 @@
 var time = new setTime();
 function redirect(req,callback){
     console.log('redirect');
-     var reqCookie=req.cookies.cookieName; //cookie
-        console.log('this user dialog');
+     //var reqCookie=req.cookies.cookieName; //cookie
+       // console.log('this user dialog');
         //console
         facebook.createPersonToken(req.query['code'],function(token){
-            facebook.getInfoOfToken(token,function(returnData){
+            facebook.getInfoAboutToken(token,function(returnData){
                 var id=returnData['data'].user_id; //id
-                cookie.addNewSession(id,reqCookie);
+                //cookie.addNewSession(id,reqCookie);
                 console.log('id: '+id);
                 console.log('token: '+token);
                 //if()
@@ -21,7 +21,7 @@ function redirect(req,callback){
                 facebook.savePerson(id,token,function(){
                     //in the future will get name
                     setImmediate(function() {
-                    callback();
+                    callback(id);
                 });
                 });
                 /*

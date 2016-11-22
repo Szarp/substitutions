@@ -123,7 +123,9 @@ var settings1 = {
 }
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
-    var userId=cookie.findIfSessionExist(reqCookie);    
+    var userId=cookie.findIfSessionExist(reqCookie);
+    console.log('user session: ',userId);
+    console.log('seesionList: ',sessionList);
     console.log('Mode: '+req.body['mode']);
     mangeUsers.postCall(userId,req.body,function(resText){
         console.log('resText',resText);
@@ -186,11 +188,19 @@ facebook.personalData(token,function(q){
 	//es.sendFile( __dirname + '/public/css/webPage.css');
 
 });
-facebook.savePerson('0000','token',function(){})
+//facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
     res.sendFile( __dirname + '/public/substitutionPage.htm');
+        var reqCookie=req.cookies.cookieName;
         console.log('redirect');
-     var reqCookie=req.cookies.cookieName;
+     //var reqCookie=req.cookies.cookieName;
+    mangeUsers.redirect(req,function(id){
+        cookie.addNewSession(id,reqCookie);
+        
+        
+    })
+    
+   /* 
     //res.sendFile( __dirname + '/public/substitutionPage.htm');
     if(req.query['code'] !== undefined){
         console.log('this user dialog');
@@ -236,7 +246,7 @@ app.get('/redirect', function(req, res){
     }
     
 	//es.sendFile( __dirname + '/public/css/webPage.css');
-
+*/
 });
 setInterval(function () { 
     var updateTime=[];
@@ -282,7 +292,7 @@ console.log(sessionList)
 
 setTimeout(function(){
     
-cookie.deleteOld();    
+//cookie.deleteOld();    
 },4*1000);
 
 
@@ -291,9 +301,9 @@ function sessionCreator(){
     
     this.findIfSessionExist=function(cookie){
         var obj = this.getSessionElement();
-        for(var i=0;i<obj.length;i++){
-            if(obj[i].cookie == cookie){
-                return obj[i].id;
+        for(k in sessionList){
+            if(k == cookie){
+                return sessionList[k].id;
             }
         }
         return '0000';
