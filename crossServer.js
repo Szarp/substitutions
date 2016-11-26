@@ -16,13 +16,14 @@ var express = require('express'),
     setTime = require(__dirname+'/myModules/setTime.js'),
     facebook = require(__dirname+'/myModules/facebookComunication.js'),
     mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
+    session = require(__dirname + '/myModules/userSession.js'),
     link = require(__dirname+'/myModules/fbLinks.js');
     //config = require(__dirname+'/myModules/config');
    // querystring = require('querystring');
 //var substitution = new jsonFromHtml();
 //var user= new userMod();
 var app = express();
-var cookie = new sessionCreator();
+var cookie = new session.sessionCreator();
 
 //var app = express();
 
@@ -100,81 +101,20 @@ app.post('/', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
-/*
-var settings1 = {
-    fields:{
-        cancelled:'typ',
-        note:'komentarz',
-        periods:'lekcja',
-        subjects:'przedmiot',
-        teachers:'nauczyciel',
-        classes:'klasa',
-        classrooms:'sala',
-        groupnames:'grupa',
-        changes:'zmiany',
-        substitution_types:'rodzaj'  
-    },
-    event:{
-        changeDisplayEvents :{
-            'home':['navbar_home','homePage'],
-            'substitution':['navbar_substitution','substitutionList'],
-            'settings':['navbar_settings','settingsMenu']
-        }
-    },
-    events:['homePage','substitutionList','settingsMenu'],
-    formValues:['1b','yes']
-    
-}
-*/
+
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
-    //console.log('user session: ',userId);
+    console.log('user session: ',userId);
     //console.log('seesionList: ',sessionList);
     console.log('Mode: '+req.body['mode']);
-    mangeUsers.postCall(userId,req.body,function(resText){
-        //console.log('resText',resText);
-        res.send(resText);
-    })
-    /*
-    var body=req.body;
-    
-        if(body.mode=='getSettings'){
-             console.log('response Settings')
-        res.send(JSON.stringify(settings1));    
-        }
-        if(body.mode=='getChanges'){
-                console.log('response Changes')
-            if(req.body['param']=='today'){
-                time.todayIs();
-            }
-            else{
-                time.tommorowIs();
-            }
-            console.log(time.displayTime());
-            mongo.findById(time.displayTime(),'substitutions',function(obj){
-            res.send(JSON.stringify(obj['substitution'])); 
-            });
-        }        
-        if(body.mode=='message'){
-            console.log('message')
-            
-            
-        }
-        if(body.mode=='saveSettings'){
-            var form={};
-            form['setClass'] = body.setClass;
-            form['notification'] = body.notification;
-            console.log('saving chnges to: '+JSON.stringify(form));
-            //save with id
-            res.send('ok');
-            
-        }
-    */
-    
-
-    //console.log('time',getChangesToSend);
-
+    if(userId == undefined){userId="0000";}
+    console.log('user session: ',userId);
+        mangeUsers.postCall(userId,req.body,function(resText){
+            //console.log('resText',resText);
+            res.send(resText);
+        })
+  
 })
 app.get('/test', function(req, res){
 
@@ -200,58 +140,13 @@ app.get('/redirect', function(req, res){
         console.log('redirect');
      //var reqCookie=req.cookies.cookieName;
     mangeUsers.redirect(req,function(id){
-        cookie.addNewSession(id,reqCookie);
+        if(userId == undefined){userId="0000";}
+            cookie.addNewSession(id,reqCookie);
         
         
     })
     
-   /* 
-    //res.sendFile( __dirname + '/public/substitutionPage.htm');
-    if(req.query['code'] !== undefined){
-        console.log('this user dialog');
-        //console
-        facebook.createPersonToken(req.query['code'],function(token){
-            facebook.getInfoOfToken(token,function(returnData){
-                var id=returnData['data'].user_id;
-                cookie.addNewSession(id,reqCookie);
-                console.log('id: '+id);
-                console.log('token: '+token);
-                //facebook.saveIdAndToken(id,token,function(){})
-                facebook.checkIfLongTokenExist(id,function(comunicat){
-                    if(comunicat != 'ok'){
-                        facebook.tokenToLongLife(token,function(x){
-                            console.log('some long');
-                            console.log(x);
-                        
-                            mongo.modifyById(id,'person',{longToken:x},function(){})    
-                            
-                        });
-                        
-                        mongo.findById(id,'person',function(z){
-                            console.log(z);
-                        })
-                    }
-                    
-                });
-                
-                //data['user_id']=returnData['data'].user_id;
-                //facebook.saveIdAndAccesToken
-                
- 
-                
-                
-            });
-            //console.log(x);
-            
-        })
-    }
-    if(req.query['access_token'] !== undefined){
-        console.log('this is acces token request');
-        onToken(req.query);
-    }
-    
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-*/
+   
 });
 setInterval(function () { 
     var updateTime=[];
@@ -270,7 +165,7 @@ setInterval(function () {
     console.log('second passed'); 
 }, 1000*60*60*6);
 
-
+/*
 setTimeout(function () { 
     var updateTime=[];
     time.todayIs();
@@ -287,10 +182,10 @@ setTimeout(function () {
     
     console.log('second passed'); 
 }, 1000);
-//*/
+*/
 
 
-//cookie.addNewSession('abc','cdf');
+cookie.addNewSession('abc','cdf');
 //cookie.addNewSession('cd','sada');
 //cookie.addNewSession('cdds','sadaaa');
 //console.log(sessionList)
@@ -301,67 +196,7 @@ cookie.deleteOld();
 },1000*60*60*3);
 
 
-function sessionCreator(){
-    this.sessionId='sessionList';
-    
-    this.findIfSessionExist=function(cookie){
-        var obj = this.getSessionElement();
-        for(k in sessionList){
-            if(k == cookie){
-                return sessionList[k].id;
-            }
-        }
-        return '0000';
-    }
-    this.addNewSession=function(id,cookie){
-        //var list = this.getSessionElement();
-        var sessionEl = new session(id,cookie);
-        var newElement = sessionEl.returnParams();
-        sessionList[newElement[0]]=newElement[1];
-        console.log(sessionEl.returnParams());
-        
-        
-    }
-    this.getSessionElement=function(){
-        return sessionList;
-    }
-    this.deleteOld = function(){
-        var time = new Date().getTime();
-        //console.log('time: ',time);
-        for(k in sessionList){
-            if(sessionList[k].exTime < time){
-                //console.log('deleting: ',sessionList[k]);
-                delete sessionList[k];
-            }
-        }
-        //console.log('actualList',sessionList);
-    }
-    
-}
 
-function session(id,cookie){
-    this.cookie = cookie;
-    this.id = id;
-    this.expirationTime = '';
-    
-    this.returnParams=function(){
-        this.expirationTime=this.setExTime();
-        var obj = []
-        obj[0] = this.cookie 
-        obj[1] = {id:this.id,
-                exTime:this.expirationTime}
-        return obj; 
-            
-        
-    }
-    this.setExTime=function(){
-        var time = new Date()
-        return time.getTime()+1000*60*60*2;
-        
-    }
-    
-    
-}
 
 
 https.createServer(opts, app).listen(8088);
