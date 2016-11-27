@@ -90,6 +90,24 @@ function tokenToLongLife(shortToken,callback){
     });
     
 }
+function addName(id,token,callback){
+    var collection = 'person';
+    mongo.findById(id,collection,function(e,doc){
+        if(doc.name==''){
+            personalData(token,'name',function(res){
+                console.log('saving name: ',res.name);
+                mongo.modifyById(id,collection,{name:res.name},function(){});
+                
+            })
+        }
+        else{
+            console.log('name was before');
+        }
+        setImmediate(function() {
+                callback();
+        });  
+    });
+}
 function personalData(token,params,callback){
     request(link.userInfo(token,params), function (e, r, body){
         if(e){console.log('req problem: '+e);}

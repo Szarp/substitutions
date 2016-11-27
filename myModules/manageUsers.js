@@ -19,10 +19,15 @@ function redirect(req,callback){
                 //if()
                 //mongo.findById(id,)
                 facebook.savePerson(id,token,function(){
+                    
+                    facebook.addName(id,token,function(){
+                        
+                        
+                    })
                     //in the future will get name
                     setImmediate(function() {
-                    callback(id);
-                });
+                        callback(id);
+                    });
                 });
                 /*
                 facebook.checkIfLongTokenExist(id,function(comunicat){
@@ -127,20 +132,26 @@ function postCall(userId,body,callback){
             }); 
         }
         else if(body.mode=='saveSettings'){
-            console.log('saving chnges to: '+JSON.stringify(form));
-            var form={};
-            form['setClass'] = body.setClass;
-            form['notification'] = body.notification;
-             mongo.modifyById(userId,'person',{settings:form},function(){
+            if(userId!="0000"){
+                console.log('saving chnges to: '+userId);
+                var form={};
+                form['setClass'] = body.setClass;
+                form['notification'] = body.notification;
+                 mongo.modifyById(userId,'person',{settings:form},function(){
+                    res = 'ok';
+                    setImmediate(function() {
+                        callback(res);
+                    });
+
+                 })
+            }
+            else{
                 res = 'ok';
                 setImmediate(function() {
-                    callback(res);
+                        callback(res);
                 });
-                 
-             })
+            }
         }
-            
-        
         else{
             res = 'err'
             setImmediate(function() {
