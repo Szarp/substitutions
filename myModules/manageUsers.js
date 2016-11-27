@@ -121,6 +121,24 @@ function postCall(userId,body,callback){
                     callback(res);
                 });
             });
+        }         
+        else if(body.mode=='classList'){
+                //console.log('response Changes')
+            if(body['param']=='today'){
+                time.todayIs();
+            }
+            else{
+                time.tommorowIs();
+            }
+            //console.log('requested date: ',time.displayTime());
+            mongo.findById(time.displayTime(),'substitutions',function(err,obj){
+                //console.log(err,obj);
+                if(err){console.log('err in sending substitutions')}
+                res = JSON.stringify(obj['userList']);
+                setImmediate(function() {
+                    callback(res);
+                });
+            });
         }        
         else if(body.mode=='message'){
             

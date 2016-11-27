@@ -135,14 +135,14 @@ facebook.personalData(token,function(q){
 });
 //facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
-    res.redirect('/index');
+    //res.redirect('/index');
         var reqCookie=req.cookies.cookieName;
         console.log('redirect');
      //var reqCookie=req.cookies.cookieName;
     mangeUsers.redirect(req,function(id){
-        if(userId == undefined){userId="0000";}
+        if(id == undefined){id="0000";}
             cookie.addNewSession(id,reqCookie);
-        
+        res.redirect('/index');
         
     })
     
