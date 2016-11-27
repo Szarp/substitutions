@@ -18,23 +18,58 @@ var user= new userMod();
 var getSomeSubstitution = function(date,callback){
     getData(date,function(data){
         convertToSubstitutions(data,function(convertedData){
-            saveSubstitutions(date,convertedData,function(){
-                    
-                mongo.findById(date,'substitutions',function(err,x){
+            console.log('converted',convertedData);
+            classListFromDate(convertedData,function(res){
+                var dataToSave={};
+                dataToSave['substitution']=convertedData;
+                dataToSave['userList']=res;
+                saveSubstitutions(date,dataToSave,function(){
+
+                    mongo.findById(date,'substitutions',function(err,x){
 
 
-                   // console.log(x);
+                        console.log(x);
+                    })
+                    console.log('save substitution '+ date);
+                    setImmediate(function() {
+                        callback(convertedData);
+                    });
+
                 })
-                console.log('save substitution '+ date);
-                setImmediate(function() {
-                    callback(convertedData);
-                });
-                
             })
             
         })
     })
               //console.log(x);
+}
+function classListFromDate(convertedData,callback){
+    var classList=[];
+    if (convertedData =='no substitutions'){
+        setImmediate(function(){
+            callback({});
+        });   
+        
+    }
+    else{
+     //mongo.findById(date,'substitutions',function(e,doc){
+         console.log('doc',convertedData);
+         var changes = convertedData;
+        for(var i=0;i<changes.length;i++){
+            var oneChange = changes[i];
+            var newClass = oneChange['classes'];
+            console.log('newClass',newClass);
+            for(var j =0;j<newClass.length;j++){    
+                if(classList.indexOf(newClass[j])==-1){
+                    classList[classList.length]=newClass[j];
+                }
+            }
+        }
+        setImmediate(function(){
+            callback(classList);
+        });   
+    }
+
+    //})
 }
 var getData = function(date,callback){
     downloadData(date,function(err,body){
@@ -151,9 +186,11 @@ function downloadData(date,callback){
     
 function saveSubstitutions(date,data,callback){
     var dataToSave={};
-        dataToSave['substitution']=data;
+        dataToSave['substitution']=data.substitution;
+        dataToSave['userList']=data.userList;
+    
         //console.log(dataToSave);
-        mongo.modifyById(date,'substitutions',dataToSave,function(){
+        mongo.modifyById(date,'substitutions',data,function(){
             setImmediate(function() {
                 callback(); //callback no need
             });

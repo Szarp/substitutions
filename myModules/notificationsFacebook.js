@@ -1,5 +1,6 @@
 var facebook = require ('./facebookComunication.js'),
     setTime = require ('./setTime.js'),
+    //link = require('./fbLinks.js'),
     MongoClient = require('mongodb').MongoClient,
     assert = require('assert'),
     mongo = require('./mongoFunctions.js');
@@ -8,31 +9,35 @@ var facebook = require ('./facebookComunication.js'),
 var time = new setTime();
 
 function sendToId (id,callback){
+    console.log('notification');
     var message = 'Welcome to my app';
     var redirect = 'https://192.166.218.253:8088/';
-    for(var i=0;i<idList.length;i++){
-        facebook.createNotification(idList[i],message,redirect, function(res){
-         console.log('noti message for: ',idList[i],res);
+        facebook.createNotification(id,message,redirect, function(res){
+         console.log('noti message for: ',id,res);
             
         });    
-    }
     setImmediate(function() {
-            callback(body);
+            callback();
     });
 }
 function whoGetSubstitution(){
     
     
 }
+createClassList();
 function createClassList(){
     
     var classList=[];
-    time.todayIs();
+    time.tommorowIs();
+    classListFromDate(time.displayTime(),function(list){
+        console.log(list);
+    })
+    //time.displayTime();
 
 }
-notification(['a','b','c'],function(){
-    console.log('a');
-});
+//notification(['2ga'],function(){
+//    console.log('a');
+//});
  function notification(classList,callback){
      var name='person';
         //[collection,{data}]
@@ -71,19 +76,13 @@ notification(['a','b','c'],function(){
         //db.close();
  }
     
-function classsListFromDate(date,callback){
+function classListFromDate(date,callback){
+    //var classList=[];
      mongo.findById(date,'substitutions',function(e,doc){
-        for(var i=0;i<doc.length;i++){
-            var change = doc[i];
-            var newClass = change['classes'];
-            for(var j =0;j<newClass.length;j++){    
-                if(newClass.indexOf(newClass[j])==-1){
-                    classList[classList.length]=newClass[j];
-                }
-            }
-        }
+         //console.log('doc',doc.substitution);
+
         setImmediate(function(){
-            callback(classList);
+            callback(doc.userList);
         });   
     })
 }
