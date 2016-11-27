@@ -1,7 +1,8 @@
-var settings1 = {'asd':12};
-var settings2={};
+//var settings1 = {'asd':12};
+//var settings2={};
 var set=new traslateSettings();
 var z = new translateChanges();
+var clssList=[];
 
 var btnEvents ={
             saveBtn:function(){takeValuesFromForm()},
@@ -21,6 +22,27 @@ function setValuesToForm(params){
         }
     }
 }
+
+function filtrEvents(){
+    var allElemnts='';
+    var begin ='<a>';
+    var end = '</a>';
+    var idBegin='classFiltr_'
+    for(var i=0;i<classList.length;i++){
+            allElemnts+='<a id="'+idBegin+i+'">'+classList[i]+'</a>';
+            allElemnts+='  ';
+    }
+    document.getElementById('forClasses').innerHTML='Klasy: '+allElemnts;
+    for(var i=0;i<classList.length;i++){
+        var el = document.getElementById(idBegin+i)
+        el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
+    }
+}
+function changeDisplayForChanges(oneClass){
+    console.log(oneClass.innerHTML);
+     z.setClassName(oneClass.innerHTML);
+     z.displayData();
+}
 function takeValuesFromForm(){
     //console.log('hi');
     var form={};
@@ -37,9 +59,35 @@ function takeValuesFromForm(){
     });
     //console.log('param from form',a,b);
 }
-
+function getClassList(form){
+    var url = 'postCall';
+    form['mode']='classList';
+    console.log('clsasList',form);
+    
+    sendObj(url,form,function(obj){
+        var json = JSON.parse(obj);
+        classList=json;
+       filtrEvents();
+        //set.saveData(json);
+        console.log('obj',json);
+        /*
+        z.data=json;
+        if(obj =='"no substitutions"'){
+            console.log('ji');
+            z.data=[{"cancelled":[true],"note":["brak zmian"],
+                    classes:[z.className]}];
+            console.log(z.data);
+        }
+        z.displayData();
+        */
+        //classList(form);
+       // console.log(obj);
+        //document.getElementById('forDay').innerHTML = 'Changes for '+type;
+    });
+    
+}
 function requestForChanges(type){
-    console.log('hi');
+    //console.log('hi');
     var url = 'postCall'
     var form={};
     form['mode']='getChanges'
@@ -51,6 +99,7 @@ function requestForChanges(type){
         form['param']='tommorow';
     }
     //console.log(form);
+    document.getElementById('forDay').innerHTML = 'Changes for '+type;
     sendObj(url,form,function(obj){
         var json = JSON.parse(obj);
         //set.saveData(json);
@@ -62,7 +111,8 @@ function requestForChanges(type){
                     classes:[z.className]}];
             console.log(z.data);
         }
-        z.displayData(); 
+        z.displayData();
+        getClassList(form);
        // console.log(obj);
     });
 }
@@ -109,14 +159,14 @@ function homePosition(id){
         }
 }
 function onLoadFunc(){
-    console.log('hi2');
+    //console.log('hi2');
     var url='postCall';
     var form={};
     form['mode']='getSettings';
     sendObj(url,form,function(obj){
     //    console.log(JSON.parse(obj));
         settings1 = JSON.parse(obj);
-        console.log('hi',settings1);
+       // console.log('hi',settings1);
         set.saveData(settings1.event);
     set.addChangeClick();
     set.addClicks();
@@ -124,9 +174,10 @@ function onLoadFunc(){
         z.setClassName(settings1.formValues[0]);
     setValuesToForm(settings1['formValues'])
         //set.saveData(settings1);
-       
+    requestForChanges('today'); 
     });
-    console.log(settings1);
+    
+    //console.log(settings1);
 }
 
 
