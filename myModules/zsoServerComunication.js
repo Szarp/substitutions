@@ -167,23 +167,39 @@ function downloadData(date,callback){
                     }
                     console.log(JSON.stringify(data));
                     mongo.modifyById('params','testCollection',data,function(){
-                        console.log('data added: '+data);
+                        console.log('cookies saved: '+data);
                         
+                        setImmediate(function() {
+                            callback(data);
+                        });
                     })
-                setImmediate(function() {
-                callback(data);
-            });
-                    
                 });
                 //ex(this.body);
                 //  console.log('hi',params[0],params[1],cookie);
                 //save somewhere
             }
-
         });
 
     }
     
+function checkIfAnySubstitutions(callback){
+    var res;
+    getData(date,function(body){
+       if(body.indexOf('column') != -1){
+                res=true;
+                console.log('i see something');
+            }
+        else{
+            res=false;
+            console.log('nothing')
+        }
+
+        setImmediate(function() {
+                callback(res);
+        });
+    })
+        
+}
 function saveSubstitutions(date,data,callback){
     var dataToSave={};
         dataToSave['substitution']=data.substitution;
