@@ -23,32 +23,63 @@
 
  
 
-<ul class="navigation">
-  <li><a id="navbar_home" href="#">Home</a></li>
-  <li><a id="navbar_substitution" href="#">Zastępstwa</a></li>
-  <li><a id="navbar_settings" href="#">Ustawienia</a></li>
+<ul class="navigation navDisplay navSize" >
+  <li><a id="navbar_home" href="#home">Home</a></li>
+  <li><a id="navbar_substitution" href="#changes">Zastępstwa</a></li>
+  <li><a id="navbar_settings" href="#settings">Ustawienia</a></li>
+  <li style="float:right"> <p id="navbar_photo" href="#about"><img src="https://scontent.xx.fbcdn.net/v/t1.0-1/c0.0.50.50/p50x50/10610535_551594338305047_7714899151004585412_n.jpg?oh=d955077bcf01628946aa49ea486afdad&oe=58BFBA18"/></p></li>
+</ul>
+<ul class="drop dropDisplay">
+    <li >
+     <a href="javascript:void(0)" >Dropdown</a>
+     <div class="dropdown-content">
+       <a id="navbar_homeD" href="#home">Home</a>
+       <a id="navbar_substitutionD" href="#changes">Zastępstwa</a>
+       <a id="navbar_settingsD" href="#settings">Ustawienia</a>
+       <p id="navbar_photoD" href="#about"><img  src="https://scontent.xx.fbcdn.net/v/t1.0-1/c0.0.50.50/p50x50/10610535_551594338305047_7714899151004585412_n.jpg?oh=d955077bcf01628946aa49ea486afdad&oe=58BFBA18"/></p>
+     </div>
+    </li>
 </ul>
 
-<div class="flex-container nowrap basicSettings" id="mainContent" >
+<div class="flex-container nowrap mainContentSize" id="mainContent" >
         <div class="" id="substitutionList"   >
             <div  class="item-size  boxed-group" id="elementsContent">
                     <h3>Zastępstwa</h3>
-                    <div class="boxed-group-inner" style="padding:0px;">
-                        <div class="chooseDay">
+                    <div class="boxed-group-inner" style="padding:0px; ">
+                        <div>Wybierz dzień</div>
+                        <div class="chooseDay" style="border-bottom:1px solid black;">
                             <ul>
-                                <li id="todayBtn" >today</li>
-                                <li id="tommorowBtn"  >tomorrow</li>
+                                <li class="btn" id="todayBtn" >today</li>
+                                <li class="btn" id="tommorowBtn"  >tomorrow</li>
                         <!--        <li id="chooseBtn" onclick="">choose</li> --> 
                             </ul>
                         </div>
                          <div id="forDay">
                             miejsce na nazwę
                         </div>
-                         <div class="" id="forClasses">
+                         <div class="btn" id="forClasses">
                             Klasy ze zmianami: 
                         </div>
                         <div class="scrollableList" id='elementsList'>
                          <div class="boxed-group-section first" id="changesContainer">
+                             <div class="displayChanges" style="width: 300px;">
+                        <div class="scrollableList" id='elementsList'>
+                        <ul>
+                            <li>Typ</li>
+                        <li>notatka</li>
+                        <li>lekcja</li>
+                        <li>przedmiot</li>
+                        <li>nauczyciel</li>
+                        <li>klasa</li>
+                        <li>sala</li>
+                        <li>zmiany</li>
+                        <li>rodzaj</li>
+                        <li>klasa</li>
+                        <li>nauczyciel</li>
+                        <li>sala</li>
+                        </ul>
+                        </div>
+                                 </div>
                         <table class="displayChanges" id="table1" >
                           <tr>
                             <td>"Pobierz":<span>"zastępstwa"</span></td>
@@ -63,12 +94,24 @@
                 </div>
         </div>
         <div id="homePage" class="" style="display:none;">
-            <div  class="boxed-group" id="elementsContent">
+            <div  class="boxed-group" >
                     <h3>Home</h3>
                     <div class="boxed-group-inner">
                       Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi aby umożliwić ich naprawę.
-                        <div  id=""><textarea id="messageArea" maxlength="1000" cols="" rows="10"></textarea>'  </div>
+                        <div  id=""><textarea id="messageArea" maxlength="1000" cols="30" style="resize: none;" rows="10" ></textarea>'  </div>
                         <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">SendMessage</a>
+
+                    </div>
+                    
+                </div>
+
+        </div>        
+        <div id="about1" class="" style="display:none;">
+            <div  class="boxed-group" >
+                    <h3>O mnie</h3>
+                    <div class="boxed-group-inner">
+                      Strona poświęcona co ta aplikacja tak naprawdę robi  
+
 
                     </div>
                     

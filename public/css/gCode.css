@@ -8,15 +8,20 @@ select {
   -moz-appearance: none;
   appearance: none;
 }
-
+body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+font-size: 14px;
+line-height: 1.5;
+color: #333;
+background-color: #fff
+    
+}
 .first{
     border-top:none;
 }
 
 
-.chooseDay li:hover{
-    color: black;   
-}
+
 
 .chooseDay ul{
     display: flex;
@@ -25,38 +30,109 @@ select {
     margin-top: 6px;
     padding-left:0px;
 }
-.chooseDay li{
-    border-bottom: 2px solid red;
-}
-.chooseDay li:hover{
-    border-bottom: 2px solid blue;
-}
+
 
 .chooseDay{
     font-size: 1.5em;
- background-color: #fafafa;
+ 
 }
+
 .navigation {
-    list-style: none;
-    margin: 0; 
+    list-style-type: none;
+    /*margin: 0;*/
+    padding: 0;
+    overflow: hidden;
     background-color: #f5f5f5;
-  border-bottom: 1px solid #e5e5e5;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-flow: row wrap;
-  justify-content: flex-end;
-    font-size: 15px;
+    height: 50px;
+
 }
-.navigation a {
+/*.navDisplay{
+    
+}
+.dropDisplay{}*/
+.drop {
+    list-style-type: none;
     margin: 0;
     padding: 0;
-  text-decoration: none;
-  display: block;
-  padding: 1em;
-  color: #333;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    
+
+}
+
+.drop li {
+    float: right;
+}
+
+ .drop a {
+    display: inline-block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+ 
+
+.drop a:hover  {
+    color: #4078c0;
+}
+
+.drop li{
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+   min-width: 60px;
+    margin-left: -5px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: #333;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+.dropdown-content p {
+    max-width: 42px; 
+    max-height: 42px;
+    color: #333;
+    padding-top: 3px;
+    padding: 0px 0px 10px 0px;
+    margin: auto;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+.dropdown-content p:hover {background-color: #f1f1f1}
+
+.drop li:hover .dropdown-content {
+    display: block;
+}
+
+
+.navigation a {
+display: block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+.navigation p{
+    padding: 0px;
+    margin: 0px;
+    display: block;
+}
+.navigation li {
+    float: left;
 }
 
 .navigation a:hover {
@@ -79,7 +155,7 @@ select {
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
     background-color: #f5f5f5;
-    border-color: #d8d8d8 #d8d8d8 -moz-use-text-color;
+    border-color: #d8d8d8 #d8d8d8;
     border-image: none;
     border-radius: 3px 3px 0 0;
     border-style: solid solid none;
@@ -102,11 +178,11 @@ select {
 }
 
 .backBlue{
-    background-color: aliceblue;
+    background-color: white;
     
 }
 .backRed{
-    background-color:#FFD8D6;
+    background-color:white;
     
 }
 .flex-contenta{
@@ -124,7 +200,7 @@ select {
     background: lightblue;
 }
 .displayChanges tr{
-    /*border: 1px solid red;*/
+    border: 1px solid red;
     text-align: left;
     color: #8757ad;
     padding-bottom: 1px;
@@ -138,10 +214,13 @@ select {
     /*#e88501*/
 }
 .displayChanges{
+    border: 1px solid red;
     font-family: 'Source Code Pro', monospace;
     border-radius: 10px;
     margin: 5px;
     text-align: left;
+    max-width:200px;
+    word-wrap:break-word;
     /*font-size: 20px;*/
 
 
@@ -191,6 +270,20 @@ width: 20px;
     border: 1px solid #D5D5D5;
     border-radius: 3px;
 }
+.btn:hover{
+    text-decoration: none;
+background-color: #ddd;
+background-image: -webkit-linear-gradient(#eee, #ddd);
+background-image: linear-gradient(#eee, #ddd);
+border-color: #ccc
+}
+.btnClicked {
+    text-decoration: none;
+background-color: #ddd;
+background-image: -webkit-linear-gradient(#eee, #ddd);
+background-image: linear-gradient(#eee, #ddd);
+border-color: #ccc
+}
 .edit-btn {
     font-size: 13px;
     padding-left: 2px;
@@ -205,4 +298,30 @@ border-color: #5CA941;
     background-color: #569E3D;
     background-image: linear-gradient(#79D858, #569E3D);
     border-color: #4A993E;
+}
+
+.scrollableList{
+    padding: 0px;    
+}
+.scrollableList ul{
+    list-style: outside none none;
+    text-align: left;
+    padding: 0px;
+    margin:0px;
+    width:auto; 
+    /*height: 200px; 
+    overflow: auto;*/
+}
+.scrollableList li{
+    color: #4078c0;
+     font-size: 14px;
+    font-weight: bold;
+    border-top: 1px solid #e5e5e5;
+    display: block;
+    font-size: 14px;
+    padding: 6px 10px 6px 10px;
+    position: relative;
+}
+.scrollableList li:hover{
+    color: black;   
 }

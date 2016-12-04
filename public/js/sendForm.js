@@ -1,4 +1,4 @@
-//var settings1 = {'asd':12};
+var settings1 = {};
 //var settings2={};
 var set=new traslateSettings();
 var z = new translateChanges();
@@ -86,10 +86,22 @@ function getClassList(form){
     });
     
 }
+function btnClicked(type){
+    console.log('hello',type);
+    var idList={today:'todayBtn',tommorow:'tommorowBtn'};
+    for (k in idList){
+        if(k==type){
+            document.getElementById(idList[k]).className='btn btnClicked';
+        }
+        else{ document.getElementById(idList[k]).className='btn';}
+    }
+    
+}
 function requestForChanges(type){
     //console.log('hi');
     var url = 'postCall'
     var form={};
+    btnClicked(type);
     form['mode']='getChanges'
     if(type =='today'){
         form['param']='today';
@@ -131,10 +143,13 @@ function traslateSettings(){
     }
     
     this.changeDisplayOnClick=function(key){
-        console.log(key[0]);    
-        var el = document.getElementById(key[0]);
+        console.log(key[0]);
+        var key1 =key[0];
+        for(var i=0;i<key1.length;i++){
+        var el = document.getElementById(key1[i]);
         //console.log(el);
         el.addEventListener('click',function(){ homePosition(key[1])},false);
+        }
     }
     this.addClicks=function(){
         for(k in this.btnEvents){
@@ -174,7 +189,7 @@ function onLoadFunc(){
         z.setClassName(settings1.formValues[0]);
     setValuesToForm(settings1['formValues'])
         //set.saveData(settings1);
-    requestForChanges('today'); 
+    //requestForChanges('today'); 
     });
     
     //console.log(settings1);
