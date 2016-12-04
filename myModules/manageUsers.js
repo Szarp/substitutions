@@ -68,13 +68,15 @@ var pageSettings = {
     },
     event:{
         changeDisplayEvents :{
-            'home':['navbar_home','homePage'],
-            'substitution':['navbar_substitution','substitutionList'],
-            'settings':['navbar_settings','settingsMenu']
+            'home':[['navbar_home','navbar_homeD'],'homePage'],
+            'substitution':[['navbar_substitution','navbar_substitutionD'],'substitutionList'],
+            'about':[['navbar_photo','navbar_photoD'],'about1'],
+            'settings':[['navbar_settings','navbar_settingsD'],'settingsMenu']
+            
         }
     },
-    events:['homePage','substitutionList','settingsMenu'],
-    formValues:['1b','yes']
+    events:['homePage','substitutionList','settingsMenu','about1'],
+    formValues:['all','no']
     
 }
     
