@@ -1,7 +1,7 @@
 //some Users Module
-    var facebook = require('./facebookComunication.js'),
-         setTime = require('./setTime.js'),
-        mongo = require('./mongoFunctions.js');
+var //facebook = require('./facebookComunication.js'),
+	setTime = require('./setTime.js'),
+	mongo = require('./mongoFunctions.js');
 
 
 
@@ -107,6 +107,8 @@ function postCall(userId,body,callback){
                     callback(res);
                 });
             }); */
+			res = "Dziękujemy za wiadomość";
+			callback(res);
         }
         else if(body.mode=='saveSettings'){
             if(userId!="0000"){

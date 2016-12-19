@@ -31,7 +31,7 @@
 </ul>
 <ul class="drop dropDisplay">
     <li >
-     <a href="javascript:void(0)" >Dropdown</a>
+     <a href="javascript:void(0)" >Menu</a>
      <div class="dropdown-content">
        <a id="navbar_homeD" href="#home">Home</a>
        <a id="navbar_substitutionD" href="#changes">Zastępstwa</a>
@@ -94,12 +94,16 @@
                 </div>
         </div>
         <div id="homePage" class="" style="display:none;">
+			<div id="infoBox" style="display: none;">
+				<div id="infoBoxData"></div>
+				<div style="width: 1%; display: table-cell;" onclick="closeInfo()">close</div>
+			</div>
             <div  class="boxed-group" >
                     <h3>Home</h3>
-                    <div class="boxed-group-inner">
-                      Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi aby umożliwić ich naprawę.
-                        <div  id=""><textarea id="messageArea" maxlength="1000" cols="30" style="resize: none;" rows="10" ></textarea>'  </div>
-                        <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">SendMessage</a>
+                    <div class="boxed-group-inner" style="text-align: justify;">
+                      Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
+                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" ></textarea>  </div>
+                        <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
 
                     </div>
                     

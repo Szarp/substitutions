@@ -24,6 +24,7 @@ function setValuesToForm(params){
 }
 
 function filtrEvents(){
+	classList.sort();
     var allElemnts='';
     var begin ='<a>';
     var end = '</a>';
@@ -210,20 +211,26 @@ function onLoadFunc(){
     }
     http.send(string_obj);
 }
-    function sendMessage(){
-        var url = 'postCall';
-        var form = {};
-        form['mode']='message';
-        var el = document.getElementById('messageArea');
-        form['param']=el.value;
-        //console.log(el.value);
-       sendObj(url,form,function(responeText){
-            
-            el.value=responeText;
-        })
-        //el.innerHTML='hi';
-        
-    }
+function closeInfo(){
+	var infB = document.getElementById('infoBox');
+	infB.style.display = 'none';
+}
+function sendMessage(){
+	var url = 'postCall';
+	var form = {};
+	form['mode']='message';
+	var el = document.getElementById('messageArea');
+	var infB = document.getElementById('infoBox');
+	var infBData = document.getElementById('infoBoxData');
+	form['param']=el.value;
+	//console.log(el.value);
+	sendObj(url,form,function(responeText){
+		infB.style.display = 'table';
+		infBData.innerHTML=responeText;
+	})
+	//el.innerHTML='hi';
+	
+}
 function translateChanges(){
     //this.data
     this.divId='changesContainer';

@@ -1,11 +1,11 @@
 var express = require('express'),
-   mangeUsers = require(__dirname+'/myModules/fakeManageUsers.js'),
-       bodyParser = require('body-parser'),
-        session = require(__dirname + '/myModules/userSession.js'),
+    mangeUsers = require(__dirname+'/myModules/fakeManageUsers.js'),
+    bodyParser = require('body-parser'),
+    session = require(__dirname + '/myModules/userSession.js'),
     cookieParser = require('cookie-parser'),
-    fs= require('fs');
- var app = express();
-    app.use(express.static(__dirname + '/public'));
+    fs = require('fs');
+var app = express();
+app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
@@ -14,7 +14,7 @@ app.use(cookieParser());
 var cookie = new session.sessionCreator();
 var sessionList = {};
     app.use(function (req, res, next) {
-  // check if client sent cookie
+    //check if client sent cookie
     var cookie = req.cookies.cookieName;
     if (cookie === undefined){
         // no: set a new cookie
@@ -34,7 +34,7 @@ app.get('/index', function (req, res) {
     
 });
     
-    app.post('/postCall',function(req,res){
+app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
     console.log('user session: ',userId);
@@ -43,7 +43,7 @@ app.get('/index', function (req, res) {
     if(userId == undefined){userId="0000";}
     console.log('user session: ',userId);
         mangeUsers.postCall(userId,req.body,function(resText){
-            //console.log('resText',resText);
+            console.log('resText: ' + resText);
             res.send(resText);
         })
   
