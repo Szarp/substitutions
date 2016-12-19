@@ -18,7 +18,7 @@ var user= new userMod();
 var getSomeSubstitution = function(date,callback){
     getData(date,function(data){
         convertToSubstitutions(data,function(convertedData){
-            console.log('converted',convertedData);
+            //console.log('converted',convertedData);
             classListFromDate(convertedData,function(res){
                 var dataToSave={};
                 dataToSave['substitution']=convertedData;
@@ -73,7 +73,7 @@ function classListFromDate(convertedData,callback){
 }
 var getData = function(date,callback){
     downloadData(date,function(err,body){
-        if(err){
+        if(!err){
             getCookie(function(){
                 downloadData(date,function(err1,newBody){
                     setImmediate(function() {
@@ -121,6 +121,7 @@ function downloadData(date,callback){
     var url1='http://zso11.edupage.org/gcall';
     mongo.findById('params','testCollection',function(err1,params){    
      //var gDate=['7593327', '1dc1b4b7'];
+        console.log('params',params);
     var cookie=params['cookie'];
     var form = {
         gpid:params['gpid'],
@@ -239,8 +240,30 @@ function convertToSubstitutions(data,callback){
 }
 function getGPIDandGSH (data,callback){ //take params to send request
         var a=data.indexOf('gsh');
-        var gpid=data.slice(a-9,a-1);
-        var gsh=data.slice(a+4,a+12);
+        var gpidIndex;
+        var gshIndex;
+        //"gpid=634226&gsh=d2ec0c25"
+        for (var i=0; i<11;i++){
+            
+            if (data.charAt(a-i)=='='){
+                gpidIndex=a-i;
+                break;
+            }
+            
+        }
+        for (var i=0; i<20;i++){
+            //console.log('char',data.charAt(a+i));
+            if (data.charAt(a+i)=='"'){
+                gshIndex=a+i;
+                break;
+            }
+            
+        }
+        var gpid=data.slice(gpidIndex+1,a-1);
+        //var gpid='a';
+        var gsh=data.slice(a+4,gshIndex);
+        //var gsh='b';
+        //console.log(gpid,gsh);
         setImmediate(function() {
             callback([gpid,gsh]);
         });
