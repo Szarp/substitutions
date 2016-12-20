@@ -325,3 +325,19 @@ border-color: #5CA941;
 .scrollableList li:hover{
     color: black;   
 }
+.info{
+	display: table;
+	border-style: solid;
+	border-color: #73AD21;
+	border-radius: 5px;
+	border-width: 2px;
+	padding: 3px;
+	background-color: #87C531CC;
+	margin-bottom: 10px;
+}
+.closeButton{
+	width: 1%;
+	display: table-cell;
+	padding-right: 3px;
+	cursor: pointer;
+}
