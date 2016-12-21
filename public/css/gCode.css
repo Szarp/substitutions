@@ -332,7 +332,7 @@ border-color: #5CA941;
 	border-radius: 5px;
 	border-width: 2px;
 	padding: 3px;
-	background-color: #87C531CC;
+	background-color: rgba(135, 197, 49, 0.8); /*#87C531CC; changed, because didn't work in Chrome*/
 	margin-bottom: 10px;
 }
 .closeButton{
