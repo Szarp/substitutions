@@ -141,7 +141,8 @@ display: block;
 .boxed-group{
     border-radius: 3px;
     margin-bottom: 30px;
-    position: relative;  
+    position: relative;
+    width: 400px;
 }
 .boxed-group-action {
     position: relative;
@@ -214,12 +215,12 @@ display: block;
     /*#e88501*/
 }
 .displayChanges{
-    border: 1px solid red;
+    /*border: 1px solid red;*/
     font-family: 'Source Code Pro', monospace;
     border-radius: 10px;
     margin: 5px;
     text-align: left;
-    max-width:200px;
+    max-width:300px;
     word-wrap:break-word;
     /*font-size: 20px;*/
 
@@ -301,14 +302,21 @@ border-color: #5CA941;
 }
 
 .scrollableList{
-    padding: 0px;    
+    padding: 0px;
+    
+
 }
 .scrollableList ul{
     list-style: outside none none;
     text-align: left;
     padding: 0px;
     margin:0px;
-    width:auto; 
+    width:300px;
+        border: 1px solid red;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    font-family: 'Source Code Pro', monospace;
     /*height: 200px; 
     overflow: auto;*/
 }
