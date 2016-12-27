@@ -13,7 +13,8 @@ body{
 font-size: 14px;
 line-height: 1.5;
 color: #333;
-background-color: #fff
+background-color: #fff;
+cursor: none; /*ciekawe gdzie podział się ten kursor*/
     
 }
 .first{
@@ -391,4 +392,14 @@ border-color: #5CA941;
 	display: table-cell;
 	padding-right: 3px;
 	cursor: pointer;
+}
+.className{
+	display: none;
+}
+.substitution{
+	display: inline;
+	cursor: pointer;
+}
+.substitution:hover{
+	font-weight: bold;
 }

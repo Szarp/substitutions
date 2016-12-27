@@ -34,22 +34,31 @@ function setValuesToForm(params){
     }
 }
 
-function filtrEvents(){
+/*function filtrEvents(){
 	classList.sort();
     var allElemnts='';
-    var begin ='<a>';
-    var end = '</a>';
+    //var begin ='<a>';
+    //var end = '</a>';
     var idBegin='classFiltr_';
     for(var i=0;i<classList.length;i++){
             allElemnts+='<div id="'+idBegin+i+'">'+classList[i]+'</div>';
             allElemnts+='  ';
     }
-    document.getElementById('forClasses').innerHTML='<a>Klasy:</a>' +allElemnts;
+    document.getElementById('forClasses').innerHTML='<div>Klasy:</div>' +allElemnts;
     for(var i=0;i<classList.length;i++){
         var el = document.getElementById(idBegin+i)
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
     }
 }
+*/
+function filtrEvents(){
+	for(var i=0; i<classList.length; i++){
+		var el = document.getElementById(classList[i]);
+		el.className = "substitution";
+        el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
+	};
+}
+
 function changeDisplayForChanges(oneClass){
     console.log(oneClass.innerHTML);
      z.setClassName(oneClass.innerHTML);
