@@ -330,8 +330,51 @@ border-color: #5CA941;
     padding: 6px 10px 6px 10px;
     position: relative;
 }
+.scrollableList a{
+    color: lightblue;
+     font-size: 14px;
+    font-weight: bold;
+    /*border-top: 1px solid #e5e5e5;
+    display: block;*/
+    
+}
 .scrollableList li:hover{
     color: black;   
+}
+.allClasses{
+    overflow:scroll;
+    width: auto;
+    border: 1px solid black;
+    
+}
+.allClasses span{
+    width: auto;
+    border: 1px solid black;
+    
+    
+}
+.allClasses ul{
+    list-style: none;
+    padding: 0px;
+    border: 1px solid black;
+    
+    
+}
+.allClasses li{
+    
+        display: inline;
+    
+}
+.allClasses a{
+    display: inline-flex;
+    /*border: 1px solid black;*/
+    /*display: flex;*/  
+    
+}
+.allClasses a:hover{
+    
+    border: 1px solid black;
+    /*display: flex;*/  
 }
 .info{
 	display: table;

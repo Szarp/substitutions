@@ -5,17 +5,16 @@ var z = new translateChanges();
 var clssList=[];
 
 
-var exData = {
-    typ:'',
-    klasa:'',
-    grupa:'',
-    przedmiot:'',
-    notatka:'',
-    zNauczyciel:'',
-    zSala:'',
-    zPrzedmiot:''
-    
-}
+var patternOfDisplay = [
+    'typ',
+    'klasa',
+    'grupa',
+    'przedmiot',
+    'nauczyciel',
+    'sala',
+    'komentarz',
+    'rodzaj'
+]
 var btnEvents ={
             saveBtn:function(){takeValuesFromForm()},
             tommorowBtn:function(){requestForChanges('tommorow')},
@@ -40,12 +39,12 @@ function filtrEvents(){
     var allElemnts='';
     var begin ='<a>';
     var end = '</a>';
-    var idBegin='classFiltr_'
+    var idBegin='classFiltr_';
     for(var i=0;i<classList.length;i++){
-            allElemnts+='<a id="'+idBegin+i+'">'+classList[i]+'</a>';
+            allElemnts+='<div id="'+idBegin+i+'">'+classList[i]+'</div>';
             allElemnts+='  ';
     }
-    document.getElementById('forClasses').innerHTML='Klasy: '+allElemnts;
+    document.getElementById('forClasses').innerHTML='<a>Klasy:</a>' +allElemnts;
     for(var i=0;i<classList.length;i++){
         var el = document.getElementById(idBegin+i)
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
@@ -322,7 +321,7 @@ function translateChanges(){
     this.assignParams = function(oneChange){
         this.i=0;
         var keyText="";
-        var x = exData;
+        //var x = exData;
         var keyValue=""
         var elInChange={};
         for (k in oneChange){
@@ -374,19 +373,25 @@ function translateChanges(){
         }
     }
     this.createElement=function(obj){
+        console.log('onj',obj);
         //if(key==undefined||value==""){return '';};
         //var tabString=this.createTabs(tabs);
         //console.log('tabs',tabs);
         var allLi=""
-        for(k in obj){
-            allLi+=this.createLi(k,obj[k]);
+        for(var i=0;i<patternOfDisplay.length;i++){
             
+           if(obj[patternOfDisplay[i]] == undefined ||obj[patternOfDisplay[i]] == ""){    
+               //do nothing
+           }
+            else{
+                allLi+=this.createLi(patternOfDisplay[i],obj[patternOfDisplay[i]]); 
+            }
         }
         var string = '<ul>'+allLi+'</ul>';
         return string;
     }
     this.createLi=function(name,text){
-    return '<li><a>'+k+' </a>'+text+'</li>';   
+    return '<li><a>'+name+' </a>'+text+'</li>';   
     }
     
 }
