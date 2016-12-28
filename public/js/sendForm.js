@@ -52,11 +52,42 @@ function setValuesToForm(params){
 }
 */
 function filtrEvents(){
+	var allClasses = [
+		"1a",
+		"1b",
+		"1c",
+		"1d",
+		"2a",
+		"2b",
+		"2c",
+		"2d",
+		"3a",
+		"3b",
+		"3c",
+		"3d",
+		"1ga",
+		"1gb",
+		"1gc",
+		"1gd",
+		"2ga",
+		"2gb",
+		"2gc",
+		"2gd",
+		"3ga",
+		"3gb",
+		"3gc",
+		"3gd"
+	];
+	for(var i=0; i<allClasses.length; i++){
+		var el = document.getElementById(allClasses[i]);
+		el.className = "className";
+        el.removeEventListener('click',function(){ changeDisplayForChanges(this)},false);
+	}
 	for(var i=0; i<classList.length; i++){
 		var el = document.getElementById(classList[i]);
 		el.className = "substitution";
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
-	};
+	}
 }
 
 function changeDisplayForChanges(oneClass){
