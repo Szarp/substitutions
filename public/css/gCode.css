@@ -140,9 +140,8 @@ display: block;
 }
 .boxed-group{
     border-radius: 3px;
-    margin-bottom: 30px;
     position: relative;
-    width: 400px;
+	margin: auto;
 }
 .boxed-group-action {
     position: relative;
