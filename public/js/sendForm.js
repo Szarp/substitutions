@@ -52,32 +52,7 @@ function setValuesToForm(params){
 }
 */
 function filtrEvents(){
-	var allClasses = [
-		"1a",
-		"1b",
-		"1c",
-		"1d",
-		"2a",
-		"2b",
-		"2c",
-		"2d",
-		"3a",
-		"3b",
-		"3c",
-		"3d",
-		"1ga",
-		"1gb",
-		"1gc",
-		"1gd",
-		"2ga",
-		"2gb",
-		"2gc",
-		"2gd",
-		"3ga",
-		"3gb",
-		"3gc",
-		"3gd"
-	];
+	var allClasses = ["1a","1b","1c","1d","2a","2b","2c","2d","3a","3b","3c","3d","1ga","1gb","1gc","1gd","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
 	for(var i=0; i<allClasses.length; i++){
 		var el = document.getElementById(allClasses[i]);
 		el.className = "className";
@@ -163,13 +138,16 @@ function requestForChanges(type){
         form['param']='tommorow';
     }
     //console.log(form);
-    document.getElementById('forDay').innerHTML = 'Changes for '+type;
+    
     sendObj(url,form,function(obj){
         var json = JSON.parse(obj);
         //set.saveData(json);
         //console.log(obj,json);
-        z.data=json;
-        if(obj =='"no substitutions"'){
+        z.data=json['substitution'];
+        console.log('data',z.data);
+        document.getElementById('forDay').innerHTML = 'Changes for '+json['date'];
+        //console.log('acctal changes',json['substitution']);
+        if(z.data == 'no substitutions'){
             console.log('ji',z.data);
             z.data=[{"cancelled":[true],"note":["brak zmian"],
                     classes:[z.className]}];
@@ -306,6 +284,7 @@ function translateChanges(){
     this.getChange = function(){
         var string="";
         for(var j=0;j<this.data.length;j++){
+            console.log('dataLength',this.data.length);
             var findParam=this.changeContainsClass(this.data[j]);
             if(findParam){
             var oneChangeObj=this.assignParams(this.data[j]);
@@ -413,6 +392,7 @@ function translateChanges(){
         }
     }
     this.createElement=function(obj){
+        if(obj=={}){return "";}
         console.log('onj',obj);
         //if(key==undefined||value==""){return '';};
         //var tabString=this.createTabs(tabs);

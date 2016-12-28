@@ -73,7 +73,7 @@ function classListFromDate(convertedData,callback){
 }
 var getData = function(date,callback){
     downloadData(date,function(err,body){
-        if(!err){
+        if(err){
             getCookie(function(){
                 downloadData(date,function(err1,newBody){
                     setImmediate(function() {
@@ -205,9 +205,10 @@ function saveSubstitutions(date,data,callback){
     var dataToSave={};
         dataToSave['substitution']=data.substitution;
         dataToSave['userList']=data.userList;
+        dataToSave['date']=date;
     
         //console.log(dataToSave);
-        mongo.modifyById(date,'substitutions',data,function(){
+        mongo.modifyById(date,'substitutions',dataToSave,function(){
             setImmediate(function() {
                 callback(); //callback no need
             });

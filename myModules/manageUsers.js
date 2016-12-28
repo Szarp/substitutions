@@ -118,7 +118,11 @@ function postCall(userId,body,callback){
             mongo.findById(time.displayTime(),'substitutions',function(err,obj){
                 //console.log(err,obj);
                 if(err){console.log('err in sending substitutions')}
-                res = JSON.stringify(obj['substitution']);
+                var objToSend={};
+                objToSend['substitution']=obj['substitution'];
+                if(obj['date'] == undefined){obj['date']='31-12-2016'}
+                objToSend['date']=obj['date'];
+                res = JSON.stringify(objToSend);
                 setImmediate(function() {
                     callback(res);
                 });
@@ -141,7 +145,7 @@ function postCall(userId,body,callback){
                     callback(res);
                 });
             });
-        }        
+        }          
         else if(body.mode=='message'){
             
             mongo.save(['messages',{id:userId,message:body.param,time:new Date()}],function(){

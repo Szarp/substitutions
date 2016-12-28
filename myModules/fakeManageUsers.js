@@ -75,7 +75,11 @@ function postCall(userId,body,callback){
                 //console.log(err,obj);
               //  if(err){console.log('err in sending substitutions')}
             console.log(obj);
-                res = JSON.stringify(obj['substitution']);
+               var objToSend={};
+                objToSend['substitution']=obj['substitution'];
+                if(obj['date'] == undefined){obj['date']='31-12-2016'}
+                objToSend['date']=obj['date'];
+                res = JSON.stringify(objToSend);
                 setImmediate(function() {
                     callback(res);
                 });
