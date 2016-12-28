@@ -142,6 +142,7 @@ display: block;
     border-radius: 3px;
     position: relative;
 	margin: auto;
+	width: 100%;
 }
 .boxed-group-action {
     position: relative;
