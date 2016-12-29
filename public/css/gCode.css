@@ -389,12 +389,12 @@ border-color: #5CA941;
 .message{
 	display: table;
 	border-style: solid;
-	border-color: #81141C;
+	border-color: #17678D;
 	border-radius: 5px;
 	border-width: 2px;
 	padding: 3px;
-	background-color: rgba(219, 19, 19, 0.8);
-	width: 300px;
+	background-color: rgba(94, 197, 219, 0.8);
+	width: 315px;
 	margin: auto;
 }
 .msgLink{
