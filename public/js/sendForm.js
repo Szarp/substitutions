@@ -239,7 +239,13 @@ function onLoadFunc(){
             var res=JSON.parse(http.responseText);
             console.log(res);
             if(res['err'] == true){
-                console.log(res.message)
+                //console.log(res.message)
+				var resMsg = res.message;
+				var msg = '<a class="msgLink" href="/">' + resMsg + '</a>';
+				var msgB = document.getElementById('msgBox');
+				var msgBData = document.getElementById('msgBoxData');
+				msgB.style.display = 'table';
+				msgBData.innerHTML=msg;
             }
             //console.log('resText',res);
             callback(res.params);
@@ -247,6 +253,10 @@ function onLoadFunc(){
         else{console.log(http.status);}
     }
     http.send(string_obj);
+}
+function closeMsg(){
+	var msgB = document.getElementById('msgBox');
+	msgB.style.display = 'none';
 }
 function closeInfo(){
 	var infB = document.getElementById('infoBox');

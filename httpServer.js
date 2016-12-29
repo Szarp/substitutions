@@ -45,7 +45,7 @@ app.post('/postCall',function(req,res){
             if(userId == '0000' && req.body['mode'] == 'getSettings'){
         //res.status(401);
         //console.error('string');
-                res.send(JSON.stringify({err:true,message:"please log to your facebook accont",params:resText}));
+                res.send(JSON.stringify({err:true,message:"Please log in using your Facebook account.",params:resText}));
             }
             else{
             //console.log('resText',resText);
