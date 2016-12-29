@@ -55,7 +55,15 @@ function savePersonalSettings(id,params,callback){
         mongo.modifyById(id,collection,{settings:params},function(){})
 }
 */
-
+function getPicture(token,callback){
+    personalData(token,'picture,gender',function(res){
+        var json = JSON.parse(res)
+        console.log('res from picture',json);
+        
+    })
+    
+    
+}
 function savePerson(id,token,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(err,doc){
@@ -93,19 +101,23 @@ function tokenToLongLife(shortToken,callback){
 function addName(id,token,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(e,doc){
-        if(doc.name==''){
-            personalData(token,'name',function(res){
-                console.log('saving name: ',res.name);
-                mongo.modifyById(id,collection,{name:res.name},function(){});
-                
-            })
-        }
+        if(e){}
         else{
-            console.log('name was before');
+            console.log('login data',doc);
+            if(doc['name']==''||doc['name']==null){
+                personalData(token,'name',function(res){
+                    console.log('saving name: ',JSON.parse(res).name);
+                    mongo.modifyById(id,collection,{name:JSON.parse(res).name},function(){});
+
+                })
+            }
+            else{
+                console.log('name was before');
+            }
+            setImmediate(function() {
+                    callback();
+            }); 
         }
-        setImmediate(function() {
-                callback();
-        });  
     });
 }
 function personalData(token,params,callback){
@@ -118,7 +130,7 @@ function personalData(token,params,callback){
     });
 }
 function createNotification(id,message,redirect,callback){
-    var url=link.notifcation(id,message,redirect);
+    var url=link.notification(id,message,redirect);
     request({
         headers: {
           'Content-Length': 0,
@@ -151,6 +163,8 @@ exports.tokenToLongLife = tokenToLongLife;
 exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoAboutToken=getInfoAboutToken;
 exports.savePerson=savePerson;
+exports.addName=addName;
+exports.getPicture=getPicture;
 exports.createPersonToken=createPersonToken;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings

@@ -92,7 +92,7 @@ function getClassList(form){
     console.log('clsasList',form);
     
     sendObj(url,form,function(obj){
-        var json = JSON.parse(obj);
+        var json = obj;
         classList=json;
        filtrEvents();
         //set.saveData(json);
@@ -140,7 +140,7 @@ function requestForChanges(type){
     //console.log(form);
     
     sendObj(url,form,function(obj){
-        var json = JSON.parse(obj);
+        var json = obj;
         //set.saveData(json);
         //console.log(obj,json);
         z.data=json['substitution'];
@@ -210,7 +210,7 @@ function onLoadFunc(){
     form['mode']='getSettings';
     sendObj(url,form,function(obj){
     //    console.log(JSON.parse(obj));
-        settings1 = JSON.parse(obj);
+        settings1 = obj;
        // console.log('hi',settings1);
         set.saveData(settings1.event);
     set.addChangeClick();
@@ -235,8 +235,16 @@ function onLoadFunc(){
     http.setRequestHeader("Content-type", "application/json");
     http.onreadystatechange = function() {//Call a function when the state changes.
         if(http.readyState == 4 && http.status == 200) {
-            callback(http.responseText);
+            console.log('resText',http.responseText);
+            var res=JSON.parse(http.responseText);
+            console.log(res);
+            if(res['err'] == true){
+                console.log(res.message)
+            }
+            //console.log('resText',res);
+            callback(res.params);
         }
+        else{console.log(http.status);}
     }
     http.send(string_obj);
 }

@@ -9,7 +9,7 @@ var express = require('express'),
     myFunc = require(__dirname+'/myModules/zsoServerComunication.js'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
-        //request= require('request'),
+        request= require('request'),
     MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
@@ -26,8 +26,20 @@ var app = express();
 var cookie = new session.sessionCreator();
 
 //var app = express();
+var token = 'EAAPYvxuxXsIBADMMhltBqlarAi5b8ozH5lxHp72JN9ZCZADabTWNgZCGY1OiEbQ4eXTUQYlMOEBJOZAueoaNQaa5Ani5hLOO35PlAiTn94ZBKsZAEl5xqZAtrA2UUesSJ6WBeFypFdPvoERnopjnx9I1FG46jdkZBeAFZCINRXRN7GwZDZD';
+
+//ace:pre;");ASC.createText(gi636490,"Czw\n01.12.");$j(gi636490).click(gi635341);var gi63773
 
 //var link=new facebook.links();
+/*
+message
+
+{"object":"page","entry":[{"id":"573446562859405","time":1480523515564,"messaging":[{"sender":{"id":"1345064578871981"},"recipient":{"id":"573446562859405"},"timestamp":1480523515364,"message":{"mid":"mid.1480523515364:af9ac5b647","seq":26,"text":"ds"}}]}]}
+
+{"object":"page","entry":[{"id":"573446562859405","time":1480523599033,"messaging":[{"sender":{"id":"1345064578871981"},"recipient":{"id":"573446562859405"},"timestamp":1480523598950,"message":{"mid":"mid.1480523598950:4d3cf19c71","seq":27,"text":"sd"}}]}]}
+
+*/
+
 
 //appSetting();
 var sessionList = {};
@@ -101,18 +113,114 @@ app.post('/', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
+app.get('/webhook', function(req, res) {
+    console.log('hi',req.query);
+  if (req.query['hub.mode'] === 'subscribe' &&
+      req.query['hub.verify_token'] === 'abcds') {
+    console.log("Validating webhook");
+    res.status(200).send(req.query['hub.challenge']);
+  } else {
+    console.error("Failed validation. Make sure the validation tokens match.");
+    res.sendStatus(403);          
+  }  
+});
+app.post('/webhook', function (req, res) {
+    console.log ('post webhook', JSON.stringify(req.body));
+    var recipientId = req.body.entry[0].id;
+    var id = '1345064578871981'; //ja
+    var id2 = '1224398530976398' //krzys
+    console.log(recipientId);
+    sendTextMessage(id2, 'messageText')
+    
+    /*
+  var data = req.body;
 
+  // Make sure this is a page subscription
+  if (data.object == 'page') {
+    // Iterate over each entry
+    // There may be multiple if batched
+    data.entry.forEach(function(pageEntry) {
+      var pageID = pageEntry.id;
+      var timeOfEvent = pageEntry.time;
+
+      // Iterate over each messaging event
+      pageEntry.messaging.forEach(function(messagingEvent) {
+        if (messagingEvent.optin) {
+          receivedAuthentication(messagingEvent);
+        } else if (messagingEvent.message) {
+          receivedMessage(messagingEvent);
+        } else if (messagingEvent.delivery) {
+          receivedDeliveryConfirmation(messagingEvent);
+        } else if (messagingEvent.postback) {
+          receivedPostback(messagingEvent);
+        } else if (messagingEvent.read) {
+          receivedMessageRead(messagingEvent);
+        } else if (messagingEvent.account_linking) {
+          receivedAccountLink(messagingEvent);
+        } else {
+          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+        }
+      });
+    });
+
+    // Assume all went well.
+    //
+    // You must send back a 200, within 20 seconds, to let us know you've 
+    // successfully received the callback. Otherwise, the request will time out.
+    */
+    res.sendStatus(200);
+ // }
+});
+function sendTextMessage(recipientId, messageText) {
+  var messageData = {
+    recipient: {
+      id: recipientId
+    },
+    message: {
+      text: messageText
+    }
+  };
+
+  callSendAPI(messageData);
+}
+function callSendAPI(messageData) {
+  request({
+    uri: 'https://graph.facebook.com/v2.6/me/messages',
+    qs: { access_token: token},
+    method: 'POST',
+    json: messageData
+
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      console.log("Successfully sent generic message with id %s to recipient %s", 
+        messageId, recipientId);
+    } else {
+      console.error("Unable to send message.");
+      console.error(response);
+      console.error(error);
+    }
+  });  
+}
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
     console.log('user session: ',userId);
     //console.log('seesionList: ',sessionList);
     console.log('Mode: '+req.body['mode']);
-    if(userId == undefined){userId="0000";}
     console.log('user session: ',userId);
         mangeUsers.postCall(userId,req.body,function(resText){
+            if(userId == '0000' && req.body['mode'] == 'getSettings'){
+        //res.status(401);
+        //console.error('string');
+                res.send(JSON.stringify({err:true,message:"please log to your facebook accont",params:resText}));
+            }
+            else{
             //console.log('resText',resText);
-            res.send(resText);
+                res.send(JSON.stringify({err:false,message:"",params:resText}));
+            }
         })
   
 })
@@ -140,11 +248,15 @@ app.get('/redirect', function(req, res){
         console.log('redirect');
      //var reqCookie=req.cookies.cookieName;
     mangeUsers.redirect(req,function(id){
-        if(id == undefined){id="0000";}
+        console.log('idd',id);
+        if(id == undefined){
+            res.send('problem with accont');
+        }
+        else{
             cookie.addNewSession(id,reqCookie);
-        res.redirect('/index');
-        
-    })
+            res.redirect('/index');
+        }
+    });
     
    
 });
@@ -157,15 +269,15 @@ setInterval(function () {
     for(var i=0;i<updateTime.length;i++){
         myFunc.subs(updateTime[i],function(y){
             
-            console.log(y);
+           // console.log(y);
         })
         
     }
     
     console.log('second passed'); 
-}, 1000*60*60*6);
+}, 1000*60*60*1);
 
-/*
+
 setTimeout(function () { 
     var updateTime=[];
     time.todayIs();
@@ -179,10 +291,11 @@ setTimeout(function () {
         })
         
     }
+    //myFunc.getCookie(function(){});
     
     console.log('second passed'); 
 }, 1000);
-*/
+//*/
 
 
 cookie.addNewSession('abc','cdf');
@@ -212,17 +325,20 @@ myFunc.subs('2016-11-16',function(y){
 })
 */
 //myFunc.getCookie(function(){});//mongoTest();
-
+//mongo.findById('2016-12-05','substitutions',function(err,doc){
+    //console.log(err);
+//    console.log(JSON.stringify(doc));
+//})
 //mongoTest();
 
 function mongoTest(){
         MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
 
-    var collection = db.collection('testCollection');
-           db.collections(function(err, collections){
-      console.log(collections);
+    var collection = db.collection('substitutions');
+   //        db.collections(function(err, collections){
+    //  console.log(collections);
                     //    db.close();
-  });
+//  });
 
 //    mongo.save(["testCollection",{_id:'params',gpid:'',gsh:'',cookie:''}],function(){});
     /*        
