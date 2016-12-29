@@ -80,21 +80,19 @@ function savePerson(id,token,name,picture,callback){
             });
         }
         else{
+            mongo.modifyById(id,collection,{name:name,picture:picture},function(){
             console.log('person was before');
             setImmediate(function() {
                 callback();
-            });  
+            });    
+            })
+              
         }
     });
 
     
 }
 /*
-
-    YOUR_REDIRECT_URI?
-  error_reason=user_denied
-  &error=access_denied
-  &error_description=The+user+denied+your+request.
 
 
 

@@ -77,7 +77,8 @@ function getPicture(){
     sendObj(url,form,function(obj){
         console.log('res picture:',obj)
         
-        document.getElementById('personPicture').src=obj;
+        document.getElementById('personPictureVer').src=obj;
+        document.getElementById('personPictureHor').src=obj;
         
         
     })
@@ -209,6 +210,7 @@ function filtrEvents(){
 		el.className = "substitution";
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
 	}
+}
 function closeMsg(){
 	var msgB = document.getElementById('msgBox');
 	msgB.style.display = 'none';
@@ -216,7 +218,7 @@ function closeMsg(){
 function closeInfo(){
 	var infB = document.getElementById('infoBox');
 	infB.style.display = 'none';
->>>>>>> f50bfc1c5962c87c6a80c4193a53de798e0f49bf
+
 }
 function btnClicked(type){
     console.log('hello',type);
