@@ -56,20 +56,23 @@ function savePersonalSettings(id,params,callback){
 }
 */
 function getPicture(token,callback){
-    personalData(token,'picture,gender',function(res){
+    personalData(token,'picture',function(res){
         var json = JSON.parse(res)
-        console.log('res from picture',json);
+        //console.log('res from picture',json);
+        setImmediate(function() {
+            callback(json.picture.data['url']);
+        }); 
         
     })
     
     
 }
-function savePerson(id,token,callback){
+function savePerson(id,token,name,picture,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(err,doc){
         console.log('doc',doc);
         if(!doc){
-            mongo.save([collection,{_id:id,token:token,settings:'',name:''}],function(){
+            mongo.save([collection,{_id:id,token:token,settings:'',name:name,picture:picture}],function(){
                 console.log('person saved');
                 setImmediate(function() {
                     callback();
@@ -86,6 +89,16 @@ function savePerson(id,token,callback){
 
     
 }
+/*
+
+    YOUR_REDIRECT_URI?
+  error_reason=user_denied
+  &error=access_denied
+  &error_description=The+user+denied+your+request.
+
+
+
+*/
 function tokenToLongLife(shortToken,callback){
    // console.log(link.linkLongLifeToken(shortToken));
      request(link.tokenToLong(shortToken), function (e, r, body){
@@ -98,31 +111,20 @@ function tokenToLongLife(shortToken,callback){
     });
     
 }
-function addName(id,token,callback){
-    var collection = 'person';
-    mongo.findById(id,collection,function(e,doc){
-        if(e){}
-        else{
-            console.log('login data',doc);
-            if(doc['name']==''||doc['name']==null){
-                personalData(token,'name',function(res){
-                    console.log('saving name: ',JSON.parse(res).name);
-                    mongo.modifyById(id,collection,{name:JSON.parse(res).name},function(){});
+function addName(token,callback){
+    personalData(token,'name',function(res){
+        console.log('res in addName',res)
+        var json = JSON.parse(res);
+        console.log('saving name: ',json);
+        setImmediate(function() {
+                callback(json.name);
+        });
+    })
 
-                })
-            }
-            else{
-                console.log('name was before');
-            }
-            setImmediate(function() {
-                    callback();
-            }); 
-        }
-    });
 }
 function personalData(token,params,callback){
     request(link.userInfo(token,params), function (e, r, body){
-        if(e){console.log('req problem: '+e);}
+        if(e){console.log('req problem with personalData: '+e);}
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
                 callback(body);

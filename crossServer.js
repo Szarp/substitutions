@@ -247,17 +247,31 @@ app.get('/redirect', function(req, res){
         var reqCookie=req.cookies.cookieName;
         console.log('redirect');
      //var reqCookie=req.cookies.cookieName;
-    mangeUsers.redirect(req,function(id){
-        console.log('idd',id);
-        if(id == undefined){
-            res.send('problem with accont');
-        }
-        else{
-            cookie.addNewSession(id,reqCookie);
-            res.redirect('/index');
-        }
-    });
+    console.log('if declined',req.query['error']);
+    if(req.query['error']){
+        console.log('im here');
+        res.redirect('/index');
+    }
+    else{
+        mangeUsers.redirect(req,function(id){
+            console.log('idd',id);
+            if(id == undefined){
+                res.send('problem with accont');
+            }
+            else{
+                cookie.addNewSession(id,reqCookie);
+                res.redirect('/index');
+            }
+        });
+    }
     
+   
+});
+app.get('/deredirect', function(req, res){
+    //res.redirect('/index');
+        //var reqCookie=req.cookies.cookieName;
+        console.log('deredirect');
+     console.log('deredirect',req.body);    
    
 });
 setInterval(function () { 
@@ -298,7 +312,7 @@ setTimeout(function () {
 //*/
 
 
-cookie.addNewSession('abc','cdf');
+//cookie.addNewSession('abc','cdf');
 //cookie.addNewSession('cd','sada');
 //cookie.addNewSession('cdds','sadaaa');
 //console.log(sessionList)

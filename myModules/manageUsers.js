@@ -19,18 +19,19 @@ function redirect(req,callback){
                 console.log('token: '+token);
                 //if()
                 //mongo.findById(id,)
-                facebook.savePerson(id,token,function(){
-                    
-                    facebook.addName(id,token,function(){
-                        facebook.getPicture(token,function(){
+                console.log('test id',id);    
+                facebook.addName(token,function(name){
+                    console.log('test name',name);
+                    facebook.getPicture(token,function(picture){
+                        console.log('test pic',picture);
+                        facebook.savePerson(id,token,name,picture,function(){
                             
-                        })
-                        
+                            setImmediate(function() {
+                                callback(id);
+                            });
+                        })    
                     })
-                    //in the future will get name
-                    setImmediate(function() {
-                        callback(id);
-                    });
+                    //in the future will get name        
                 });
                 /*
                 facebook.checkIfLongTokenExist(id,function(comunicat){
