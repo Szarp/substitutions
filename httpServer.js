@@ -35,19 +35,24 @@ app.get('/index', function (req, res) {
 });
     
 app.post('/postCall',function(req,res){
-    var reqCookie=req.cookies.cookieName;
+     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
     console.log('user session: ',userId);
     //console.log('seesionList: ',sessionList);
     console.log('Mode: '+req.body['mode']);
-    if(userId == undefined){userId="0000";}
     console.log('user session: ',userId);
         mangeUsers.postCall(userId,req.body,function(resText){
-            console.log('resText: ' + resText);
-            res.send(resText);
+            if(userId == '0000' && req.body['mode'] == 'getSettings'){
+        //res.status(401);
+        //console.error('string');
+                res.send(JSON.stringify({err:true,message:"please log to your facebook accont",params:resText}));
+            }
+            else{
+            //console.log('resText',resText);
+                res.send(JSON.stringify({err:false,message:"",params:resText}));
+            }
         })
-  
-})
+});
 
 app.listen(3000,function(){
 console.log('ok');

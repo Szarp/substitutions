@@ -55,7 +55,7 @@ function postCall(userId,body,callback){
                 table[0]=params.setClass;
                 table[1]=params.notification;
                 pageSettings['formValues']=table;
-                res = JSON.stringify(pageSettings); 
+                res = pageSettings; 
                 setImmediate(function() {
                     callback(res);
                 });
@@ -79,7 +79,7 @@ function postCall(userId,body,callback){
                 objToSend['substitution']=obj['substitution'];
                 if(obj['date'] == undefined){obj['date']='31-12-2016'}
                 objToSend['date']=obj['date'];
-                res = JSON.stringify(objToSend);
+                res = objToSend;
                 setImmediate(function() {
                     callback(res);
                 });
@@ -97,7 +97,7 @@ function postCall(userId,body,callback){
             //mongo.findById(time.displayTime(),'substitutions',function(err,obj){
                 //console.log(err,obj);
               //  if(err){console.log('err in sending substitutions')}
-                res = JSON.stringify(obj['userList']);
+                res = obj['userList'];
                 setImmediate(function() {
                     callback(res);
                 });
