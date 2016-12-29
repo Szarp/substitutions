@@ -193,7 +193,7 @@ function postCall(userId,body,callback){
             });
             }
             else{
-                res = 'http://b.static.ak.fbcdn.net/rsrc.php/v1/yo/r/UlIqmHJn-SK.gif';
+                res = '/img/unknown.gif';
                 setImmediate(function() {
                         callback(res);
                 });
