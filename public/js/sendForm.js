@@ -209,6 +209,7 @@ function filtrEvents(){
 		el.className = "substitution";
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
 	}
+}
 function closeMsg(){
 	var msgB = document.getElementById('msgBox');
 	msgB.style.display = 'none';
@@ -216,7 +217,6 @@ function closeMsg(){
 function closeInfo(){
 	var infB = document.getElementById('infoBox');
 	infB.style.display = 'none';
->>>>>>> f50bfc1c5962c87c6a80c4193a53de798e0f49bf
 }
 function btnClicked(type){
     console.log('hello',type);
