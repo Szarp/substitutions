@@ -182,7 +182,13 @@ function sendObj (url,json_obj,callback){
             var res=JSON.parse(http.responseText);
             console.log(res);
             if(res['err'] == true){
-                console.log(res.message)
+                //console.log(res.message)
+				var resMsg = res.message;
+				var msg = '<a class="msgLink" href="/">' + resMsg + '</a>';
+				var msgB = document.getElementById('msgBox');
+				var msgBData = document.getElementById('msgBoxData');
+				msgB.style.display = 'table';
+				msgBData.innerHTML=msg;
             }
             //console.log('resText',res);
             callback(res.params);
@@ -203,6 +209,14 @@ function filtrEvents(){
 		el.className = "substitution";
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
 	}
+function closeMsg(){
+	var msgB = document.getElementById('msgBox');
+	msgB.style.display = 'none';
+}
+function closeInfo(){
+	var infB = document.getElementById('infoBox');
+	infB.style.display = 'none';
+>>>>>>> f50bfc1c5962c87c6a80c4193a53de798e0f49bf
 }
 function btnClicked(type){
     console.log('hello',type);

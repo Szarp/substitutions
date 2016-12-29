@@ -342,7 +342,7 @@ border-color: #5CA941;
     color: black;   
 }
 .allClasses{
-    overflow:scroll;
+    /*overflow:scroll;*/
     width: auto;
     border: 1px solid black;
     
@@ -385,6 +385,24 @@ border-color: #5CA941;
 	padding: 3px;
 	background-color: rgba(135, 197, 49, 0.8); /*#87C531CC; changed, because didn't work in Chrome*/
 	margin-bottom: 10px;
+}
+.message{
+	display: table;
+	border-style: solid;
+	border-color: #17678D;
+	border-radius: 5px;
+	border-width: 2px;
+	padding: 3px;
+	background-color: rgba(94, 197, 219, 0.8);
+	width: 315px;
+	margin: auto;
+}
+.msgLink{
+	color: black;
+	font-weight: bold;
+}
+.msgLink:visited{
+	color: black;
 }
 .closeButton{
 	width: 1%;
