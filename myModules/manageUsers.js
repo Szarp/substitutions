@@ -180,8 +180,27 @@ function postCall(userId,body,callback){
                 });
             }
         }
+        else if(body.mode=='picture'){
+            if(userId != "0000"){
+                 mongo.findById(userId,'person',function(err,obj){
+                //console.log(err,obj);
+                if(err){console.log('err in sending picture')}
+                     console.log('some fond object:',obj.picture);
+                res = obj['picture'];
+                setImmediate(function() {
+                    callback(res);
+                });
+            });
+            }
+            else{
+                res = 'http://b.static.ak.fbcdn.net/rsrc.php/v1/yo/r/UlIqmHJn-SK.gif';
+                setImmediate(function() {
+                        callback(res);
+                });
+            }
+        }
         else{
-            res = 'err'
+            res = 'no matches in postCall'
             setImmediate(function() {
                 callback(res);
             });
