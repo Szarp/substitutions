@@ -153,7 +153,7 @@ function postCall(userId,body,callback){
         else if(body.mode=='message'){
             
             mongo.save(['messages',{id:userId,message:body.param,time:new Date()}],function(){
-                res = 'thanks for your message, we will read it soon';
+                res = 'Dziękujemy za wiadomość';
                 setImmediate(function() {
                     callback(res);
                 });
