@@ -394,8 +394,9 @@ border-color: #5CA941;
 	border-width: 2px;
 	padding: 3px;
 	background-color: rgba(94, 197, 219, 0.8);
-	width: 315px;
+	max-width: 590px;
 	margin: auto;
+	margin-top: 5px;
 }
 .msgLink{
 	color: black;
