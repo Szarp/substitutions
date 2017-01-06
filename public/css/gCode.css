@@ -311,7 +311,7 @@ border-color: #5CA941;
     text-align: left;
     padding: 0px;
     margin:0px;
-    width:300px;
+    /*width:300px;*/
         border: 1px solid red;
     padding-bottom: 5px;
     margin-bottom: 5px;

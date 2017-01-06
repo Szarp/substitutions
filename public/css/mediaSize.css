@@ -10,7 +10,14 @@
         display: block;
         
     }
-   
+	.scrollableList ul{
+		width: 100%;
+	}
+}
+@media (min-width: 330px){
+	.scrollableList ul{
+		width: 300px;
+	}
 }
 @media  (min-width:400px)   { /* 1070px*/
     .navSize{
