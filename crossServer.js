@@ -124,15 +124,16 @@ app.get('/webhook', function(req, res) {
     res.sendStatus(403);          
   }  
 });
+/*
 app.post('/webhook', function (req, res) {
     console.log ('post webhook', JSON.stringify(req.body));
     var recipientId = req.body.entry[0].id;
     var id = '1345064578871981'; //ja
     var id2 = '1224398530976398' //krzys
     console.log(recipientId);
-    sendTextMessage(id2, 'messageText')
+    sendTextMessage(id2, 'messageText');
     
-    /*
+    
   var data = req.body;
 
   // Make sure this is a page subscription
@@ -167,10 +168,11 @@ app.post('/webhook', function (req, res) {
     //
     // You must send back a 200, within 20 seconds, to let us know you've 
     // successfully received the callback. Otherwise, the request will time out.
-    */
+    
     res.sendStatus(200);
  // }
 });
+*/
 function sendTextMessage(recipientId, messageText) {
   var messageData = {
     recipient: {

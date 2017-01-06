@@ -8,6 +8,7 @@ var patternOfDisplay = [
     'typ',
     'klasa',
     'grupa',
+    'lekcja',
     'przedmiot',
     'nauczyciel',
     'sala',
