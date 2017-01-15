@@ -113,6 +113,7 @@ app.post('/', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
+/*
 app.get('/webhook', function(req, res) {
     console.log('hi',req.query);
   if (req.query['hub.mode'] === 'subscribe' &&
@@ -124,7 +125,7 @@ app.get('/webhook', function(req, res) {
     res.sendStatus(403);          
   }  
 });
-/*
+
 app.post('/webhook', function (req, res) {
     console.log ('post webhook', JSON.stringify(req.body));
     var recipientId = req.body.entry[0].id;
@@ -228,7 +229,7 @@ app.post('/postCall',function(req,res){
 })
 app.get('/test', function(req, res){
 
-facebook.personalData(token,function(q){
+facebook.personalData(token,'name',function(q){
     console.log(q);
     
 })

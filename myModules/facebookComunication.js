@@ -57,13 +57,23 @@ function savePersonalSettings(id,params,callback){
 */
 function getPicture(token,callback){
     personalData(token,'picture',function(res){
-        var json = JSON.parse(res)
-        //console.log('res from picture',json);
-        setImmediate(function() {
-            callback(json.picture.data['url']);
-        }); 
+        var json = JSON.parse(res);
+        console.log('json',json);
+        if(!json['picture']){
+            setImmediate(function() {
+                callback('');
+            });
+        }
+        else{
+            //console.log('res in addName',res)
+            //console.log('saving name: ',json);
+            setImmediate(function() {
+                callback(json.picture.data['url']);
+            }); 
         
-    })
+        }
+        
+    });
     
     
 }
@@ -111,22 +121,40 @@ function tokenToLongLife(shortToken,callback){
 }
 function addName(token,callback){
     personalData(token,'name',function(res){
-        console.log('res in addName',res)
         var json = JSON.parse(res);
-        console.log('saving name: ',json);
-        setImmediate(function() {
-                callback(json.name);
+        if(!json.name){
+            setImmediate(function() {
+                callback('');
         });
+        }
+        else{
+            //console.log('res in addName',res)
+            //console.log('saving name: ',json);
+            setImmediate(function() {
+                    callback(json.name);
+            });
+        }
     })
 
 }
 function personalData(token,params,callback){
     request(link.userInfo(token,params), function (e, r, body){
+        var parsed=JSON.parse(body);
         if(e){console.log('req problem with personalData: '+e);}
+        
+        if(parsed['error']){
+            console.log('personal data error',parsed);
+            setImmediate(function() {
+                callback('{}');
+            });
+        }
+        //if(body.error||body.data.error){console.log('hire i am', body)};
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
-        setImmediate(function() {
-                callback(body);
-        });
+        else{
+            setImmediate(function() {
+                    callback(body);
+            });
+        }
     });
 }
 function createNotification(id,message,redirect,callback){
