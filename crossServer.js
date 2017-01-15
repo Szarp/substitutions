@@ -259,7 +259,7 @@ app.get('/redirect', function(req, res){
         mangeUsers.redirect(req,function(id){
             console.log('idd',id);
             if(id == undefined){
-                res.send('problem with accont');
+                res.send('Problem logging in. Try again.');
             }
             else{
                 cookie.addNewSession(id,reqCookie);
