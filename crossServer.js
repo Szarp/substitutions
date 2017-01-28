@@ -91,7 +91,7 @@ app.use(function (req, res, next) {
 });
 
 
-app.get('/', function (req, res) {
+app.get('/login', function (req, res) {
     console.log('Asking for login');
     var login=link.loginAttempt('');
     //check cookie or something
@@ -101,12 +101,17 @@ app.get('/', function (req, res) {
     //res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
+
+app.get('/', function (req, res){
+    res.sendFile( __dirname + '/public/substitutionPage.htm');
+});
+
 app.get('/index', function (req, res) {
     res.sendFile( __dirname + '/public/substitutionPage.htm');
     
 });
 
-app.post('/', function (req, res) {
+app.post('/login', function (req, res) {
    console.log('Asking for login');
     var login=link.loginAttempt('');
     //check cookie or something

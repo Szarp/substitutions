@@ -186,7 +186,7 @@ function sendObj (url,json_obj,callback){
             if(res['err'] == true){
                 //console.log(res.message)
 				var resMsg = res.message;
-				var msg = '<a class="msgLink" href="/">' + resMsg + '</a>';
+				var msg = '<a class="msgLink" href="/login">' + resMsg + '</a>';
 				var msgB = document.getElementById('msgBox');
 				var msgBData = document.getElementById('msgBoxData');
 				msgB.style.display = 'table';
