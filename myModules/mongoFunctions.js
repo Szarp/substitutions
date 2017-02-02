@@ -27,6 +27,7 @@ function saveToCollection(params,callback){
         //[collection,{data}]
         //var collectionName = collection;
         var data = paramsToModify;
+        //console.log(data);
         var url = 'mongodb://localhost:27017/test2';
         MongoClient.connect(url, function(err, db) {
             assert.equal(null,err);
@@ -40,13 +41,13 @@ function saveToCollection(params,callback){
                   if (err){
                       //console.warn(err.message);  // returns error if no matching object found
                   }else{
+                    setImmediate(function() {
+                        callback();
+                    });
                      // console.log(object);
                   }
               });
-        
-            setImmediate(function() {
-                callback();
-            });
+    
         db.close();
         })
     }    
