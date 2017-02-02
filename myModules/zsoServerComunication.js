@@ -12,8 +12,8 @@ var mongo = require('./mongoFunctions.js'),
 */
 
 
-var substitution =new jsonFromHtml();
-var user= new userMod();
+//var substitution =new jsonFromHtml();
+//var user= new userMod();
 //module.exports= getSomeSubstitution;
 var getSomeSubstitution = function(date,callback){
     getData(date,function(data){
@@ -23,17 +23,18 @@ var getSomeSubstitution = function(date,callback){
                 var dataToSave={};
                 dataToSave['substitution']=convertedData;
                 dataToSave['userList']=res;
+                console.log('before saving'+ dataToSave['userList']);
                 saveSubstitutions(date,dataToSave,function(){
 
                     mongo.findById(date,'substitutions',function(err,x){
+                         console.log('save substitution '+  x.userList,x.date);
+                        setImmediate(function() {
+                            callback(convertedData);
+                        });
 
-
-                        console.log(x);
+                        //console.log(x);
                     })
-                    console.log('save substitution '+ date);
-                    setImmediate(function() {
-                        callback(convertedData);
-                    });
+                   
 
                 })
             })
@@ -52,12 +53,12 @@ function classListFromDate(convertedData,callback){
     }
     else{
      //mongo.findById(date,'substitutions',function(e,doc){
-         console.log('doc',convertedData);
+         //console.log('doc',convertedData);
          var changes = convertedData;
         for(var i=0;i<changes.length;i++){
             var oneChange = changes[i];
             var newClass = oneChange['classes'];
-            console.log('newClass',newClass);
+           // console.log('newClass',newClass);
             for(var j =0;j<newClass.length;j++){    
                 if(classList.indexOf(newClass[j])==-1){
                     classList[classList.length]=newClass[j];
@@ -101,7 +102,7 @@ var getData = function(date,callback){
                         'gsh':params[1],
                         'cookie':cookie
                     }
-                    console.log(JSON.stringify(data));
+                    //console.log(JSON.stringify(data));
                     saveToCollection(['testCollection',data],function(){
                         console.log('data added: '+data);
                         
@@ -112,10 +113,11 @@ var getData = function(date,callback){
                 //  console.log('hi',params[0],params[1],cookie);
                 //save somewhere
             }
-        });
-        setImmediate(function() {
+            setImmediate(function() {
                 callback();
             });
+        });
+        
     }
 function downloadData(date,callback){
     var url1='http://zso11.edupage.org/gcall';
@@ -219,17 +221,19 @@ function saveSubstitutions(date,data,callback){
     
 }
 function convertToSubstitutions(data,callback){
+    var substitution2 =new jsonFromHtml();
+    var user2= new userMod();
     //console.log('hi');
     var allChanges;
-    substitution.fileString=data;
-    var err=substitution.testIfCorrectFile();
+    substitution2.fileString=data;
+    var err=substitution2.testIfCorrectFile();
     //console.log(err);
     if(err){
-        substitution.getJsonObj();
-        user.keyArray=JSON.parse(substitution.keyObj);
-        user.dataArray=JSON.parse(substitution.dataObj);
+        substitution2.getJsonObj();
+        user2.keyArray=JSON.parse(substitution2.keyObj);
+        user2.dataArray=JSON.parse(substitution2.dataObj);
         //console.log(substitution.dataObj);
-        allChanges=user.changes();
+        allChanges=user2.changes();
     }
     else{
         allChanges='no substitutions';

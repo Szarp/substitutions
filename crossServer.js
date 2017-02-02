@@ -275,6 +275,7 @@ app.get('/redirect', function(req, res){
     
    
 });
+
 app.get('/deredirect', function(req, res){
     //res.redirect('/index');
         //var reqCookie=req.cookies.cookieName;
@@ -282,41 +283,30 @@ app.get('/deredirect', function(req, res){
      console.log('deredirect',req.body);    
    
 });
-setInterval(function () { 
-    var updateTime=[];
-    time.todayIs();
-    updateTime[0]=time.displayTime();
+
+
+setInterval(function(){
     time.tommorowIs();
-    updateTime[1]=time.displayTime();
-    for(var i=0;i<updateTime.length;i++){
-        myFunc.subs(updateTime[i],function(y){
-            
-           // console.log(y);
-        })
-        
-    }
-    
-    console.log('second passed'); 
-}, 1000*60*60*1);
+    myFunc.subs(time.displayTime(),function(y){
+        time.todayIs();
+        myFunc.subs(time.displayTime(),function(b){
+            console.log('downloaded changes');        
+        });               
+    });
+}, 1000*60*60*1); //now running once per hour
 
-
-setTimeout(function () { 
-    var updateTime=[];
-    time.todayIs();
-    updateTime[0]=time.displayTime();
-    time.tommorowIs()
-    updateTime[1]=time.displayTime();
-    for(var i=0;i<updateTime.length;i++){
-        myFunc.subs(updateTime[i],function(y){
-            
-            console.log(y);
-        })
-        
-    }
-    //myFunc.getCookie(function(){});
-    
-    console.log('second passed'); 
-}, 1000);
+  //  myFunc.subs(time.displayTime(),function(y){
+    //        });
+///*
+ setTimeout(function () { 
+     time.tommorowIs();
+     myFunc.subs(time.displayTime(),function(y){
+         time.todayIs();
+         myFunc.subs(time.displayTime(),function(b){
+             console.log('downloaded changes');        
+         });                 
+     });
+ }, 1000);
 //*/
 
 
@@ -325,10 +315,9 @@ setTimeout(function () {
 //cookie.addNewSession('cdds','sadaaa');
 //console.log(sessionList)
 
-setTimeout(function(){
-    
-cookie.deleteOld();    
-},1000*60*60*3);
+ setTimeout(function(){
+     cookie.deleteOld();    
+ },1000*60*60*3);
 
 
 
