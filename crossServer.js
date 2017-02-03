@@ -118,7 +118,7 @@ app.post('/login', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
-/*
+
 app.get('/webhook', function(req, res) {
     console.log('hi',req.query);
   if (req.query['hub.mode'] === 'subscribe' &&
@@ -178,7 +178,7 @@ app.post('/webhook', function (req, res) {
     res.sendStatus(200);
  // }
 });
-*/
+
 function sendTextMessage(recipientId, messageText) {
   var messageData = {
     recipient: {
@@ -323,7 +323,7 @@ setInterval(function(){
 
 
 
-https.createServer(opts, app).listen(8088);
+https.createServer(opts, app).listen(8089);
 console.log('Started');
 //app.listen(8090);
 /*
