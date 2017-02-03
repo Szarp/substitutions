@@ -205,6 +205,9 @@ function filtrEvents(){
 		var el = document.getElementById(allClasses[i]);
 		var new_element = el.cloneNode(true);
 		el.parentNode.replaceChild(new_element, el);
+	}
+	for(var i=0; i<allClasses.length; i++){
+		var el = document.getElementById(allClasses[i]);
 		el.className = "className";
 	}
 	for(var i=0; i<classList.length; i++){
