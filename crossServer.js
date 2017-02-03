@@ -18,7 +18,7 @@ var express = require('express'),
     mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
     session = require(__dirname + '/myModules/userSession.js'),
     link = require(__dirname+'/myModules/fbLinks.js');
-    //config = require(__dirname+'/myModules/config');
+    config = require(__dirname+'/myModules/config');
    // querystring = require('querystring');
 //var substitution = new jsonFromHtml();
 //var user= new userMod();
@@ -122,7 +122,7 @@ app.post('/login', function (req, res) {
 app.get('/webhook', function(req, res) {
     console.log('hi',req.query);
   if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === 'abcds') {
+      req.query['hub.verify_token'] === config.webhookToken) {
     console.log("Validating webhook");
     res.status(200).send(req.query['hub.challenge']);
   } else {
