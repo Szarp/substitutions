@@ -176,7 +176,7 @@ app.post('/webhook', function (req, res) {
     // successfully received the callback. Otherwise, the request will time out.
     
     res.sendStatus(200);
- // }
+  }
 });
 
 function sendTextMessage(recipientId, messageText) {
