@@ -17,8 +17,9 @@ var express = require('express'),
     facebook = require(__dirname+'/myModules/facebookComunication.js'),
     mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
     session = require(__dirname + '/myModules/userSession.js'),
-    link = require(__dirname+'/myModules/fbLinks.js');
-    config = require(__dirname+'/myModules/config');
+    link = require(__dirname+'/myModules/fbLinks.js'),
+    config = require(__dirname+'/myModules/config'),
+	messenger = require(__dirname+'myModules/messengerBot.js');
    // querystring = require('querystring');
 //var substitution = new jsonFromHtml();
 //var user= new userMod();
@@ -26,19 +27,7 @@ var app = express();
 var cookie = new session.sessionCreator();
 
 //var app = express();
-var token = 'EAAPYvxuxXsIBADMMhltBqlarAi5b8ozH5lxHp72JN9ZCZADabTWNgZCGY1OiEbQ4eXTUQYlMOEBJOZAueoaNQaa5Ani5hLOO35PlAiTn94ZBKsZAEl5xqZAtrA2UUesSJ6WBeFypFdPvoERnopjnx9I1FG46jdkZBeAFZCINRXRN7GwZDZD';
-
-//ace:pre;");ASC.createText(gi636490,"Czw\n01.12.");$j(gi636490).click(gi635341);var gi63773
-
-//var link=new facebook.links();
-/*
-message
-
-{"object":"page","entry":[{"id":"573446562859405","time":1480523515564,"messaging":[{"sender":{"id":"1345064578871981"},"recipient":{"id":"573446562859405"},"timestamp":1480523515364,"message":{"mid":"mid.1480523515364:af9ac5b647","seq":26,"text":"ds"}}]}]}
-
-{"object":"page","entry":[{"id":"573446562859405","time":1480523599033,"messaging":[{"sender":{"id":"1345064578871981"},"recipient":{"id":"573446562859405"},"timestamp":1480523598950,"message":{"mid":"mid.1480523598950:4d3cf19c71","seq":27,"text":"sd"}}]}]}
-
-*/
+var token = config.token;
 
 
 //appSetting();
@@ -145,9 +134,9 @@ app.post('/webhook', function (req, res) {
       // Iterate over each messaging event
       entry.messaging.forEach(function(event) {
         if (event.message) {
-          receivedMessage(event);
+          messenger.receivedMessage(event);
 		} else if (event.postback) {
-          receivedPostback(event);
+          messenger.receivedPostback(event);
         } else {
           console.log("Webhook received unknown event: ", event);
         }
@@ -162,137 +151,6 @@ app.post('/webhook', function (req, res) {
     res.sendStatus(200);
   }
 });
-
-function receivedPostback(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfPostback = event.timestamp;
-
-  // The 'payload' param is a developer-defined field which is set in a postback 
-  // button for Structured Messages. 
-  var payload = event.postback.payload;
-
-  console.log("Received postback for user %d and page %d with payload '%s' " + 
-    "at %d", senderID, recipientID, payload, timeOfPostback);
-
-  // When a postback is called, we'll send a message back to the sender to 
-  // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
-}
-
-function receivedMessage(event) {
-  var senderID = event.sender.id;
-  var recipientID = event.recipient.id;
-  var timeOfMessage = event.timestamp;
-  var message = event.message;
-
-  console.log("Received message for user %d and page %d at %d with message:", 
-    senderID, recipientID, timeOfMessage);
-  console.log(JSON.stringify(message));
-
-  var messageId = message.mid;
-
-  var messageText = message.text;
-  var messageAttachments = message.attachments;
-
-  if (messageText) {
-
-    // If we receive a text message, check to see if it matches a keyword
-    // and send back the example. Otherwise, just echo the text we received.
-    switch (messageText) {
-      case 'generic':
-        sendGenericMessage(senderID);
-        break;
-
-      default:
-        sendTextMessage(senderID, messageText);
-    }
-  } else if (messageAttachments) {
-    sendTextMessage(senderID, "Message with attachment received");
-  }
-}
-
-function sendGenericMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "rift",
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
-            image_url: "http://messengerdemo.parseapp.com/img/rift.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/rift/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for first bubble",
-            }],
-          }, {
-            title: "touch",
-            subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",               
-            image_url: "http://messengerdemo.parseapp.com/img/touch.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/touch/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for second bubble",
-            }]
-          }]
-        }
-      }
-    }
-  };  
-
-  callSendAPI(messageData);
-}
-
-function sendTextMessage(recipientId, messageText) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: messageText
-    }
-  };
-
-  callSendAPI(messageData);
-}
-
-function callSendAPI(messageData) {
-  request({
-    uri: 'https://graph.facebook.com/v2.7/me/messages',
-    qs: { access_token: config.pageToken },
-    method: 'POST',
-    json: messageData
-
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      console.log("Successfully sent generic message with id %s to recipient %s", 
-        messageId, recipientId);
-    } else {
-      console.error("Unable to send message.");
-      console.error(response);
-      console.error(error);
-    }
-  });  
-}
 
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
