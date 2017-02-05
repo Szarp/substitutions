@@ -1,17 +1,23 @@
 var config = require('./config');
-var mongo = require('./mongoFunctions.js');
+var manageUsers = require('./manageUsers.js');
+//var mongo = require('./mongoFunctions.js');
 
 function sendSubstitutions(senderID){
-	mongo.findById(senderID,'person',function(err,doc){
-		if (err)
-			console.log('prolem with settings: ',userId);
-		console.log('Settings file: ',doc);
-		var params = (doc['settings']);
-		if(params == '')
-			params={setClass:'all',notification:'no'};
-		var table=[];
-		console.log(params.setClass);
-	})
+	var body = {
+		'mode': 'getChanges',
+		'param': 'today'
+	};
+	manageUsers.postCall('0000', body, function(substitutions){
+		var messageData = {
+			recipient: {
+				id: senderID
+			},
+			message: {
+				text: substitutions
+			}
+		};
+		callSendAPI(messageData);
+	});
 }
 
 function receivedPostback(event) {
@@ -28,7 +34,7 @@ function receivedPostback(event) {
 
   // When a postback is called, we'll send a message back to the sender to 
   // let them know it was successful
-  sendTextMessage(senderID, "Postback called");
+  //sendTextMessage(senderID, "Postback called");
 }
 
 function receivedMessage(event) {
@@ -62,7 +68,7 @@ function receivedMessage(event) {
     sendTextMessage(senderID, "Message with attachment received");
   }*/
   sendSubstitutions(senderID);
-  sendTextMessage(senderID, messageText);
+  //sendTextMessage(senderID, messageText);
 }
 
 function callSendAPI(messageData) {
