@@ -1,5 +1,6 @@
 var config = require('./config');
 var manageUsers = require('./manageUsers.js');
+var request = require('request');
 //var mongo = require('./mongoFunctions.js');
 
 function sendSubstitutions(senderID){
