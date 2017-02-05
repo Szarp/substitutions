@@ -8,17 +8,24 @@ function sendSubstitutions(senderID){
 		'mode': 'getChanges',
 		'param': 'today'
 	};
+	var messageText = '';
 	manageUsers.postCall('0000', body, function(substitutions){
-		var messageData = {
-			recipient: {
-				id: senderID
-			},
-			message: {
-				text: substitutions
-			}
-		};
-		callSendAPI(messageData);
+		var json = substitutions;
+		if(json['substitution']=='no substitutions'){
+			messageText = 'brak zastępstw';
+		} else {
+			console.log(json['substitution']);
+		}
 	});
+	var messageData = {
+		recipient: {
+		  id: senderID
+		},
+		message: {
+		  text: messageText
+		}
+	};
+	callSendAPI(messageData);
 }
 
 function receivedPostback(event) {
