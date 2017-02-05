@@ -11,7 +11,7 @@ function sendSubstitutions(senderID, messageText){
 	switch(messageText){
 		case 'jutro':
 			//przechodzimy dalej (do tommorow)
-		case 'tommorow':
+		case 'tomorrow':
 			body['param'] = 'tommorow';
 			break;
 		default:
