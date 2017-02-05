@@ -14,7 +14,8 @@ function sendSubstitutions(senderID){
 		if(json['substitution']=='no substitutions'){
 			messageText = 'brak zastępstw';
 		} else {
-			console.log(json['substitution']);
+			console.log("zastępstwa: " + json['substitution']);
+			messageText = 'zastępstwa';
 		}
 	});
 	var messageData = {
