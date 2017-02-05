@@ -3,11 +3,20 @@ var manageUsers = require('./manageUsers.js');
 var request = require('request');
 //var mongo = require('./mongoFunctions.js');
 
-function sendSubstitutions(senderID){
+function sendSubstitutions(senderID, messageText){
 	var body = {
 		'mode': 'getChanges',
 		'param': 'today'
 	};
+	switch(messageText){
+		case 'jutro':
+			//przechodzimy dalej (do tommorow)
+		case 'tommorow':
+			body['param'] = 'tommorow';
+			break;
+		default:
+			break;
+	}
 	var messageText = '';
 	manageUsers.postCall('0000', body, function(substitutions){
 		var json = substitutions;
@@ -76,7 +85,7 @@ function receivedMessage(event) {
   } else if (messageAttachments) {
     sendTextMessage(senderID, "Message with attachment received");
   }*/
-  sendSubstitutions(senderID);
+  sendSubstitutions(senderID, messageText);
   //sendTextMessage(senderID, messageText);
 }
 
