@@ -1,4 +1,5 @@
 var config = require('./config');
+var mongo = require('./mongoFunctions.js');
 
 function sendSubstitutions(senderID){
 	mongo.findById(userId,'person',function(err,doc){
