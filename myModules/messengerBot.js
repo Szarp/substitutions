@@ -1,3 +1,18 @@
+var config = require('./config');
+
+function sendSubstitutions(senderID){
+	mongo.findById(userId,'person',function(err,doc){
+		if (err)
+			console.log('prolem with settings: ',userId);
+		console.log('Settings file: ',doc);
+		var params = (doc['settings']);
+		if(params == '')
+			params={setClass:'all',notification:'no'};
+		var table=[];
+		console.log(params.setClass);
+	})
+}
+
 function receivedPostback(event) {
   var senderID = event.sender.id;
   var recipientID = event.recipient.id;
@@ -46,6 +61,7 @@ function receivedMessage(event) {
     sendTextMessage(senderID, "Message with attachment received");
   }*/
   sendSubstitutions(senderID);
+  sendTextMessage(senderID, messageText);
 }
 
 function callSendAPI(messageData) {
