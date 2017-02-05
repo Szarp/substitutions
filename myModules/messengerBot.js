@@ -8,6 +8,7 @@ function sendSubstitutions(senderID, messageText){
 		'mode': 'getChanges',
 		'param': 'today'
 	};
+	messageText = messageText.toLowerCase();
 	switch(messageText){
 		case 'jutro':
 			//przechodzimy dalej (do tommorow)
