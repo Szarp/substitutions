@@ -2,7 +2,7 @@ var config = require('./config');
 var mongo = require('./mongoFunctions.js');
 
 function sendSubstitutions(senderID){
-	mongo.findById(userId,'person',function(err,doc){
+	mongo.findById(senderId,'person',function(err,doc){
 		if (err)
 			console.log('prolem with settings: ',userId);
 		console.log('Settings file: ',doc);
