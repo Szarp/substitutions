@@ -9,7 +9,7 @@ var express = require('express'),
     myFunc = require(__dirname+'/myModules/zsoServerComunication.js'),
     bodyParser = require('body-parser'),
     cookieParser = require('cookie-parser'),
-        request= require('request'),
+    request= require('request'),
     MongoClient = require('mongodb').MongoClient,
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
@@ -120,9 +120,9 @@ app.post('/login', function (req, res) {
 });
 
 app.get('/webhook', function(req, res) {
-    console.log('hi',req.query);
+    //console.log('hi',req.query);
   if (req.query['hub.mode'] === 'subscribe' &&
-      req.query['hub.verify_token'] === config.webhookToken) {
+		req.query['hub.verify_token'] === config.webhookToken) {
     console.log("Validating webhook");
     res.status(200).send(req.query['hub.challenge']);
   } else {
@@ -132,86 +132,40 @@ app.get('/webhook', function(req, res) {
 });
 
 app.post('/webhook', function (req, res) {
-    console.log ('post webhook', JSON.stringify(req.body));
-    var recipientId = req.body.entry[0].id;
-    var id = '1345064578871981'; //ja
-    var id2 = '1224398530976398' //krzys
-    console.log(recipientId);
-    sendTextMessage(id2, 'messageText');
-    
-    
   var data = req.body;
 
   // Make sure this is a page subscription
-  if (data.object == 'page') {
-    // Iterate over each entry
-    // There may be multiple if batched
-    data.entry.forEach(function(pageEntry) {
-      var pageID = pageEntry.id;
-      var timeOfEvent = pageEntry.time;
+  if (data.object === 'page') {
+
+    // Iterate over each entry - there may be multiple if batched
+    data.entry.forEach(function(entry) {
+      var pageID = entry.id;
+      var timeOfEvent = entry.time;
 
       // Iterate over each messaging event
-      pageEntry.messaging.forEach(function(messagingEvent) {
-        if (messagingEvent.optin) {
-          receivedAuthentication(messagingEvent);
-        } else if (messagingEvent.message) {
-          receivedMessage(messagingEvent);
-        } else if (messagingEvent.delivery) {
-          receivedDeliveryConfirmation(messagingEvent);
-        } else if (messagingEvent.postback) {
-          receivedPostback(messagingEvent);
-        } else if (messagingEvent.read) {
-          receivedMessageRead(messagingEvent);
-        } else if (messagingEvent.account_linking) {
-          receivedAccountLink(messagingEvent);
+      entry.messaging.forEach(function(event) {
+        if (event.message) {
+          receivedMessage(event);
         } else {
-          console.log("Webhook received unknown messagingEvent: ", messagingEvent);
+          console.log("Webhook received unknown event: ", event);
         }
       });
     });
 
     // Assume all went well.
     //
-    // You must send back a 200, within 20 seconds, to let us know you've 
-    // successfully received the callback. Otherwise, the request will time out.
-    
+    // You must send back a 200, within 20 seconds, to let us know
+    // you've successfully received the callback. Otherwise, the request
+    // will time out and we will keep trying to resend.
     res.sendStatus(200);
   }
 });
-
-function sendTextMessage(recipientId, messageText) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: messageText
-    }
-  };
-
-  callSendAPI(messageData);
+  
+function receivedMessage(event) {
+  // Putting a stub for now, we'll expand it in the following steps
+  console.log("Message data: ", event.message);
 }
-function callSendAPI(messageData) {
-  request({
-    uri: 'https://graph.facebook.com/v2.6/me/messages',
-    qs: { access_token: token},
-    method: 'POST',
-    json: messageData
 
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      console.log("Successfully sent generic message with id %s to recipient %s", 
-        messageId, recipientId);
-    } else {
-      console.error("Unable to send message.");
-      console.error(response);
-      console.error(error);
-    }
-  });  
-}
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
@@ -233,21 +187,10 @@ app.post('/postCall',function(req,res){
   
 })
 app.get('/test', function(req, res){
-
-facebook.personalData(token,'name',function(q){
-    console.log(q);
-    
-})
-//        facebook.createNotification(idd,token,function(z){
-  //          console.log(z);
-    //    })
-       //console.log(req.cookies.cookieName);
-
-    //console.log(res.headers);
-    
+	facebook.personalData(token,'name',function(q){
+		console.log(q);   
+	});
     res.send('okk');
-	//es.sendFile( __dirname + '/public/css/webPage.css');
-
 });
 //facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
