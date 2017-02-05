@@ -17,16 +17,16 @@ function sendSubstitutions(senderID){
 			console.log("zastępstwa: " + json['substitution']);
 			messageText = 'zastępstwa';
 		}
+		var messageData = {
+			recipient: {
+			  id: senderID
+			},
+			message: {
+			  text: messageText
+			}
+		};
+		callSendAPI(messageData);
 	});
-	var messageData = {
-		recipient: {
-		  id: senderID
-		},
-		message: {
-		  text: messageText
-		}
-	};
-	callSendAPI(messageData);
 }
 
 function receivedPostback(event) {
