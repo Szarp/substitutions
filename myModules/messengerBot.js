@@ -3,13 +3,13 @@ var manageUsers = require('./manageUsers.js');
 var request = require('request');
 //var mongo = require('./mongoFunctions.js');
 
-function sendSubstitutions(senderID, messageText){
+function sendSubstitutions(senderID, message){
 	var body = {
 		'mode': 'getChanges',
 		'param': 'today'
 	};
-	messageText = messageText.toLowerCase();
-	switch(messageText){
+	message = message.toLowerCase();
+	switch(message){
 		case 'jutro':
 			//przechodzimy dalej (do tommorow)
 		case 'tomorrow':
