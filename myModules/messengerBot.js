@@ -10,7 +10,7 @@ function sendSubstitutions(senderID, message){
 	};
 	message = message.toLowerCase();
 	var opt = message[0];
-	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc”';
+	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
 	var messageData = {
 		recipient: {
 		  id: senderID
@@ -48,12 +48,11 @@ function sendSubstitutions(senderID, message){
 	if(body['mode'] != 'NO'){
 		manageUsers.postCall('0000', body, function(classes){
 			var is = 0;
-			console.log(classes);
-			/*for(var i = 0; i < classes.length(); i++){
+			for(var i = 0; i < classes.length; i++){
 				if(classes[i] == reqClass){
 					is++;
 				}
-			}*/
+			}
 			if(is > 0){
 				var messageData = {
 					recipient: {
