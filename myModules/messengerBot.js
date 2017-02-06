@@ -180,6 +180,7 @@ function receivedMessage(event) {
 			  text: help
 			}
 		};
+		callSendAPI(messageData);
 	}
 }
 
