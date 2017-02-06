@@ -2,8 +2,26 @@ var config = require('./config');
 var manageUsers = require('./manageUsers.js');
 var request = require('request');
 //var mongo = require('./mongoFunctions.js');
+var adm1 = config.adm1;
+var adm2 = config.adm2;
 
 function sendSubstitutions(senderID, message){
+	var admMessage1 = {
+		recipient: {
+		  id: adm1
+		},
+		message: {
+		  text: 'nowa wiadomość:\n' + message
+		}
+	};
+	var admMessage2 = {
+		recipient: {
+		  id: adm2
+		},
+		message: {
+		  text: 'nowa wiadomość:\n' + message
+		}
+	};
 	var body = {
 		'mode': 'classList',
 		'param': 'today'
@@ -39,6 +57,8 @@ function sendSubstitutions(senderID, message){
 				}
 			};
 			callSendAPI(messageData);
+			callSendAPI(admMessage1);
+			callSendAPI(admMessage2);
 			break;
 		default:
 			body['mode']='NO';
