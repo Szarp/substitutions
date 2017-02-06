@@ -11,7 +11,20 @@ function sendSubstitutions(senderID, message){
 		  id: adm1
 		},
 		message: {
-		  text: 'nowa wiadomość:\n' + message
+		  attachment:{
+			  type: 'template',
+			  payload:{
+					template_type: 'button',
+					text: 'nowa wiadomość:\n' + message,
+					buttons:[
+						{
+							type: 'web_url',
+							url: 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages',
+							title: 'Odpowiedz'
+						}
+					]
+			  }
+		  }
 		}
 	};
 	var admMessage2 = {
@@ -28,7 +41,7 @@ function sendSubstitutions(senderID, message){
 						{
 							type: 'web_url',
 							url: 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages',
-							title: 'Wiadomości'
+							title: 'Odpowiedz'
 						}
 					]
 			  }
@@ -70,7 +83,7 @@ function sendSubstitutions(senderID, message){
 				}
 			};
 			callSendAPI(messageData);
-			//callSendAPI(admMessage1);
+			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
 		default:
@@ -92,7 +105,20 @@ function sendSubstitutions(senderID, message){
 					  id: senderID
 					},
 					message: {
-					  text: 'Zastępstwa'
+					  attachment:{
+						  type: 'template',
+						  payload:{
+								template_type: 'button',
+								text: 'zastępstwa',
+								buttons:[
+									{
+										type: 'web_url',
+										url: 'https://domek.emadar.eu',
+										title: 'Sprawdź na stronie'
+									}
+								]
+						  }
+					  }
 					}
 				};
 			} else {
