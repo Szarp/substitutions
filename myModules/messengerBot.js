@@ -5,38 +5,76 @@ var request = require('request');
 
 function sendSubstitutions(senderID, message){
 	var body = {
-		'mode': 'getChanges',
+		'mode': 'classList',
 		'param': 'today'
 	};
 	message = message.toLowerCase();
-	switch(message){
-		case 'jutro':
-			//przechodzimy dalej (do tommorow)
-		case 'tomorrow':
-			body['param'] = 'tommorow';
+	var opt = message[0];
+	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj "1 <klasa>" - jutro "2 <pytanie>" - pomoc”';
+	var messageData = {
+		recipient: {
+		  id: senderID
+		},
+		message: {
+		  text: help
+		}
+	};
+	var reqClass = message[2] + message[3];
+	if(reqClass[1]=='g'){
+	reqClass += message[4];};
+	switch(opt){
+		case '0':
+			break;
+		case '1':
+			body['param']='tomorrow'; //masz else, więc jak dam dobrze to przejdzie, chociaż ty piszesz źle
+			break;
+		case '2':
+			body['mode']='NO';
+			var messageData = {
+				recipient: {
+				  id: senderID
+				},
+				message: {
+				  text: 'Skontaktujemy się aby odpowiedzieć na pytanie.'
+				}
+			};
+			callSendAPI(messageData);
 			break;
 		default:
+			body['mode']='NO';
+			callSendAPI(messageData);
 			break;
-	}
-	var messageText = '';
-	manageUsers.postCall('0000', body, function(substitutions){
-		var json = substitutions;
-		if(json['substitution']=='no substitutions'){
-			messageText = 'brak zastępstw';
-		} else {
-			console.log("zastępstwa: " + json['substitution']);
-			messageText = 'zastępstwa';
-		}
-		var messageData = {
-			recipient: {
-			  id: senderID
-			},
-			message: {
-			  text: messageText
+	};
+	if(body['mode'] != 'NO'){
+		manageUsers.postCall('0000', body, function(classes){
+			var is = 0;
+			for(var i = 0; i < classes.length(); i++){
+				if(classes[i] == reqClass){
+					is++;
+				}
 			}
-		};
-		callSendAPI(messageData);
-	});
+			if(is > 0){
+				var messageData = {
+					recipient: {
+					  id: senderID
+					},
+					message: {
+					  text: 'Zastępstwa'
+					}
+				};
+			} else {
+				var messageData = {
+					recipient: {
+					  id: senderID
+					},
+					message: {
+					  text: 'brak zastępstw'
+					}
+				};
+			}
+			callSendAPI(messageData);
+		});
+	}
 }
 
 function receivedPostback(event) {
