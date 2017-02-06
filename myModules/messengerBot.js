@@ -98,11 +98,13 @@ function sendSubstitutions(senderID, message){
 						msg+='anulowanie';};
 					msg+='\nLekcja: ' + oneSub.periods;
 					msg+='\nNauczyciel: ' + oneSub.teachers;
-					if(changes.teachers){
-						msg+=' => ' + changes.teachers;};
-					msg+='\nPrzedmiot: ' + oneSub.subjects;
-					if(changes.subjects){
-						msg+= ' => ' + changes.subjects;};
+					if(changes){
+						if(changes.teachers){
+							msg+=' => ' + changes.teachers;};
+						msg+='\nPrzedmiot: ' + oneSub.subjects;
+						if(changes.subjects){
+							msg+= ' => ' + changes.subjects;};
+					}
 					console.log(msg);
 					var messageData = {
 						recipient: {
