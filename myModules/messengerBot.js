@@ -86,6 +86,38 @@ function sendSubstitutions(senderID, message){
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
+		case '3':
+			body['mode']='getChanges';
+			manageUsers.postCall('0000', body, function(obj){
+				var subs = obj['substitution'];
+				var msg = "";
+				for(var i = 0; i < subs.length; i++){
+					var oneSub = subs[i];
+					var changes = oneSub['changes'];
+					if(oneSub.cancelled){
+						msg+='anulowanie';};
+					msg+='\nLekcja: ' + oneSub.periods;
+					msg+='\nNauczyciel: ' + oneSub.teachers;
+					if(changes.teachers){
+						msg+=' => ' + changes.teachers;};
+					msg+='\nPrzedmiot: ' + oneSub.subjects;
+					if(changes.subjects){
+						msg+= ' => ' + changes.subjects;};
+					console.log(msg);
+					var messageData = {
+						recipient: {
+							id: senderID
+						},
+						message: {
+							text: msg
+						}
+					};
+					callSendAPI(messageData);
+					msg='';
+				};
+			});
+			body['mode']='NO';
+			break;
 		default:
 			body['mode']='NO';
 			callSendAPI(messageData);
