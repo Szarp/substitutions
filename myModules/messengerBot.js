@@ -19,7 +19,20 @@ function sendSubstitutions(senderID, message){
 		  id: adm2
 		},
 		message: {
-		  text: 'nowa wiadomość:\n' + message
+		  attachment:{
+			  type: 'template',
+			  payload:{
+					template_type: 'button',
+					text: 'nowa wiadomość:\n' + message,
+					buttons:[
+						{
+							type: 'web_url',
+							url: 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages',
+							title: 'Wiadomości'
+						}
+					]
+			  }
+		  }
 		}
 	};
 	var body = {
@@ -57,7 +70,7 @@ function sendSubstitutions(senderID, message){
 				}
 			};
 			callSendAPI(messageData);
-			callSendAPI(admMessage1);
+			//callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
 		default:
