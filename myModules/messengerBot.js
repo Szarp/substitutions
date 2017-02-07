@@ -119,7 +119,7 @@ function sendSubstitutions(senderID, message){
 									},
 									{
 										type: 'postback',
-										title: 'Send on chat'
+										title: 'Send on chat',
 										payload: message
 									}
 								]
