@@ -87,64 +87,6 @@ function sendSubstitutions(senderID, message){
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
-		case '3':
-			body['mode']='getChanges';
-			manageUsers.postCall('0000', body, function(obj){
-				var subs = obj['substitution'];
-				var msg = "";
-				for(var i = 0; i < subs.length; i++){
-					var oneSub = subs[i];
-					if(oneSub.classes == reqClass){
-						var changes = oneSub['changes'];
-						if(oneSub.cancelled[0]){
-							msg+='anulowanie';
-						} else {
-							msg+='Typ: ' + oneSub.substitution_types;
-						}
-						msg+='\nLekcja: ' + oneSub.periods;
-						msg+='\nNauczyciel: ' + oneSub.teachers;
-						if(changes){
-							if(changes.teachers){
-								msg+=' => ' + changes.teachers;
-							}
-						}
-						msg+='\nPrzedmiot: ' + oneSub.subjects;
-						if(changes){
-							if(changes.subjects){
-								msg+= ' => ' + changes.subjects;
-							}
-						}
-						msg+='\nSala: ' + oneSub.classrooms;
-						if(changes){
-							if(changes.classrooms){
-								msg+=' => ' + changes.classrooms;
-							}
-						}
-						if(oneSub.groupnames){
-							if(oneSub.groupnames != ""){
-								msg+='\nGrupa: ' + oneSub.groupnames;
-							}
-						}
-						if(oneSub.note){
-							if(oneSub.note != ""){
-								msg+='\nKomentarz: '  + oneSub.note;
-							}
-						}
-						var messageData = {
-							recipient: {
-								id: senderID
-							},
-							message: {
-								text: msg
-							}
-						};
-						callSendAPI(messageData);
-						msg='';
-					}
-				}
-			});
-			body['mode']='NO';
-			break;
 		default:
 			body['mode']='NO';
 			callSendAPI(messageData);
@@ -174,6 +116,11 @@ function sendSubstitutions(senderID, message){
 										type: 'web_url',
 										url: 'https://domek.emadar.eu',
 										title: 'Sprawdź na stronie'
+									},
+									{
+										type: 'postback',
+										title: 'Send on chat'
+										payload: message
 									}
 								]
 						  }
@@ -195,6 +142,76 @@ function sendSubstitutions(senderID, message){
 	}
 }
 
+function sendList(senderID, payload){
+	var body = {
+		'mode': 'getChanges',
+		'param': 'today'
+	};
+	if(payload[0]=='1'){
+		body['param']='tomorrow';
+	}
+	var reqClass = message[2] + message[3];
+	if(reqClass[1]=='g'){
+		reqClass += message[4];
+	}
+	manageUsers.postCall('0000', body, function(obj){
+		var subs = obj['substitution'];
+		var msg = "";
+		for(var i = 0; i < subs.length; i++){
+			var oneSub = subs[i];
+			if(oneSub.classes == reqClass){
+				var changes = oneSub['changes'];
+				if(oneSub.cancelled[0]){
+					msg+='anulowanie';
+				} else {
+					msg+='Typ: ' + oneSub.substitution_types;
+				}
+				msg+='\nLekcja: ' + oneSub.periods;
+				msg+='\nNauczyciel: ' + oneSub.teachers;
+				if(changes){
+					if(changes.teachers){
+						msg+=' => ' + changes.teachers;
+					}
+				}
+				msg+='\nPrzedmiot: ' + oneSub.subjects;
+				if(changes){
+					if(changes.subjects){
+						msg+= ' => ' + changes.subjects;
+					}
+				}
+				msg+='\nSala: ' + oneSub.classrooms;
+				if(changes){
+					if(changes.classrooms){
+						msg+=' => ' + changes.classrooms;
+					}
+				}
+				if(oneSub.groupnames){
+					if(oneSub.groupnames != ""){
+						msg+='\nGrupa: ' + oneSub.groupnames;
+					}
+				}
+				if(oneSub.note){
+					if(oneSub.note != ""){
+						msg+='\nKomentarz: '  + oneSub.note;
+					}
+				}
+				var messageData = {
+					recipient: {
+						id: senderID
+					},
+					message: {
+						text: msg
+					}
+				};
+				callSendAPI(messageData);
+				msg='';
+			}
+		}
+	});
+	body['mode']='NO';
+	break;
+}
+
 function receivedPostback(event) {
 	var senderID = event.sender.id;
 	var recipientID = event.recipient.id;
@@ -207,9 +224,7 @@ function receivedPostback(event) {
 	console.log("Received postback for user %d and page %d with payload '%s' " + 
 	"at %d", senderID, recipientID, payload, timeOfPostback);
 
-	// When a postback is called, we'll send a message back to the sender to 
-	// let them know it was successful
-	//sendTextMessage(senderID, "Postback called");
+	sendList(senderID, payload);
 }
 
 function receivedMessage(event) {
