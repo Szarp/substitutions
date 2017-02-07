@@ -208,8 +208,6 @@ function sendList(senderID, payload){
 			}
 		}
 	});
-	body['mode']='NO';
-	break;
 }
 
 function receivedPostback(event) {
