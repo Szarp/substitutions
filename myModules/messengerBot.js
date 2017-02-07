@@ -65,7 +65,8 @@ function sendSubstitutions(senderID, message){
 	};
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
-	reqClass += message[4];};
+		reqClass += message[4];
+	}
 	switch(opt){
 		case '0':
 			break;
@@ -93,42 +94,52 @@ function sendSubstitutions(senderID, message){
 				var msg = "";
 				for(var i = 0; i < subs.length; i++){
 					var oneSub = subs[i];
-					var changes = oneSub['changes'];
-					if(oneSub.cancelled[0]){
-						msg+='anulowanie';
-					} else {
-						msg+=oneSub.substitution_types;}
-					msg+='\nLekcja: ' + oneSub.periods;
-					msg+='\nNauczyciel: ' + oneSub.teachers;
-					if(changes){
-						if(changes.teachers){
-							msg+=' => ' + changes.teachers;};};
-					msg+='\nPrzedmiot: ' + oneSub.subjects;
-					if(changes){
-						if(changes.subjects){
-							msg+= ' => ' + changes.subjects;};
-					}
-					msg+='\nSala: ' + oneSub.classrooms;
-					if(changes){
-						if(changes.classrooms){
-							msg+=' => ' + changes.classrooms;}}
-					if(oneSub.groupnames){
-						msg+='\nGrupa: ' + oneSub.groupnames;}
-					if(oneSub.note){
-						if(oneSub.note != ""){
-							msg+='\nKomentarz: '  + oneSub.note;}}
-					//console.log(msg);
-					var messageData = {
-						recipient: {
-							id: senderID
-						},
-						message: {
-							text: msg
+					if(oneSub.classes == reqClass){
+						var changes = oneSub['changes'];
+						if(oneSub.cancelled[0]){
+							msg+='anulowanie';
+						} else {
+							msg+=oneSub.substitution_types;
 						}
-					};
-					callSendAPI(messageData);
-					msg='';
-				};
+						msg+='\nLekcja: ' + oneSub.periods;
+						msg+='\nNauczyciel: ' + oneSub.teachers;
+						if(changes){
+							if(changes.teachers){
+								msg+=' => ' + changes.teachers;
+							}
+						}
+						msg+='\nPrzedmiot: ' + oneSub.subjects;
+						if(changes){
+							if(changes.subjects){
+								msg+= ' => ' + changes.subjects;
+							}
+						}
+						msg+='\nSala: ' + oneSub.classrooms;
+						if(changes){
+							if(changes.classrooms){
+								msg+=' => ' + changes.classrooms;
+							}
+						}
+						if(oneSub.groupnames){
+							msg+='\nGrupa: ' + oneSub.groupnames;
+						}
+						if(oneSub.note){
+							if(oneSub.note != ""){
+								msg+='\nKomentarz: '  + oneSub.note;
+							}
+						}
+						var messageData = {
+							recipient: {
+								id: senderID
+							},
+							message: {
+								text: msg
+							}
+						};
+						callSendAPI(messageData);
+						msg='';
+					}
+				}
 			});
 			body['mode']='NO';
 			break;
