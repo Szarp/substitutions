@@ -99,7 +99,7 @@ function sendSubstitutions(senderID, message){
 						if(oneSub.cancelled[0]){
 							msg+='anulowanie';
 						} else {
-							msg+=oneSub.substitution_types;
+							msg+='Typ: ' + oneSub.substitution_types;
 						}
 						msg+='\nLekcja: ' + oneSub.periods;
 						msg+='\nNauczyciel: ' + oneSub.teachers;
@@ -121,7 +121,9 @@ function sendSubstitutions(senderID, message){
 							}
 						}
 						if(oneSub.groupnames){
-							msg+='\nGrupa: ' + oneSub.groupnames;
+							if(oneSub.groupnames != ""){
+								msg+='\nGrupa: ' + oneSub.groupnames;
+							}
 						}
 						if(oneSub.note){
 							if(oneSub.note != ""){
