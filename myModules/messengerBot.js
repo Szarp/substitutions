@@ -114,8 +114,9 @@ function sendSubstitutions(senderID, message){
 					if(oneSub.groupnames){
 						msg+='\nGrupa: ' + oneSub.groupnames;}
 					if(oneSub.note){
-						msg+='\nKomentarz: '  + oneSub.note;}
-					console.log(msg);
+						if(oneSub.note != ""){
+							msg+='\nKomentarz: '  + oneSub.note;}}
+					//console.log(msg);
 					var messageData = {
 						recipient: {
 							id: senderID
