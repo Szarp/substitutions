@@ -142,7 +142,7 @@ function sendSubstitutions(senderID, message){
 	}
 }
 
-function sendList(senderID, payload){
+function sendList(senderID, message){
 	var body = {
 		'mode': 'getChanges',
 		'param': 'today'
