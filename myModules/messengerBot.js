@@ -94,17 +94,27 @@ function sendSubstitutions(senderID, message){
 				for(var i = 0; i < subs.length; i++){
 					var oneSub = subs[i];
 					var changes = oneSub['changes'];
-					if(oneSub.cancelled){
-						msg+='anulowanie';};
+					if(oneSub.cancelled[0]){
+						msg+='anulowanie';
+						console.log(oneSub.cancelled[0]);};
 					msg+='\nLekcja: ' + oneSub.periods;
 					msg+='\nNauczyciel: ' + oneSub.teachers;
 					if(changes){
 						if(changes.teachers){
-							msg+=' => ' + changes.teachers;};
-						msg+='\nPrzedmiot: ' + oneSub.subjects;
+							msg+=' => ' + changes.teachers;};};
+					msg+='\nPrzedmiot: ' + oneSub.subjects;
+					if(changes){
 						if(changes.subjects){
 							msg+= ' => ' + changes.subjects;};
 					}
+					msg+='\nSala: ' + oneSub.classrooms;
+					if(changes){
+						if(changes.classrooms){
+							msg+=' => ' + changes.classrooms;}}
+					if(oneSub.groupnames){
+						msg+='\nGrupa: ' + oneSub.groupnames;}
+					if(oneSub.note){
+						msg+='\nKomentarz: '  + oneSub.note;}
 					console.log(msg);
 					var messageData = {
 						recipient: {
