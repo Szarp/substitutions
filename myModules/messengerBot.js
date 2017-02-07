@@ -96,7 +96,8 @@ function sendSubstitutions(senderID, message){
 					var changes = oneSub['changes'];
 					if(oneSub.cancelled[0]){
 						msg+='anulowanie';
-						console.log(oneSub.cancelled[0]);};
+					} else {
+						msg+=oneSub.substitution_types;}
 					msg+='\nLekcja: ' + oneSub.periods;
 					msg+='\nNauczyciel: ' + oneSub.teachers;
 					if(changes){
