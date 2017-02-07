@@ -147,7 +147,7 @@ function sendList(senderID, message){
 		'mode': 'getChanges',
 		'param': 'today'
 	};
-	if(payload[0]=='1'){
+	if(message[0]=='1'){
 		body['param']='tomorrow';
 	}
 	var reqClass = message[2] + message[3];
