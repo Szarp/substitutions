@@ -5,6 +5,24 @@ var request = require('request');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 
+var exampleGenric = {
+    title:"Welcome",
+    image:'someUrl',
+    subtitle:'Welcome',
+    "buttons":[
+        {
+        "type":"web_url",
+        "url":"https://petersfancybrownhats.com",
+        "title":"View Website"
+        },{
+                "type":"postback",
+                "title":"Start Chatting",
+                "payload":"DEVELOPER_DEFINED_PAYLOAD"
+              }              
+    ]      
+    
+}
+
 function sendSubstitutions(senderID, message){
 	var admMessage1 = {
 		recipient: {
