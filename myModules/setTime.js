@@ -23,6 +23,10 @@ module.exports = function setTime(){
         this.Today = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
         this.updateTime();
     }
+    this.theDayAfterTomorrowIs=function(){
+        this.Today = new Date(new Date().getTime() + 2*24 * 60 * 60 * 1000);
+        this.updateTime();
+    }
     this.yeasterdayIs=function(){
         this.Today = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
         this.updateTime();
