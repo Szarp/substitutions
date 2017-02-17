@@ -5,22 +5,21 @@ var request = require('request');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 
-var exampleGenric = {
-    title:"Welcome",
-    image:'someUrl',
-    subtitle:'Welcome',
-    "buttons":[
-        {
-        "type":"web_url",
-        "url":"https://petersfancybrownhats.com",
-        "title":"View Website"
-        },{
-                "type":"postback",
-                "title":"Start Chatting",
-                "payload":"DEVELOPER_DEFINED_PAYLOAD"
-              }              
-    ]      
-    
+function createMessage(type, id, content, callback){
+	var message = {
+		recipient: {
+		  id: id
+		},
+		message: {}
+	};
+	if(type == 'text'){
+		message['message']=content;
+	}else{
+		
+	}
+	setImmediate(function(){
+		callback(message);
+	});
 }
 
 function sendSubstitutions(senderID, message){
@@ -104,6 +103,13 @@ function sendSubstitutions(senderID, message){
 			callSendAPI(messageData);
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
+			break;
+		case '3':
+			body['mode']='NO';
+			createMessage('text', senderID, 'Jakiś tekst - test', function(){
+				console.log(message);
+				callSendAPI(message);
+			});
 			break;
 		default:
 			body['mode']='NO';
