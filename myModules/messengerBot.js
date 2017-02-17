@@ -143,8 +143,8 @@ function sendSubstitutions(senderID, message){
 				callSendAPI(message);
 			});
 			var content={
-				text: 'TEST GENERIC'
-				buttons:[
+				'text': 'TEST GENERIC'
+				'buttons':[
 					{
 						type: 'web_url',
 						url: 'https://domek.emadar.eu',
