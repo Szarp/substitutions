@@ -12,8 +12,10 @@ function createMessage(type, id, content, callback){
 		},
 		message: {}
 	};
+	console.log(content);
 	if(type == 'text'){
 		message['message']=content;
+		console.log(message);
 	}else{
 		
 	}
@@ -108,7 +110,7 @@ function sendSubstitutions(senderID, message){
 			body['mode']='NO';
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				console.log(message);
-				callSendAPI(message);
+				//callSendAPI(message);
 			});
 			break;
 		default:
