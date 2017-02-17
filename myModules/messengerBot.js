@@ -32,7 +32,7 @@ function createMessage(type, id, content, callback){
 }
 
 function createButtons(tab, callback){
-	var buttons={};
+	var buttons=[];
 	for(var i = 0; i < tab.length; i++){
 		var btn = tab[i];
 		var singleBTN={};
