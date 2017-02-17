@@ -37,10 +37,8 @@ function createButtons(tab, callback){
 	var buttons;
 	for(var i = 0; i < tab.length; i++){
 		var btn = tab[i];
-		var singleBTN={
-			type: btn[1],
-			title: btn[3]
-		}
+		var singleBTN['type']=btn[1];
+		singleBTN['title']=btn[3];
 		if(btn[1]=='web_url'){
 			singleBTN['url']=btn[2];
 		} else if(btn[1]=='postback'){
