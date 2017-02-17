@@ -33,7 +33,7 @@ function createMessage(type, id, content, callback){
 	});
 }
 
-function createButtons(tab, callback){
+/*function createButtons(tab, callback){
 	var buttons;
 	for(var i = 0; i < tab.length; i++){
 		var btn = tab[i];
@@ -53,7 +53,7 @@ function createButtons(tab, callback){
 		console.log(buttons);
 		callback(buttons);
 	});
-}
+}*/
 
 function sendSubstitutions(senderID, message){
 	var admMessage1 = {
@@ -142,8 +142,23 @@ function sendSubstitutions(senderID, message){
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				callSendAPI(message);
 			});
-			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
-				console.log(buttons); 
+			var content={
+				text: 'TEST GENERIC'
+				buttons:[
+					{
+						type: 'web_url',
+						url: 'https://domek.emadar.eu',
+						title: 'Sprawdź na stronie'
+					},
+					{
+						type: 'postback',
+						title: 'Send on chat',
+						payload: message
+					}
+				]
+			}
+			createMessage('generic', senderID, content, function(message){
+				callSendAPI(message);
 			});
 			break;
 		default:
