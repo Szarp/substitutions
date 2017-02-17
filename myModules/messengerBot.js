@@ -21,9 +21,7 @@ function createMessage(type, id, content, callback){
 				payload:{
 					template_type: 'button',
 					text: content['text'],
-					buttons: [
-						content['buttons']
-					]
+					buttons: content['buttons']
 				}
 			}
 		}
