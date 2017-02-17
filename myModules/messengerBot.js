@@ -14,7 +14,7 @@ function createMessage(type, id, content, callback){
 	};
 	console.log(content);
 	if(type == 'text'){
-		message['message']=content;
+		message['message']='text: {' + content + '}';
 		console.log(message);
 	}else{
 		
