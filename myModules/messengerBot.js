@@ -9,17 +9,47 @@ function createMessage(type, id, content, callback){
 	var message = {
 		recipient: {
 		  id: id
-		},
-		message: {}
+		}
 	};
 	console.log(content);
 	if(type == 'text'){
-		message['message']={ text: content};
+		message['message']={text: content};
 	}else{
-		
+		message['message']={
+			attachment:{
+				type: 'template',
+				payload:{
+					template_type: 'button',
+					text: content['text'],
+					buttons: [
+						content['buttons']
+					]
+				}
+			}
+		}
 	}
 	setImmediate(function(){
 		callback(message);
+	});
+}
+
+function createButtons(tab, callback){
+	var buttons;
+	for(var i = 0; i < tab.length; i++){
+		var btn = tab[i];
+		var singleBTN={
+			type: btn[1],
+			title: btn[3]
+		}
+		if(btn[1]=='web_url'){
+			singleBTN['url']=btn[2];
+		} else if(btn[1]=='postback'){
+			singleBTN['payload']=btn[2];
+		}
+		buttons.push(singleBTN);
+	}
+	setImmediate(function(){
+		callback(buttons);
 	});
 }
 
@@ -108,8 +138,10 @@ function sendSubstitutions(senderID, message){
 		case '3':
 			body['mode']='NO';
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
-				console.log(message);
 				callSendAPI(message);
+			});
+			createButtons([{'web_url', 'https://google.com', 'TEST LINK'},{'postback', 'payload', 'POSTBACK - TEST'}], function(btns){
+				console.log(btns);
 			});
 			break;
 		default:
