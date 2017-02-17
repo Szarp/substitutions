@@ -38,12 +38,12 @@ function createButtons(tab, callback){
 	for(var i = 0; i < tab.length; i++){
 		var btn = tab[i];
 		var singleBTN=[];
-		singleBTN['type']=btn[1];
-		singleBTN['title']=btn[3];
-		if(btn[1]=='web_url'){
-			singleBTN['url']=btn[2];
-		} else if(btn[1]=='postback'){
-			singleBTN['payload']=btn[2];
+		singleBTN['type']=btn[0];
+		singleBTN['title']=btn[2];
+		if(btn[0]=='web_url'){
+			singleBTN['url']=btn[1];
+		} else if(btn[0]=='postback'){
+			singleBTN['payload']=btn[1];
 		}
 		console.log(singleBTN);
 		console.log(btn);
