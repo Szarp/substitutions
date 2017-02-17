@@ -143,7 +143,7 @@ function sendSubstitutions(senderID, message){
 				callSendAPI(message);
 			});
 			var content={
-				'text': 'TEST GENERIC'
+				'text': 'TEST GENERIC',
 				'buttons':[
 					{
 						type: 'web_url',
