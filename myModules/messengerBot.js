@@ -106,7 +106,7 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '3':
 			body['mode']='NO';
-			createMessage('text', senderID, 'Jakiś tekst - test', function(){
+			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				console.log(message);
 				callSendAPI(message);
 			});
