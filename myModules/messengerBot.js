@@ -31,11 +31,11 @@ function createMessage(type, id, content, callback){
 	});
 }
 
-/*function createButtons(tab, callback){
-	var buttons;
+function createButtons(tab, callback){
+	var buttons={};
 	for(var i = 0; i < tab.length; i++){
 		var btn = tab[i];
-		var singleBTN=[];
+		var singleBTN={};
 		singleBTN['type']=btn[0];
 		singleBTN['title']=btn[2];
 		if(btn[0]=='web_url'){
@@ -44,14 +44,14 @@ function createMessage(type, id, content, callback){
 			singleBTN['payload']=btn[1];
 		}
 		console.log(singleBTN);
-		console.log(btn);
-		buttons+=singleBTN;
+		console.log(JSON.stringify(singleBTN));
+		buttons[i]=singleBTN;
 	}
 	setImmediate(function(){
 		console.log(buttons);
 		callback(buttons);
 	});
-}*/
+}
 
 function sendSubstitutions(senderID, message){
 	var admMessage1 = {
@@ -155,6 +155,9 @@ function sendSubstitutions(senderID, message){
 					}
 				]
 			}
+			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
+				console.log(buttons);
+			})
 			createMessage('generic', senderID, content, function(message){
 				callSendAPI(message);
 			});
