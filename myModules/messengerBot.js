@@ -45,7 +45,8 @@ function createButtons(tab, callback){
 		} else if(btn[1]=='postback'){
 			singleBTN['payload']=btn[2];
 		}
-		console.log(JSON.stringify(singleBTN));
+		console.log(singleBTN);
+		console.log(btn);
 		buttons+=singleBTN;
 	}
 	setImmediate(function(){
