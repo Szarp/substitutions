@@ -50,6 +50,7 @@ function createButtons(tab, callback){
 		buttons+=singleBTN;
 	}
 	setImmediate(function(){
+		console.log(buttons);
 		callback(buttons);
 	});
 }
@@ -141,8 +142,8 @@ function sendSubstitutions(senderID, message){
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				callSendAPI(message);
 			});
-			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(btns){
-				console.log(btns);
+			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
+				console.log(buttons); 
 			});
 			break;
 		default:
