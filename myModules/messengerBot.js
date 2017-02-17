@@ -45,7 +45,7 @@ function createButtons(tab, callback){
 		}
 		console.log(singleBTN);
 		console.log(JSON.stringify(singleBTN));
-		buttons[i]=singleBTN;
+		buttons.push(singleBTN);
 	}
 	setImmediate(function(){
 		console.log(buttons);
