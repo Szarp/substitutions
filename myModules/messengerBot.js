@@ -123,19 +123,14 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '2':
 			body['mode']='NO';
-			var messageData = {
-				recipient: {
-				  id: senderID
-				},
-				message: {
-				  text: 'Skontaktujemy się aby odpowiedzieć na pytanie.'
-				}
-			};
+			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(message){
+				callSendAPI(message);
+			});
 			callSendAPI(messageData);
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
-		case '3':
+		/*case '3':
 			body['mode']='NO';
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				callSendAPI(message);
@@ -149,10 +144,12 @@ function sendSubstitutions(senderID, message){
 					callSendAPI(message);
 				});
 			});
-			break;
+			break;*/
 		default:
 			body['mode']='NO';
-			callSendAPI(messageData);
+			createMessage('text', senderID, help, function(message){
+				callSendAPI(message);
+			});
 			break;
 	};
 	if(body['mode'] != 'NO'){
