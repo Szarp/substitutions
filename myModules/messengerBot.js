@@ -140,11 +140,10 @@ function sendSubstitutions(senderID, message){
 			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
 				callSendAPI(message);
 			});
-			var btns;
 			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
 				var content={
 					'text': 'TEST GENERIC',
-					'buttons': btns
+					'buttons': buttons
 				}
 				createMessage('generic', senderID, content, function(message){
 					callSendAPI(message);
