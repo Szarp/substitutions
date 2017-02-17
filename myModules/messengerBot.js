@@ -142,14 +142,13 @@ function sendSubstitutions(senderID, message){
 			});
 			var btns;
 			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
-				btns=buttons;
-			});
-			var content={
-				'text': 'TEST GENERIC',
-				'buttons': btns
-			}
-			createMessage('generic', senderID, content, function(message){
-				callSendAPI(message);
+				var content={
+					'text': 'TEST GENERIC',
+					'buttons': btns
+				}
+				createMessage('generic', senderID, content, function(message){
+					callSendAPI(message);
+				});
 			});
 			break;
 		default:
