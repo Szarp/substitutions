@@ -126,7 +126,6 @@ function sendSubstitutions(senderID, message){
 			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(message){
 				callSendAPI(message);
 			});
-			callSendAPI(messageData);
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
