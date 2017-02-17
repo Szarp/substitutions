@@ -142,7 +142,7 @@ function sendSubstitutions(senderID, message){
 				callSendAPI(message);
 			});
 			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(btns){
-				console.log(JSON.stringify(btns));
+				console.log(btns);
 			});
 			break;
 		default:
