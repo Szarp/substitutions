@@ -5,22 +5,52 @@ var request = require('request');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 
-var exampleGenric = {
-    title:"Welcome",
-    image:'someUrl',
-    subtitle:'Welcome',
-    "buttons":[
-        {
-        "type":"web_url",
-        "url":"https://petersfancybrownhats.com",
-        "title":"View Website"
-        },{
-                "type":"postback",
-                "title":"Start Chatting",
-                "payload":"DEVELOPER_DEFINED_PAYLOAD"
-              }              
-    ]      
-    
+function createMessage(type, id, content, callback){
+	var message = {
+		recipient: {
+		  id: id
+		}
+	};
+	console.log(content);
+	if(type == 'text'){
+		message['message']={text: content};
+	}else{
+		message['message']={
+			attachment:{
+				type: 'template',
+				payload:{
+					template_type: 'button',
+					text: content['text'],
+					buttons: content['buttons']
+				}
+			}
+		}
+	}
+	setImmediate(function(){
+		callback(message);
+	});
+}
+
+function createButtons(tab, callback){
+	var buttons=[];
+	for(var i = 0; i < tab.length; i++){
+		var btn = tab[i];
+		var singleBTN={};
+		singleBTN['type']=btn[0];
+		singleBTN['title']=btn[2];
+		if(btn[0]=='web_url'){
+			singleBTN['url']=btn[1];
+		} else if(btn[0]=='postback'){
+			singleBTN['payload']=btn[1];
+		}
+		console.log(singleBTN);
+		console.log(JSON.stringify(singleBTN));
+		buttons.push(singleBTN);
+	}
+	setImmediate(function(){
+		console.log(buttons);
+		callback(buttons);
+	});
 }
 
 function sendSubstitutions(senderID, message){
@@ -93,21 +123,32 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '2':
 			body['mode']='NO';
-			var messageData = {
-				recipient: {
-				  id: senderID
-				},
-				message: {
-				  text: 'Skontaktujemy się aby odpowiedzieć na pytanie.'
-				}
-			};
-			callSendAPI(messageData);
+			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(message){
+				callSendAPI(message);
+			});
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
 			break;
+		/*case '3':
+			body['mode']='NO';
+			createMessage('text', senderID, 'Jakiś tekst - test', function(message){
+				callSendAPI(message);
+			});
+			createButtons([['web_url', 'https://google.com', 'TEST LINK'],['postback', 'payload', 'POSTBACK - TEST']], function(buttons){
+				var content={
+					'text': 'TEST GENERIC',
+					'buttons': buttons
+				}
+				createMessage('generic', senderID, content, function(message){
+					callSendAPI(message);
+				});
+			});
+			break;*/
 		default:
 			body['mode']='NO';
-			callSendAPI(messageData);
+			createMessage('text', senderID, help, function(message){
+				callSendAPI(message);
+			});
 			break;
 	};
 	if(body['mode'] != 'NO'){
