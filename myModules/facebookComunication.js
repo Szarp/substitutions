@@ -7,6 +7,19 @@ var link = require('./fbLinks.js');
 Make requests to facebook server
 
 */
+function messengerUserInfo(id,callback){
+    
+    request(link.messengerApi(id), function (e, r, body){
+        if(e){console.log('req problem: '+e);}
+        //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
+        //console.log(body);
+        setImmediate(function() {
+                callback(JSON.parse(body));
+        });
+    });
+}
+
+
 function createPersonToken(code,callback){
     
     request(link.userAccesToken(code), function (e, r, body){
@@ -194,6 +207,7 @@ exports.savePerson=savePerson;
 exports.addName=addName;
 exports.getPicture=getPicture;
 exports.createPersonToken=createPersonToken;
+exports.messengerUserInfo=messengerUserInfo;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
