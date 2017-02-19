@@ -123,9 +123,14 @@ function postCall(userId,body,callback){
                 //console.log(err,obj);
                 if(err){console.log('err in sending substitutions')}
                 var objToSend={};
-                objToSend['substitution']=obj['substitution'];
-                if(obj['date'] == undefined){obj['date']='31-12-2016'}
-                objToSend['date']=obj['date'];
+				if(obj){
+					objToSend['substitution']=obj['substitution'];
+					if(obj['date'] == undefined){obj['date']='31-12-2016'}
+					objToSend['date']=obj['date'];
+				} else {
+					objToSend['substitution']='';
+					objToSend['date']='ERROR';
+				}
                 res = objToSend;
                 setImmediate(function() {
                     callback(res);

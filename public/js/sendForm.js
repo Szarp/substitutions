@@ -142,6 +142,7 @@ function sendMessage(){
 	sendObj(url,form,function(responeText){
 		infB.style.display = 'table';
 		infBData.innerHTML=responeText;
+		document.getElementById('messageArea').value='';
 	})
 	//el.innerHTML='hi';
 	

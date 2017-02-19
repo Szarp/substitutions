@@ -219,7 +219,10 @@ setInterval(function(){
     myFunc.subs(time.displayTime(),function(y){
         time.todayIs();
         myFunc.subs(time.displayTime(),function(b){
-            console.log('downloaded changes');        
+            time.theDayAfterTomorrowIs();
+            myFunc.subs(time.displayTime(),function(x){
+                console.log('downloaded changes');
+            });
         });               
     });
 }, 1000*60*60*1); //now running once per hour
