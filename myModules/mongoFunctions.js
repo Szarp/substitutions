@@ -4,7 +4,36 @@ var MongoClient = require('mongodb').MongoClient,
     Module to comunicate with mongo
     
     */
+function findByParam(paramAndValue,collectionName,callback){
+    var url = 'mongodb://localhost:27017/test2';
+    MongoClient.connect(url, function(err, db) {
+        assert.equal(null,err);
+        var collection=db.collection(collectionName);
+        var arrayOfElements=[];
+        collection.find({},{fields:paramAndValue}).each(function(e, doc) {
+              
+            if(doc){
+                for(k in paramAndValue){
+                    //console.log(doc[k]);
+                    if(doc[k]==paramAndValue[k]){
+                        arrayOfElements[arrayOfElements.length]=doc;
+                      //console.log('ho',doc);
+                    }
+                }
+            }
+            else{
+                setImmediate(function() {
+                    callback(arrayOfElements);
+                });
+            }
+        });    
+        db.close();
+        })
+  
     
+}    
+
+
 function saveToCollection(params,callback){
         //[collection,{data}]
         var collectionName = params[0];
@@ -50,7 +79,7 @@ function saveToCollection(params,callback){
     
         db.close();
         })
-    }    
+    }
     function findById(id,collectionName,callback){
         //[collection,{data}]
         //var collectionName = collection;
@@ -75,3 +104,4 @@ function saveToCollection(params,callback){
 exports.findById=findById;
 exports.modifyById=modifyById;
 exports.save=saveToCollection;
+exports.findByParam=findByParam;
