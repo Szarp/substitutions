@@ -103,14 +103,6 @@ function sendSubstitutions(senderID, message){
 	message = message.toLowerCase();
 	var opt = message[0];
 	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
-	var messageData = {
-		recipient: {
-		  id: senderID
-		},
-		message: {
-		  text: help
-		}
-	};
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
@@ -123,8 +115,8 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '2':
 			body['mode']='NO';
-			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(message){
-				callSendAPI(message);
+			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
+				callSendAPI(messageTS);
 			});
 			callSendAPI(admMessage1);
 			callSendAPI(admMessage2);
@@ -146,8 +138,8 @@ function sendSubstitutions(senderID, message){
 			break;*/
 		default:
 			body['mode']='NO';
-			createMessage('text', senderID, help, function(message){
-				callSendAPI(message);
+			createMessage('text', senderID, help, function(messageTS){
+				callSendAPI(messageTS);
 			});
 			break;
 	};
@@ -159,44 +151,28 @@ function sendSubstitutions(senderID, message){
 					is++;
 				}
 			}
-			if(is > 0){
-				var messageData = {
-					recipient: {
-					  id: senderID
-					},
-					message: {
-					  attachment:{
-						  type: 'template',
-						  payload:{
-								template_type: 'button',
-								text: 'zastępstwa',
-								buttons:[
-									{
-										type: 'web_url',
-										url: 'https://domek.emadar.eu',
-										title: 'Sprawdź na stronie'
-									},
-									{
-										type: 'postback',
-										title: 'Send on chat',
-										payload: message
-									}
-								]
-						  }
-					  }
-					}
-				};
+			if(opt == 0){
+				var dayToMSG = 'Jutro';
 			} else {
-				var messageData = {
-					recipient: {
-					  id: senderID
-					},
-					message: {
-					  text: 'brak zastępstw'
-					}
-				};
+				var dayToMSG = 'Dzisiaj';
 			}
-			callSendAPI(messageData);
+			if(is > 0){
+				createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
+					var content={
+						text: dayToMSG,
+						buttons: buttons
+					}
+					createMessage('generic', senderID, content, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});
+			} else {
+				dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
+				createMessage('text', senderID, dayToMSG, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			}
 		});
 	}
 }
@@ -254,15 +230,9 @@ function sendList(senderID, message){
 						msg+='\nKomentarz: '  + oneSub.note;
 					}
 				}
-				var messageData = {
-					recipient: {
-						id: senderID
-					},
-					message: {
-						text: msg
-					}
-				};
-				callSendAPI(messageData);
+				createMessage('text', senderID, msg, function(messageTS){
+					callSendAPI(messageTS);
+				});
 				msg='';
 			}
 		}
@@ -303,15 +273,9 @@ function receivedMessage(event) {
 	if (messageText) {
 		sendSubstitutions(senderID, messageText);
 	} else {
-		var messageData = {
-			recipient: {
-			  id: senderID
-			},
-			message: {
-			  text: help
-			}
-		};
-		callSendAPI(messageData);
+		createMessage('text', senderID, help, function(messageTS){
+			callSendAPI(messageTS);
+		});
 	}
 }
 
