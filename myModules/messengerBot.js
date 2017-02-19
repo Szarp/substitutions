@@ -54,48 +54,6 @@ function createButtons(tab, callback){
 }
 
 function sendSubstitutions(senderID, message){
-	var admMessage1 = {
-		recipient: {
-		  id: adm1
-		},
-		message: {
-		  attachment:{
-			  type: 'template',
-			  payload:{
-					template_type: 'button',
-					text: 'nowa wiadomość:\n' + message,
-					buttons:[
-						{
-							type: 'web_url',
-							url: 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages',
-							title: 'Odpowiedz'
-						}
-					]
-			  }
-		  }
-		}
-	};
-	var admMessage2 = {
-		recipient: {
-		  id: adm2
-		},
-		message: {
-		  attachment:{
-			  type: 'template',
-			  payload:{
-					template_type: 'button',
-					text: 'nowa wiadomość:\n' + message,
-					buttons:[
-						{
-							type: 'web_url',
-							url: 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages',
-							title: 'Odpowiedz'
-						}
-					]
-			  }
-		  }
-		}
-	};
 	var body = {
 		'mode': 'classList',
 		'param': 'today'
@@ -118,8 +76,18 @@ function sendSubstitutions(senderID, message){
 			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 				callSendAPI(messageTS);
 			});
-			callSendAPI(admMessage1);
-			callSendAPI(admMessage2);
+			createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz']], function(buttons){
+				var content={
+					text: 'nowa wiadomość:\n' + message,
+					buttons: buttons
+				}
+				createMessage('generic', adm1, content, function(messageTS){
+					callSendAPI(messageTS);
+				});
+				createMessage('generic', adm2, content, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			});
 			break;
 		/*case '3':
 			body['mode']='NO';
@@ -152,9 +120,9 @@ function sendSubstitutions(senderID, message){
 				}
 			}
 			if(opt == 0){
-				var dayToMSG = 'Jutro';
-			} else {
 				var dayToMSG = 'Dzisiaj';
+			} else {
+				var dayToMSG = 'Jutro';
 			}
 			if(is > 0){
 				createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
