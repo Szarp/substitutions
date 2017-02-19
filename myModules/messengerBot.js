@@ -156,7 +156,7 @@ function sendSubstitutions(senderID, message){
 						for(var i = 1; i < allClasses.length; i++){
 								klasy += ', ' + allClasses[i];
 						}
-						dayToMSG = 'Klasa ' + reqClass + ' nie istnieje. Dostępne klasy to:\n' + klasy;
+						dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
 					}
 				} else {
 					dayToMSG = 'Nie podałeś klasy :/'
