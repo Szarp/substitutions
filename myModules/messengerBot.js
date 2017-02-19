@@ -136,7 +136,11 @@ function sendSubstitutions(senderID, message){
 					});
 				});
 			} else {
-				dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
+				if(reqClass != NaN){
+					dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
+				} else {
+					dayToMSG = 'Nie podałeś klasy :/'
+				}
 				createMessage('text', senderID, dayToMSG, function(messageTS){
 					callSendAPI(messageTS);
 				});
