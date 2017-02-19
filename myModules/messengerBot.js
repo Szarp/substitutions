@@ -73,21 +73,27 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '2':
 			body['mode']='NO';
-			createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
-				callSendAPI(messageTS);
-			});
-			createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz']], function(buttons){
-				var content={
-					text: 'nowa wiadomość:\n' + message,
-					buttons: buttons
-				}
-				createMessage('generic', adm1, content, function(messageTS){
+			if(message.length>2){
+				createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 					callSendAPI(messageTS);
 				});
-				createMessage('generic', adm2, content, function(messageTS){
+				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz']], function(buttons){
+					var content={
+						text: 'nowa wiadomość:\n' + message,
+						buttons: buttons
+					}
+					createMessage('generic', adm1, content, function(messageTS){
+						callSendAPI(messageTS);
+					});
+					createMessage('generic', adm2, content, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});
+			} else {
+				createMessage('text', senderID, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(", function(messageTS){
 					callSendAPI(messageTS);
 				});
-			});
+			}
 			break;
 		/*case '3':
 			body['mode']='NO';
