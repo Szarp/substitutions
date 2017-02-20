@@ -78,7 +78,7 @@ function sendSubstitutions(senderID, message){
 				createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 					callSendAPI(messageTS);
 				});
-				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz']], function(buttons){
+				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz'],['web_url', 'https://m.facebook.com/messages/?pageID=573446562859405', 'Odpowiedz z tel']], function(buttons){
 					var content={
 						text: 'nowa wiadomość:\n' + message,
 						buttons: buttons
