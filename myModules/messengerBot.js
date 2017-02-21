@@ -1,6 +1,7 @@
 var config = require('./config');
 var manageUsers = require('./manageUsers.js');
 var request = require('request');
+var facebook = require('./facebookComunication.js');
 //var mongo = require('./mongoFunctions.js');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
@@ -79,15 +80,17 @@ function sendSubstitutions(senderID, message){
 					callSendAPI(messageTS);
 				});
 				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz'],['web_url', 'https://m.facebook.com/messages/?pageID=573446562859405', 'Odpowiedz z tel']], function(buttons){
-					var content={
-						text: 'nowa wiadomość:\n' + message,
-						buttons: buttons
-					}
-					createMessage('generic', adm1, content, function(messageTS){
-						callSendAPI(messageTS);
-					});
-					createMessage('generic', adm2, content, function(messageTS){
-						callSendAPI(messageTS);
+					facebook.messengerUserInfo(senderID, function(userData){
+						var content={
+							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + message,
+							buttons: buttons
+						}
+						createMessage('generic', adm1, content, function(messageTS){
+							callSendAPI(messageTS);
+						});
+						createMessage('generic', adm2, content, function(messageTS){
+							callSendAPI(messageTS);
+						});
 					});
 				});
 			} else {
@@ -261,6 +264,11 @@ function receivedMessage(event) {
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
 	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
+	/*facebook.messengerUserInfo(senderID, function(userData){
+		console.log(userData);
+		console.log('Wiadomość od ' + userData['first_name'] + ' ' + userData['last_name']);
+	});*/
+	
 
 	if (messageText) {
 		sendSubstitutions(senderID, messageText);
