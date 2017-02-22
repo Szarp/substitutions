@@ -83,7 +83,7 @@ function sendSubstitutions(senderID, message){
 				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz'],['web_url', 'https://m.facebook.com/messages/?pageID=573446562859405', 'Odpowiedz z tel']], function(buttons){
 					facebook.messengerUserInfo(senderID, function(userData){
 						var content={
-							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + oMessage,
+							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + oMessage.substring(1),
 							buttons: buttons
 						}
 						createMessage('generic', adm1, content, function(messageTS){
