@@ -60,6 +60,7 @@ function sendSubstitutions(senderID, message){
 		'mode': 'classList',
 		'param': 'today'
 	};
+	var oMessage=message;
 	message = message.toLowerCase();
 	var opt = message[0];
 	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
@@ -82,7 +83,7 @@ function sendSubstitutions(senderID, message){
 				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz'],['web_url', 'https://m.facebook.com/messages/?pageID=573446562859405', 'Odpowiedz z tel']], function(buttons){
 					facebook.messengerUserInfo(senderID, function(userData){
 						var content={
-							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + message,
+							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + oMessage,
 							buttons: buttons
 						}
 						createMessage('generic', adm1, content, function(messageTS){
