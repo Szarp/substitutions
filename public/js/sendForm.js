@@ -168,7 +168,7 @@ function onLoadFunc(){
     });
 	if('serviceWorker' in navigator){
 		navigator.serviceWorker.register('/js/service-worker.js', {
-			scope: './'
+			scope: './js/'
 		});
     }
     
