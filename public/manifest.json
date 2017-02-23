@@ -1,11 +1,11 @@
 {
         "name": "Zastępstwa",
         "short_name": "Zastępstwa",
-        "start_url": "https://domek.emadar.eu/index",
+        "start_url": "/",
         "display": "standalone",
         "orientation": "any",
-        "theme_color": "#282936",
-        "background_color": "#1B1B24",
+        "theme_color": "#f4f4f4",
+        "background_color": "#fffcf4",
         "icons":
         [
                 {
