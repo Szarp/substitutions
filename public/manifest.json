@@ -1,0 +1,27 @@
+{
+        "name": "Zastępstwa",
+        "short_name": "Zastępstwa",
+        "start_url": "/",
+        "display": "standalone",
+        "orientation": "any",
+        "theme_color": "#f4f4f4",
+        "background_color": "#fffcf4",
+        "icons":
+        [
+                {
+                        "src": "img/icon1024.png",
+                        "sizes": "1024x1024",
+                        "type": "image/png"
+                },
+                {
+                        "src":"img/icon192.png",
+                        "sizes": "192x192",
+                        "type": "image/png"
+                },
+				{
+				        "src": "img/icon144.png",
+						"sizes": "144x144",
+						"type": "image/png"
+				}
+        ]
+}
