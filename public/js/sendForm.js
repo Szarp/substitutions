@@ -166,6 +166,11 @@ function onLoadFunc(){
         //set.saveData(settings1);
     requestForChanges('today'); 
     });
+	if('serviceWorker' in navigator){
+		navigator.serviceWorker.register('/js/service-worker.js', {
+			scope: './'
+		});
+    }
     
     //console.log(settings1);
 }
