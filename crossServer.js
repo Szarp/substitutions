@@ -19,7 +19,8 @@ var express = require('express'),
     session = require(__dirname + '/myModules/userSession.js'),
     link = require(__dirname+'/myModules/fbLinks.js'),
     config = require(__dirname+'/myModules/config'),
-	messenger = require(__dirname+'/myModules/messengerBot.js');
+	messenger = require(__dirname+'/myModules/messengerBot.js'),
+	compression = require('compression');
    // querystring = require('querystring');
 //var substitution = new jsonFromHtml();
 //var user= new userMod();
@@ -59,6 +60,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
+app.use(compression());
 
 
 //setting cookie on first login

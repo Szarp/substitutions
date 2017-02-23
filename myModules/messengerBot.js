@@ -82,8 +82,13 @@ function sendSubstitutions(senderID, message){
 				});
 				createButtons([['web_url', 'https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/messages', 'Odpowiedz'],['web_url', 'https://m.facebook.com/messages/?pageID=573446562859405', 'Odpowiedz z tel']], function(buttons){
 					facebook.messengerUserInfo(senderID, function(userData){
+						if(oMessage[1]==' ' || oMessage[1]=='.' || oMessage[1]==','){
+							var uMessage=oMessage.substring(2);
+						}else{
+							var uMessage=oMessage.substring(1);
+						}
 						var content={
-							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + oMessage.substring(1),
+							text: 'nowa wiadomość od ' + userData['first_name'] + ' ' + userData['last_name'] + ':\n' + uMessage,
 							buttons: buttons
 						}
 						createMessage('generic', adm1, content, function(messageTS){
