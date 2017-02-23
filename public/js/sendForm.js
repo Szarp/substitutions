@@ -167,7 +167,7 @@ function onLoadFunc(){
     requestForChanges('today'); 
     });
 	if('serviceWorker' in navigator){
-		navigator.serviceWorker.register('/js/service-worker.js', {
+		navigator.serviceWorker.register('/service-worker.js', {
 			scope: './'
 		});
     }
