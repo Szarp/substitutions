@@ -320,7 +320,7 @@ setInterval(function(){
 
  setTimeout(function(){
      cookie.deleteOld();    
- },1000*60*60*3);
+ },1000*60*60*24*30);
 
 
 
