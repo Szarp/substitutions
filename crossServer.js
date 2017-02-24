@@ -71,7 +71,7 @@ app.use(function (req, res, next) {
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2,randomNumber.length);
-        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*120, httpOnly: false });
+        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: false });
         console.log('cookie created successfully');
     } 
     else{
@@ -251,7 +251,7 @@ setInterval(function(){
 
  setTimeout(function(){
      cookie.deleteOld();    
- },1000*60*60*3);
+ },1000*60*60*24*30);
 
 
 
