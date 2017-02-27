@@ -127,7 +127,7 @@ function sendSubstitutions(senderID, message){
 					'text': help,
 					'buttons': buttons
 				}
-				createMessage('text', senderID, content, function(messageTS){
+				createMessage('generic', senderID, content, function(messageTS){
 					callSendAPI(messageTS);
 				});
 			});
