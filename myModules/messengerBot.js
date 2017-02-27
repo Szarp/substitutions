@@ -122,8 +122,14 @@ function sendSubstitutions(senderID, message){
 			break;*/
 		default:
 			body['mode']='NO';
-			createMessage('text', senderID, help, function(messageTS){
-				callSendAPI(messageTS);
+			createButtons([['postback', 'example', 'Przykład']], function(buttons){
+				var content={
+					'text': help,
+					'buttons': buttons
+				}
+				createMessage('text', senderID, content, function(messageTS){
+					callSendAPI(messageTS);
+				});
 			});
 			break;
 	};
@@ -183,61 +189,73 @@ function sendList(senderID, message){
 		'mode': 'getChanges',
 		'param': 'today'
 	};
-	if(message[0]=='1'){
-		body['param']='tomorrow';
-	}
-	var reqClass = message[2] + message[3];
-	if(reqClass[1]=='g'){
-		reqClass += message[4];
-	}
-	manageUsers.postCall('0000', body, function(obj){
-		var subs = obj['substitution'];
-		var msg = "";
-		for(var i = 0; i < subs.length; i++){
-			var oneSub = subs[i];
-			if(oneSub.classes == reqClass){
-				var changes = oneSub['changes'];
-				if(oneSub.cancelled[0]){
-					msg+='anulowanie';
-				} else {
-					msg+='Typ: ' + oneSub.substitution_types;
-				}
-				msg+='\nLekcja: ' + oneSub.periods;
-				msg+='\nNauczyciel: ' + oneSub.teachers;
-				if(changes){
-					if(changes.teachers){
-						msg+=' => ' + changes.teachers;
-					}
-				}
-				msg+='\nPrzedmiot: ' + oneSub.subjects;
-				if(changes){
-					if(changes.subjects){
-						msg+= ' => ' + changes.subjects;
-					}
-				}
-				msg+='\nSala: ' + oneSub.classrooms;
-				if(changes){
-					if(changes.classrooms){
-						msg+=' => ' + changes.classrooms;
-					}
-				}
-				if(oneSub.groupnames){
-					if(oneSub.groupnames != ""){
-						msg+='\nGrupa: ' + oneSub.groupnames;
-					}
-				}
-				if(oneSub.note){
-					if(oneSub.note != ""){
-						msg+='\nKomentarz: '  + oneSub.note;
-					}
-				}
-				createMessage('text', senderID, msg, function(messageTS){
-					callSendAPI(messageTS);
-				});
-				msg='';
-			}
+	if(message=='example'){
+		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
+			callSendAPI(messageTS);
+		});
+		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na jutro dla klasy 2gc:\n1 2gc', function(messageTS){
+			callSendAPI(messageTS);
+		});
+		createMessage('text', senderID, 'Mam jakąś propozycję/pytanie:\n2 Możecie poprawić ??? na stronie i w bocie zmienić ???', function(messageTS){
+			callSendAPI(messageTS);
+		});
+	}else{
+		if(message[0]=='1'){
+			body['param']='tomorrow';
 		}
-	});
+		var reqClass = message[2] + message[3];
+		if(reqClass[1]=='g'){
+			reqClass += message[4];
+		}
+		manageUsers.postCall('0000', body, function(obj){
+			var subs = obj['substitution'];
+			var msg = "";
+			for(var i = 0; i < subs.length; i++){
+				var oneSub = subs[i];
+				if(oneSub.classes == reqClass){
+					var changes = oneSub['changes'];
+					if(oneSub.cancelled[0]){
+						msg+='anulowanie';
+					} else {
+						msg+='Typ: ' + oneSub.substitution_types;
+					}
+					msg+='\nLekcja: ' + oneSub.periods;
+					msg+='\nNauczyciel: ' + oneSub.teachers;
+					if(changes){
+						if(changes.teachers){
+							msg+=' => ' + changes.teachers;
+						}
+					}
+					msg+='\nPrzedmiot: ' + oneSub.subjects;
+					if(changes){
+						if(changes.subjects){
+							msg+= ' => ' + changes.subjects;
+						}
+					}
+					msg+='\nSala: ' + oneSub.classrooms;
+					if(changes){
+						if(changes.classrooms){
+							msg+=' => ' + changes.classrooms;
+						}
+					}
+					if(oneSub.groupnames){
+						if(oneSub.groupnames != ""){
+							msg+='\nGrupa: ' + oneSub.groupnames;
+						}
+					}
+					if(oneSub.note){
+						if(oneSub.note != ""){
+							msg+='\nKomentarz: '  + oneSub.note;
+						}
+					}
+					createMessage('text', senderID, msg, function(messageTS){
+						callSendAPI(messageTS);
+					});
+					msg='';
+				}
+			}
+		});
+	}
 }
 
 function receivedPostback(event) {
