@@ -63,7 +63,7 @@ function sendSubstitutions(senderID, message){
 	var oMessage=message;
 	message = message.toLowerCase();
 	var opt = message[0];
-	var help = 'Dostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
+	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc';
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
@@ -287,7 +287,7 @@ function receivedMessage(event) {
 
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
-	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 <klasa>" - zastępstwa dla klasy na dzisiaj\n"1 <klasa>" - zastępstwa dla klasy na jutro\n"2 <pytanie>" - pomoc';
+	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc';
 	/*facebook.messengerUserInfo(senderID, function(userData){
 		console.log(userData);
 		console.log('Wiadomość od ' + userData['first_name'] + ' ' + userData['last_name']);
