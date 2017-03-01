@@ -18,6 +18,35 @@ function messengerUserInfo(id,callback){
         });
     });
 }
+function messengerSavePerson(id,callback){
+    var collection ='messengerPerson';
+    messengerUserInfo(id,function(params){
+        var picture = params['profile_pic'];
+        var name = params['first_name']+' '+params['last_name'];
+        var time = new Date().getTime();
+        mongo.findById(id,collection,function(e,doc){
+            if(!doc){
+            mongo.save([collection,{_id:id,settings:'',name:name,picture:picture,id:id,lastLogin:time,fromWhen:time}],function(){
+                //console.log('person saved');
+                setImmediate(function() {
+                    callback();
+                });    
+            });
+            }
+            else{
+                mongo.modifyById(id,collection,{name:name,picture:picture,lastLogin:time},function(){
+                //console.log('person was before');
+                setImmediate(function() {
+                    callback();
+                });    
+                })
+
+            }
+        })       
+    });
+    
+}
+
 
 
 function createPersonToken(code,callback){
