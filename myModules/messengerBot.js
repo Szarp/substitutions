@@ -302,7 +302,7 @@ function receivedMessage(event) {
 		});
 	}
 	facebook.messengerSavePerson(senderID, function(res){
-		console.log('zdj msg:' + res);
+		console.log('saving done');
 	});
 }
 
