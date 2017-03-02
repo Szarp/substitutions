@@ -119,12 +119,45 @@ function getPicture(token,callback){
     
     
 }
+/*
+var somePattern = {
+    personal:{
+        id: '',
+        token: '',
+        settings: { setClass: '2d', notification: 'yes' },
+        name: '',
+        picture: ''
+    },
+    system:{
+        secret : "",
+        connected : false,
+        lastLogin : 0,
+        fromWhen : 0
+    }
+}
+*/
 function savePerson(id,token,name,picture,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(err,doc){
         console.log('doc',doc);
+        var pattern ={
+            _id:id,
+            personal:{
+                id: id,
+                token: token,
+                settings: { setClass: '', notification: 'no' },
+                name: name,
+                picture: picture
+            },
+            system:{
+                secret : "",
+                connected : false,
+                lastLogin : 0,
+                fromWhen : 0
+            }
+        }
         if(!doc){
-            mongo.save([collection,{_id:id,token:token,settings:'',name:name,picture:picture}],function(){
+            mongo.save([collection,pattern],function(){
                 console.log('person saved');
                 setImmediate(function() {
                     callback();
@@ -132,7 +165,7 @@ function savePerson(id,token,name,picture,callback){
             });
         }
         else{
-            mongo.modifyById(id,collection,{name:name,picture:picture},function(){
+            mongo.modifyById(id,collection,{peronal:{name:name,picture:picture}},function(){
             console.log('person was before');
             setImmediate(function() {
                 callback();
