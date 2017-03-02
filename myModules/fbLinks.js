@@ -5,7 +5,10 @@ links to some facebook reqests
 
 */
 
-    
+    function messengerApi(userId){
+        return 'https://graph.facebook.com/v2.6/'+userId+'?fields=first_name,last_name,profile_pic&access_token='+config.pageToken;
+        
+    }
     function loginAttempt(permissions){ //opens a facebook dialog window, returns code 
         var redirect='/redirect';
         return  'https://www.facebook.com/v2.8/dialog/oauth?'+'client_id='+config.clientId+'&redirect_uri='+config.url+redirect+'&scope='+permissions;
@@ -84,3 +87,4 @@ function tokenToLong(shortToken){ //exchange short to long-life token
     exports.userInfo = userInfo;
     exports.notification = notification;
     exports.tokenToLong = tokenToLong;
+    exports.messengerApi = messengerApi;

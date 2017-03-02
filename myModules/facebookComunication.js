@@ -7,6 +7,48 @@ var link = require('./fbLinks.js');
 Make requests to facebook server
 
 */
+function messengerUserInfo(id,callback){
+    
+    request(link.messengerApi(id), function (e, r, body){
+        if(e){console.log('req problem: '+e);}
+        //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
+        //console.log(body);
+        setImmediate(function() {
+                callback(JSON.parse(body));
+        });
+    });
+}
+function messengerSavePerson(id,callback){
+    var collection ='messengerPerson';
+    messengerUserInfo(id,function(params){
+        var picture = params['profile_pic'];
+        var name = params['first_name']+' '+params['last_name'];
+        var time = new Date().getTime();
+        mongo.findById(id,collection,function(e,doc){
+            if(!doc){
+            mongo.save([collection,{_id:id,settings:'',name:name,picture:picture,id:id,lastLogin:time,fromWhen:time}],function(){
+                //console.log('person saved');
+                setImmediate(function() {
+                    callback();
+                });    
+            });
+            }
+            else{
+                mongo.modifyById(id,collection,{name:name,picture:picture,lastLogin:time},function(){
+                //console.log('person was before');
+                setImmediate(function() {
+                    callback();
+                });    
+                })
+
+            }
+        })       
+    });
+    
+}
+
+
+
 function createPersonToken(code,callback){
     
     request(link.userAccesToken(code), function (e, r, body){
@@ -77,12 +119,45 @@ function getPicture(token,callback){
     
     
 }
+/*
+var somePattern = {
+    personal:{
+        id: '',
+        token: '',
+        settings: { setClass: '2d', notification: 'yes' },
+        name: '',
+        picture: ''
+    },
+    system:{
+        secret : "",
+        connected : false,
+        lastLogin : 0,
+        fromWhen : 0
+    }
+}
+*/
 function savePerson(id,token,name,picture,callback){
     var collection = 'person';
     mongo.findById(id,collection,function(err,doc){
         console.log('doc',doc);
+        var pattern ={
+            _id:id,
+            personal:{
+                id: id,
+                token: token,
+                settings: { setClass: '', notification: 'no' },
+                name: name,
+                picture: picture
+            },
+            system:{
+                secret : "",
+                connected : false,
+                lastLogin : 0,
+                fromWhen : 0
+            }
+        }
         if(!doc){
-            mongo.save([collection,{_id:id,token:token,settings:'',name:name,picture:picture}],function(){
+            mongo.save([collection,pattern],function(){
                 console.log('person saved');
                 setImmediate(function() {
                     callback();
@@ -90,7 +165,7 @@ function savePerson(id,token,name,picture,callback){
             });
         }
         else{
-            mongo.modifyById(id,collection,{name:name,picture:picture},function(){
+            mongo.modifyById(id,collection,{peronal:{name:name,picture:picture}},function(){
             console.log('person was before');
             setImmediate(function() {
                 callback();
@@ -194,6 +269,7 @@ exports.savePerson=savePerson;
 exports.addName=addName;
 exports.getPicture=getPicture;
 exports.createPersonToken=createPersonToken;
+exports.messengerUserInfo=messengerUserInfo;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
