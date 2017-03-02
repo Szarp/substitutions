@@ -50,7 +50,7 @@ function createClassList(){
             assert.equal(null,err);
             var collection=db.collection(name);
             collection.find().forEach(function(doc){
-                console.log("hi",doc.settings);
+                console.log("hi",doc.personal.settings);
                 if(doc.settings =='' || doc.settings == undefined ||doc.settings == null){
                  //do nothing   
                 }

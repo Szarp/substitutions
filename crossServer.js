@@ -14,7 +14,7 @@ var express = require('express'),
     //assert = require('assert'),
     mongo=require(__dirname+'/myModules/mongoFunctions.js'),
     setTime = require(__dirname+'/myModules/setTime.js'),
-    facebook = require(__dirname+'/myModules/facebookComunication.js'),
+    //facebook = require(__dirname+'/myModules/facebookComunication.js'),
     mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
     session = require(__dirname + '/myModules/userSession.js'),
     link = require(__dirname+'/myModules/fbLinks.js'),
@@ -174,12 +174,14 @@ app.post('/postCall',function(req,res){
         })
   
 })
+/*
 app.get('/test', function(req, res){
 	facebook.personalData(token,'name',function(q){
 		console.log(q);   
 	});
     res.send('okk');
 });
+*/
 //facebook.savePerson('0000','token',function(){})
 app.get('/redirect', function(req, res){
     //res.redirect('/index');

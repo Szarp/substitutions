@@ -24,7 +24,7 @@ function redirect(req,callback){
                     console.log('test name',name);
                     facebook.getPicture(token,function(picture){
                         console.log('test pic',picture);
-                        facebook.savePerson(id,token,name,picture,function(){
+                        facebook.facebookSavePerson(id,name,picture,function(){
                             
                             setImmediate(function() {
                                 callback(id);
@@ -97,7 +97,7 @@ function postCall(userId,body,callback){
             mongo.findById(userId,'person',function(err,doc){
                 if (err){console.log('prolem with settings: ',userId)};
                 console.log('Settings file: ',doc);
-                var params = (doc['settings']);
+                var params = (doc.personal['settings']);
                 if(params == ''){params={setClass:'all',notification:'no'}}
                 var table=[];
                 table[0]=params.setClass;
@@ -170,7 +170,7 @@ function postCall(userId,body,callback){
                 var form={};
                 form['setClass'] = body.setClass;
                 form['notification'] = body.notification;
-                 mongo.modifyById(userId,'person',{settings:form},function(){
+                 mongo.modifyById(userId,'person',{"personal.settings":form},function(){
                     res = 'ok';
                     setImmediate(function() {
                         callback(res);
@@ -190,8 +190,8 @@ function postCall(userId,body,callback){
                  mongo.findById(userId,'person',function(err,obj){
                 //console.log(err,obj);
                 if(err){console.log('err in sending picture')}
-                     console.log('some fond object:',obj.picture);
-                res = obj['picture'];
+                     console.log('some fond object:',obj.personal.picture); //found? weź się naucz anglijskiego
+                res = obj.personal.picture;
                 setImmediate(function() {
                     callback(res);
                 });
