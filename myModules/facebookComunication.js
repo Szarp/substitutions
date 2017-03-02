@@ -23,26 +23,57 @@ function messengerSavePerson(id,callback){
     messengerUserInfo(id,function(params){
         var picture = params['profile_pic'];
         var name = params['first_name']+' '+params['last_name'];
-        var time = new Date().getTime();
-        mongo.findById(id,collection,function(e,doc){
-            if(!doc){
-            mongo.save([collection,{_id:id,settings:'',name:name,picture:picture,id:id,lastLogin:time,fromWhen:time}],function(){
+        //var time = new Date().getTime();
+        var paramsToSave = {
+            id:id,
+            picture:picture,
+            name:name,
+        }
+        addPersonToCollection(collection,paramsToSave,function(status){
+            console.log('Person '+id+ ' '+status);
+            setImmediate(function() {
+                callback(json.picture.data['url']);
+            }); 
+        })
+    });
+}
+function addPersonToCollection(collection,params,callback){
+    //var id = params.id;
+    var time = new Date().getTime();
+    mongo.findById(params.id,collection,function(err,doc){
+        //console.log('doc',doc);
+        var pattern ={
+            _id:params.id,
+            personal:{
+                id: params.id,
+                //token: token,
+                settings: { setClass: '', notification: 'no' },
+                name: params.name,
+                picture: params.picture
+            },
+            system:{
+                secret : "",
+                connected : false,
+                lastLogin : time,
+                fromWhen : time
+            }
+        }
+        if(!doc){
+            mongo.save([collection,pattern],function(){
                 //console.log('person saved');
                 setImmediate(function() {
-                    callback();
+                    callback('saved');
                 });    
             });
-            }
-            else{
-                mongo.modifyById(id,collection,{name:name,picture:picture,lastLogin:time},function(){
-                //console.log('person was before');
+        }
+        else{
+            mongo.modifyById(params.id,collection,{"personal.name":params.name,"personal.picture":params.picture,"system.lastLogin":time},function(){
+            //console.log('person was before');
                 setImmediate(function() {
-                    callback();
+                    callback('was before');
                 });    
-                })
-
-            }
-        })       
+            })
+        }
     });
     
 }
@@ -136,46 +167,19 @@ var somePattern = {
     }
 }
 */
-function savePerson(id,token,name,picture,callback){
+function facebookSavePerson(id,name,picture,callback){
     var collection = 'person';
-    mongo.findById(id,collection,function(err,doc){
-        console.log('doc',doc);
-        var pattern ={
-            _id:id,
-            personal:{
-                id: id,
-                token: token,
-                settings: { setClass: '', notification: 'no' },
-                name: name,
-                picture: picture
-            },
-            system:{
-                secret : "",
-                connected : false,
-                lastLogin : 0,
-                fromWhen : 0
-            }
-        }
-        if(!doc){
-            mongo.save([collection,pattern],function(){
-                console.log('person saved');
-                setImmediate(function() {
-                    callback();
-                });    
-            });
-        }
-        else{
-            mongo.modifyById(id,collection,{peronal:{name:name,picture:picture}},function(){
-            console.log('person was before');
-            setImmediate(function() {
+    var paramsToSave = {
+        id:id,
+        picture:picture,
+        name:name,
+    }
+    addPersonToCollection(collection,paramsToSave,function(status){
+        console.log('Person '+id+ ' '+status);
+        setImmediate(function() {
                 callback();
-            });    
-            })
-              
-        }
-    });
-
-    
+        }); 
+    })
 }
 /*
 
@@ -265,11 +269,14 @@ exports.createNotification = createNotification;
 exports.tokenToLongLife = tokenToLongLife;
 exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoAboutToken=getInfoAboutToken;
-exports.savePerson=savePerson;
+exports.facebookSavePerson=facebookSavePerson;
 exports.addName=addName;
+exports.addPersonToCollection=addPersonToCollection;
 exports.getPicture=getPicture;
 exports.createPersonToken=createPersonToken;
+exports.createPersonToken=createPersonToken;
 exports.messengerUserInfo=messengerUserInfo;
+exports.messengerSavePerson=messengerSavePerson;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
