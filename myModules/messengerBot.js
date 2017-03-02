@@ -301,6 +301,9 @@ function receivedMessage(event) {
 			callSendAPI(messageTS);
 		});
 	}
+	facebook.messengerSavePerson(senderID, function(res){
+		console.log('saving done');
+	});
 }
 
 function callSendAPI(messageData) {

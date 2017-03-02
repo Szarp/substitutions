@@ -31,8 +31,8 @@ function messengerSavePerson(id,callback){
         }
         addPersonToCollection(collection,paramsToSave,function(status){
             console.log('Person '+id+ ' '+status);
-            setImmediate(function() {
-                callback(json.picture.data['url']);
+            setImmediate(function(){
+					callback();
             }); 
         })
     });
