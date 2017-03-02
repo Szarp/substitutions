@@ -32,7 +32,11 @@ function messengerSavePerson(id,callback){
         addPersonToCollection(collection,paramsToSave,function(status){
             console.log('Person '+id+ ' '+status);
             setImmediate(function(json){
-                callback(json.picture.data['url']);
+				if(json){
+					callback(json.picture.data['url']);
+				} else {
+					callback('JSON is undefined');
+				}
             }); 
         })
     });
