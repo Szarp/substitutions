@@ -190,8 +190,8 @@ function postCall(userId,body,callback){
                  mongo.findById(userId,'person',function(err,obj){
                 //console.log(err,obj);
                 if(err){console.log('err in sending picture')}
-                     console.log('some fond object:',obj.personal.picture);
-                res = obj['picture'];
+                     console.log('some fond object:',obj.personal.picture); //found? weź się naucz anglijskiego
+                res = obj.personal.picture;
                 setImmediate(function() {
                     callback(res);
                 });
