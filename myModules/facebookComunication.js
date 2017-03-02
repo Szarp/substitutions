@@ -40,7 +40,7 @@ function messengerSavePerson(id,callback){
 function addPersonToCollection(collection,params,callback){
     //var id = params.id;
     var time = new Date().getTime();
-    mongo.findById(id,collection,function(err,doc){
+    mongo.findById(params.id,collection,function(err,doc){
         //console.log('doc',doc);
         var pattern ={
             _id:params.id,
@@ -67,7 +67,7 @@ function addPersonToCollection(collection,params,callback){
             });
         }
         else{
-            mongo.modifyById(id,collection,{peronal:{name:params.name,picture:params.picture},system:{lastLogin:time}},function(){
+            mongo.modifyById(params.id,collection,{"personal.name":params.name,"personal.picture":params.picture,"system.lastLogin":time},function(){
             //console.log('person was before');
                 setImmediate(function() {
                     callback('was before');
@@ -167,7 +167,7 @@ var somePattern = {
     }
 }
 */
-function savePerson(id,token,name,picture,callback){
+function facebookSavePerson(id,token,name,picture,callback){
     var collection = 'person';
     var paramsToSave = {
         id:id,
@@ -269,11 +269,14 @@ exports.createNotification = createNotification;
 exports.tokenToLongLife = tokenToLongLife;
 exports.checkIfLongTokenExist = checkIfLongTokenExist;
 exports.getInfoAboutToken=getInfoAboutToken;
-exports.savePerson=savePerson;
+exports.facebookSavePerson=facebookSavePerson;
 exports.addName=addName;
+exports.addPersonToCollection=addPersonToCollection;
 exports.getPicture=getPicture;
 exports.createPersonToken=createPersonToken;
+exports.createPersonToken=createPersonToken;
 exports.messengerUserInfo=messengerUserInfo;
+exports.messengerSavePerson=messengerSavePerson;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
