@@ -301,6 +301,9 @@ function receivedMessage(event) {
 			callSendAPI(messageTS);
 		});
 	}
+	messengerSavePerson(senderID, function(res){
+		console.log('zdj msg:' + res);
+	});
 }
 
 function callSendAPI(messageData) {
