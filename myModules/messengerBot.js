@@ -301,7 +301,7 @@ function receivedMessage(event) {
 			callSendAPI(messageTS);
 		});
 	}
-	messengerSavePerson(senderID, function(res){
+	facebook.messengerSavePerson(senderID, function(res){
 		console.log('zdj msg:' + res);
 	});
 }
