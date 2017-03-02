@@ -167,7 +167,7 @@ var somePattern = {
     }
 }
 */
-function facebookSavePerson(id,token,name,picture,callback){
+function facebookSavePerson(id,name,picture,callback){
     var collection = 'person';
     var paramsToSave = {
         id:id,
