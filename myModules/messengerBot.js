@@ -306,6 +306,14 @@ function receivedMessage(event) {
 	}
 	facebook.messengerSavePerson(senderID, function(res){
 		console.log('saving done');
+		if(res==='saved'){
+			messengerUserInfo(senderID, function(userData){
+				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
+				createMessage('text', adm1, txt, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			});
+		}
 	});
 }
 
