@@ -4,7 +4,7 @@ var MongoClient = require('mongodb').MongoClient,
     Module to comunicate with mongo
     
     */
-function findByParam(paramAndValue,collectionName,callback){
+function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
     var url = 'mongodb://localhost:27017/test2';
     MongoClient.connect(url, function(err, db) {
         assert.equal(null,err);
@@ -13,7 +13,7 @@ function findByParam(paramAndValue,collectionName,callback){
         //var x =collection.find({});
         //console.log('x',x);
         //var buffer=[];
-        collection.find(paramAndValue,{"system.secret":1}).toArray(function(e, doc) {
+        collection.find(paramAndValue,paramsToDisplay).toArray(function(e, doc) {
               //console.log(doc);
             if(doc){
                 //console.log(doc);
