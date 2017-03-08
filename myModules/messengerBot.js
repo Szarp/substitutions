@@ -212,49 +212,61 @@ function sendList(senderID, message){
 			var msg = "";
 			for(var i = 0; i < subs.length; i++){
 				var oneSub = subs[i];
-				var classIDs = oneSub.classes;
-				for(var n = 0; n < classIDs.length; n++){
-					if(classIDs[n] == reqClass){
-						var changes = oneSub['changes'];
-						if(oneSub.cancelled[0]){
-							msg+='anulowanie';
-						} else {
-							msg+='Typ: ' + oneSub.substitution_types;
-						}
-						msg+='\nLekcja: ' + oneSub.periods;
-						msg+='\nNauczyciel: ' + oneSub.teachers;
-						if(changes){
-							if(changes.teachers){
-								msg+=' => ' + changes.teachers;
+				if(oneSub != 'no substitutions'){
+					var classIDs = oneSub.classes;
+					for(var n = 0; n < classIDs.length; n++){
+						if(classIDs[n] == reqClass){
+							var changes = oneSub['changes'];
+							if(oneSub.cancelled[0]){
+								msg+='anulowanie';
+							} else {
+								msg+='Typ: ' + oneSub.substitution_types;
 							}
-						}
-						msg+='\nPrzedmiot: ' + oneSub.subjects;
-						if(changes){
-							if(changes.subjects){
-								msg+= ' => ' + changes.subjects;
+							msg+='\nLekcja: ' + oneSub.periods;
+							msg+='\nNauczyciel: ' + oneSub.teachers;
+							if(changes){
+								if(changes.teachers){
+									msg+=' => ' + changes.teachers;
+								}
 							}
-						}
-						msg+='\nSala: ' + oneSub.classrooms;
-						if(changes){
-							if(changes.classrooms){
-								msg+=' => ' + changes.classrooms;
+							msg+='\nPrzedmiot: ' + oneSub.subjects;
+							if(changes){
+								if(changes.subjects){
+									msg+= ' => ' + changes.subjects;
+								}
 							}
-						}
-						if(oneSub.groupnames){
-							if(oneSub.groupnames != ""){
-								msg+='\nGrupa: ' + oneSub.groupnames;
+							msg+='\nSala: ' + oneSub.classrooms;
+							if(changes){
+								if(changes.classrooms){
+									msg+=' => ' + changes.classrooms;
+								}
 							}
-						}
-						if(oneSub.note){
-							if(oneSub.note != ""){
-								msg+='\nKomentarz: '  + oneSub.note;
+							if(oneSub.groupnames){
+								if(oneSub.groupnames != ""){
+									msg+='\nGrupa: ' + oneSub.groupnames;
+								}
 							}
+							if(oneSub.note){
+								if(oneSub.note != ""){
+									msg+='\nKomentarz: '  + oneSub.note;
+								}
+							}
+							createMessage('text', senderID, msg, function(messageTS){
+								callSendAPI(messageTS);
+							});
+							msg='';
 						}
-						createMessage('text', senderID, msg, function(messageTS){
-							callSendAPI(messageTS);
-						});
-						msg='';
 					}
+				} else {
+					if(message[0] == 0){
+						var dayToMSG = 'dzisiaj.';
+					} else {
+						var dayToMSG = 'jutro.';
+					}
+					var msg = 'Brak danych na ' + dayToMSG;
+					createMessage('text', senderID, msg, function(messageTS){
+						callSendAPI(messageTS);
+					});
 				}
 			}
 		});
