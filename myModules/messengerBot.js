@@ -212,7 +212,7 @@ function sendList(senderID, message){
 			var msg = "";
 			for(var i = 0; i < subs.length; i++){
 				var oneSub = subs[i];
-				if(oneSub != 'no substitutions'){
+				if(oneSub){
 					var classIDs = oneSub.classes;
 					for(var n = 0; n < classIDs.length; n++){
 						if(classIDs[n] == reqClass){
