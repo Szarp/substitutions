@@ -1,17 +1,90 @@
 var mongo=require('./mongoFunctions.js');
 
-
-
-function matchTokens(collection,token,callback){
-    var collectionList={peson:'messengerPerson',messengerPerson:'person':}
-    mongo.findByParam({"system.connected":false,"system.secret":token} ,{"system.secret":"1"},collection,function(a){
-        if(a.length == 1){
-            var person =a.secret;
-            var time = new Date().getTime()
-            if(person.expirationTime-time>0){
+//ret: boolen true if tokens matches
+function appCheck(appId,token,callback){ //authorization of tokens
+    //appId String
+    //token number
+    var medium = 'messengerPerson';
+        matchTokens(medium,token,function(match){
+            if(match != null){
+                connectAcconts(appId,match,function(){
+                    setImmediate(function(){
+                        callback(true);
+                    });
+                })
+            }
+            else{
                 setImmediate(function(){
-		          //console.log(buttons);
-		              callback(person._id);
+                    callback(false);
+                });
+            }
+        });
+    }    
+//ret: boolen true if tokens matches
+function messCheck(messId,token,callback){ //authorization of tokens form Messenger
+    //appId String
+    //token number
+    var medium = 'person';
+        matchTokens(medium,token,function(match){
+            if(match != null){
+                connectAcconts(appId,match,function(){
+                    setImmediate(function(){
+                        callback(true);
+                    });
+                })
+            }
+            else{
+                setImmediate(function(){
+                    callback(false);
+                });
+            }
+        });
+    }    
+//ret: String token
+function appRequest(appId,callback){ //request for token from app
+    //appId String
+    var medium = 'person';
+    saveAndGenerate(medium,appId,function(token){
+        setImmediate(function(){
+            callback(token);
+        });    
+    });
+}
+//ret: String token
+function messRequest(appId,callback){ //request for token from Messenger
+    //appId String
+    var medium = 'messengerPerson';
+    saveAndGenerate(medium,appId,function(token){
+        setImmediate(function(){
+            callback(token);
+        });    
+    });
+}
+//ret: ()
+function connectAcconts(appId,messId,callback){ //connect acconts by id
+    //id String
+    mongo.modifyById(messId,'messengerPerson',{'system.connected':true},function(){
+        mongo.modifyById(appId,'person',{'system.connected':true,'personal.id':messId},function(){
+            setImmediate(function(){
+                callback();
+            });
+        });
+    });
+}
+
+//ret: String id or null
+function matchTokens(medium,token,callback){ //checking if exist same tokens
+    //medium string {person; messengerPerson}
+    //token number
+    //searching by secret token
+    mongo.findByParam({"system.connected":false,"system.secret":token} ,{"system.secret":"1"},medium,function(a){
+        if(a.length == 1){ //if exist one element
+            var person =a[0].secret;
+            var time = new Date().getTime()
+            if(person.expirationTime-time>0){ //if expiration time is longer 
+                setImmediate(function(){
+		//console.log(buttons);
+                    callback(person._id);
                 });
             }
             else{
@@ -27,56 +100,63 @@ function matchTokens(collection,token,callback){
                 callback(null);
             });
         }
-    //console.log('hi there');
-    //console.log('a',a);
     });
 }
-function ifMatches(collection,matchingId,callback){
-    
-    
-}
-
-//mongoTest();
-var token ={
+//arrExample: token
+var token ={ 
     secret:'12345',
-    expirationTime:'time+2h',
+    expirationTime:'time+24h',
     
 }
 
-function compareTokens(pattern,token,callback){
-    //var resp = "";
-    var time = new Date().getTime();
-    if(pattern.secret == token){
-        //resp="tok"
-        if(pattern.expirationTime < time){
-            setImmediate(function(){
-		//console.log(buttons);
-                callback(true);
-            });
+//ret: token secret 
+function saveAndGenerate(medium,userId,callback){ //saving new token to id form medium
+    //medium string {person; messengerPerson}
+    //id string
+    mongo.findById(userId,medium,function(e,doc){ //protection for neer-time-tokens
+        console.log(doc);
+        if(doc.system.secret != ''){
+            var time = new Date().getTime()+1000*60*60*24;
+            var lastTime = doc.system.secret.time;
+            if(time-lastTime>1000*60*5){ //wait 5 min after creation newer
+                tokenGenerator(function(secret){
+                    mongo.modifyById(userId,medium,{'system.secret':secret},function(){
+                        setImmediate(function(){
+                          callback(secret.token);
+                       });
+                    });  
+                });
+            }
+            else{
+                setImmediate(function(){
+                    callback(doc.system.secret.token);
+                });
+            }
         }
-    }
-    else{
-        setImmediate(function(){
-		//console.log(buttons);
-		  callback(false);
-        });
-    }
+        else{
+            tokenGenerator(function(secret){
+                mongo.modifyById(userId,medium,{'system.secret':secret},function(){
+                    setImmediate(function(){
+                      callback(secret.token);
+                   });
+                });  
+            });
+        } 
+    });
+    
 }
-
-function generateSecretToken(callback){
-//var pattern = "abcdefghijklmnoprstuwxyz1234567890"; //34 znaki
-  //  var hash = 0;
-    //for(var i=0;i<5;i++){
-        var time = new Date().getTime()+1000*60*24;
-        var index = Math.floor(Math.random()*100000);
-        //hash+=pattern.charAt(index);
-        
-    //}
+//ret: array with secret and time
+function tokenGenerator(callback){  //generates secret token and adds time
+    var time = new Date().getTime()+1000*60*60*24;
+    var index = Math.floor(Math.random()*100000);
     setImmediate(function(){
-		//console.log(buttons);
-		callback(index,time);
+		callback({token:index,time:time});
 	});
 }
-function saveSecretToken(){
-    
-}
+exports.appCheck = appCheck;
+exports.messCheck = messCheck;
+exports.appRequest = appRequest;
+exports.messRequest = messRequest;
+exports.matchTokens = matchTokens;
+exports.saveAndGenerate = saveAndGenerate;
+exports.tokenGenerator = tokenGenerator;
