@@ -210,10 +210,11 @@ function sendList(senderID, message){
 		manageUsers.postCall('0000', body, function(obj){
 			var subs = obj['substitution'];
 			var msg = "";
+			var nd = 0;
 			for(var i = 0; i < subs.length; i++){
 				var oneSub = subs[i];
-				if(oneSub){
-					var classIDs = oneSub.classes;
+				var classIDs = oneSub.classes;
+				if(classIDs){
 					for(var n = 0; n < classIDs.length; n++){
 						if(classIDs[n] == reqClass){
 							var changes = oneSub['changes'];
@@ -257,7 +258,7 @@ function sendList(senderID, message){
 							msg='';
 						}
 					}
-				} else {
+				} else if(nd == 0) {
 					if(message[0] == 0){
 						var dayToMSG = 'dzisiaj.';
 					} else {
@@ -267,6 +268,7 @@ function sendList(senderID, message){
 					createMessage('text', senderID, msg, function(messageTS){
 						callSendAPI(messageTS);
 					});
+					nd = 1;
 				}
 			}
 		});
