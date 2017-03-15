@@ -27,7 +27,7 @@ function messCheck(messId,token,callback){ //authorization of tokens form Messen
     var medium = 'person';
         matchTokens(medium,token,function(match){
             if(match != null){
-                connectAcconts(appId,match,function(){
+                connectAcconts(match,messId,function(){
                     setImmediate(function(){
                         callback(true);
                     });
@@ -77,14 +77,17 @@ function matchTokens(medium,token,callback){ //checking if exist same tokens
     //medium string {person; messengerPerson}
     //token number
     //searching by secret token
-    mongo.findByParam({"system.connected":false,"system.secret":token} ,{"system.secret":"1"},medium,function(a){
+    mongo.findByParam({"system.connected":false,"system.secret.token":token} ,{"system.secret":"1"},medium,function(a){
+        //console.log('is thre some person',a[0]);
         if(a.length == 1){ //if exist one element
-            var person =a[0].secret;
+            var person =a[0].system.secret;
+            //console.log('is there token',person);
             var time = new Date().getTime()
-            if(person.expirationTime-time>0){ //if expiration time is longer 
+            if(person.time-time>0){ //if expiration time is longer 
+                console.log('how about time');
                 setImmediate(function(){
 		//console.log(buttons);
-                    callback(person._id);
+                    callback(a[0]._id);
                 });
             }
             else{
