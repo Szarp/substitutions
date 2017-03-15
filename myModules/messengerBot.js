@@ -210,48 +210,65 @@ function sendList(senderID, message){
 		manageUsers.postCall('0000', body, function(obj){
 			var subs = obj['substitution'];
 			var msg = "";
+			var nd = 0;
 			for(var i = 0; i < subs.length; i++){
 				var oneSub = subs[i];
-				if(oneSub.classes == reqClass){
-					var changes = oneSub['changes'];
-					if(oneSub.cancelled[0]){
-						msg+='anulowanie';
+				var classIDs = oneSub.classes;
+				if(classIDs){
+					for(var n = 0; n < classIDs.length; n++){
+						if(classIDs[n] == reqClass){
+							var changes = oneSub['changes'];
+							if(oneSub.cancelled[0]){
+								msg+='anulowanie';
+							} else {
+								msg+='Typ: ' + oneSub.substitution_types;
+							}
+							msg+='\nLekcja: ' + oneSub.periods;
+							msg+='\nNauczyciel: ' + oneSub.teachers;
+							if(changes){
+								if(changes.teachers){
+									msg+=' => ' + changes.teachers;
+								}
+							}
+							msg+='\nPrzedmiot: ' + oneSub.subjects;
+							if(changes){
+								if(changes.subjects){
+									msg+= ' => ' + changes.subjects;
+								}
+							}
+							msg+='\nSala: ' + oneSub.classrooms;
+							if(changes){
+								if(changes.classrooms){
+									msg+=' => ' + changes.classrooms;
+								}
+							}
+							if(oneSub.groupnames){
+								if(oneSub.groupnames != ""){
+									msg+='\nGrupa: ' + oneSub.groupnames;
+								}
+							}
+							if(oneSub.note){
+								if(oneSub.note != ""){
+									msg+='\nKomentarz: '  + oneSub.note;
+								}
+							}
+							createMessage('text', senderID, msg, function(messageTS){
+								callSendAPI(messageTS);
+							});
+							msg='';
+						}
+					}
+				} else if(nd == 0) {
+					if(message[0] == 0){
+						var dayToMSG = 'dzisiaj.';
 					} else {
-						msg+='Typ: ' + oneSub.substitution_types;
+						var dayToMSG = 'jutro.';
 					}
-					msg+='\nLekcja: ' + oneSub.periods;
-					msg+='\nNauczyciel: ' + oneSub.teachers;
-					if(changes){
-						if(changes.teachers){
-							msg+=' => ' + changes.teachers;
-						}
-					}
-					msg+='\nPrzedmiot: ' + oneSub.subjects;
-					if(changes){
-						if(changes.subjects){
-							msg+= ' => ' + changes.subjects;
-						}
-					}
-					msg+='\nSala: ' + oneSub.classrooms;
-					if(changes){
-						if(changes.classrooms){
-							msg+=' => ' + changes.classrooms;
-						}
-					}
-					if(oneSub.groupnames){
-						if(oneSub.groupnames != ""){
-							msg+='\nGrupa: ' + oneSub.groupnames;
-						}
-					}
-					if(oneSub.note){
-						if(oneSub.note != ""){
-							msg+='\nKomentarz: '  + oneSub.note;
-						}
-					}
+					var msg = 'Brak danych na ' + dayToMSG;
 					createMessage('text', senderID, msg, function(messageTS){
 						callSendAPI(messageTS);
 					});
-					msg='';
+					nd = 1;
 				}
 			}
 		});
@@ -303,6 +320,14 @@ function receivedMessage(event) {
 	}
 	facebook.messengerSavePerson(senderID, function(res){
 		console.log('saving done');
+		if(res==='saved'){
+			facebook.messengerUserInfo(senderID, function(userData){
+				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
+				createMessage('text', adm1, txt, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			});
+		}
 	});
 }
 
