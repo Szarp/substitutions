@@ -235,13 +235,16 @@ setInterval(function(){
     //        });
 ///*
  setTimeout(function () { 
-     time.tommorowIs();
-     myFunc.subs(time.displayTime(),function(y){
-         time.todayIs();
-         myFunc.subs(time.displayTime(),function(b){
-             console.log('downloaded changes');        
-         });                 
-     });
+    time.tommorowIs();
+    myFunc.subs(time.displayTime(),function(y){
+        time.todayIs();
+        myFunc.subs(time.displayTime(),function(b){
+            time.theDayAfterTomorrowIs();
+            myFunc.subs(time.displayTime(),function(x){
+                console.log('downloaded changes');
+            });
+        });               
+    });
  }, 1000);
 //*/
 
