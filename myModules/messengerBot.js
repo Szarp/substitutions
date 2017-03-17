@@ -136,7 +136,11 @@ function sendSubstitutions(senderID, message){
 			break;
 	};
 	if(day != ''){
-        var dayToMSG="";
+        if(opt == 0){
+			var dayToMSG = 'Dzisiaj';
+		}else{
+			var dayToMSG = 'Jutro';
+		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
                 createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
