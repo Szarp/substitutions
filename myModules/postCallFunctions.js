@@ -49,7 +49,7 @@ function getSettings(userId,callback){
     })        
 }
 
-function getChanges(userId,body,callback){ //resposne app's format changes
+function getChanges(body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
     }

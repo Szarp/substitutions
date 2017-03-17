@@ -101,7 +101,7 @@ function postCall(userId,body,callback){
             });        
         }
         else if(body.mode=='getChanges'){
-            callFunc.getChanges(userId,body,function(resText){
+            callFunc.getChanges(body,function(resText){
                 setImmediate(function() {
                     callback(resText);
                 });
