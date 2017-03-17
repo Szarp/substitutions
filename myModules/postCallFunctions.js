@@ -49,7 +49,7 @@ function getSettings(userId,callback){
     })        
 }
 
-function getChanges(userId,body,callback){
+function getChanges(body,callback){ //resposne app's format changes
                 //console.log('response Changes')
     if(body['param']=='today'){
         time.todayIs();
@@ -76,7 +76,7 @@ function getChanges(userId,body,callback){
         });
     });
 }
-function classList(body,callback){
+function classList(body,callback){ //response classList from day
                 //console.log('response Changes')
     if(body['param']=='today'){
         time.todayIs();
@@ -94,7 +94,8 @@ function classList(body,callback){
         });
     });
 }
-function message(userId,body,callback){
+//res:text
+function message(userId,body,callback){ //saves message from app
     mongo.save(['messages',{id:userId,message:body.param,time:new Date()}],function(){
         res = 'Dziękujemy za wiadomość';
         setImmediate(function() {
@@ -102,7 +103,10 @@ function message(userId,body,callback){
         });
     }); 
 }
-function saveSettings(userId,body,callback){
+//res: ok
+function saveSettings(userId,body,callback){ //saves settings from app
+    //userId String
+    //body Array 
     if(userId!="0000"){
         console.log('saving chnges to: '+userId);
         var form={};
@@ -122,7 +126,9 @@ function saveSettings(userId,body,callback){
         });
     }
 }
-function picture(userId,callback){
+//res: picture link
+function picture(userId,callback){ //res id's picture
+    //userId String
     if(userId != "0000"){
          mongo.findById(userId,'person',function(err,obj){
         //console.log(err,obj);
@@ -141,9 +147,82 @@ function picture(userId,callback){
         });
     }
 }
+//res: Table of messages to send
+function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
+    //reqClass String [class]
+    //day String [today;tommorow]
+    getChanges({param:day},function(obj){
+        //console.log(obj)
+        var tableOfMesseges=[];
+        var msg = "";
+        //console.log(obj);
+        if(obj['substitution'] != 'no substitutions'){
+            var subs = obj['substitution'];
+            for(var i = 0; i < subs.length; i++){
+                var oneSub = subs[i];
+                var classIDs = oneSub.classes;
+                if(classIDs){
+                    for(var n = 0; n < classIDs.length; n++){
+                        if(classIDs[n] == reqClass){
+                            var changes = oneSub['changes'];
+                            if(oneSub.cancelled[0]){
+                                msg+='anulowanie';
+                            }else {
+                                msg+='Typ: ' + oneSub.substitution_types;
+                            }
+                            msg+='\nLekcja: ' + oneSub.periods;
+                            msg+='\nNauczyciel: ' + oneSub.teachers;
+                            if(changes){
+                                if(changes.teachers){
+                                    msg+=' => ' + changes.teachers;
+                                }
+                            }
+                            msg+='\nPrzedmiot: ' + oneSub.subjects;
+                            if(changes){
+                                if(changes.subjects){
+                                    msg+= ' => ' + changes.subjects;
+                                }
+                            }
+                            msg+='\nSala: ' + oneSub.classrooms;
+                            if(changes){
+                                if(changes.classrooms){
+                                    msg+=' => ' + changes.classrooms;
+                                }
+                            }
+                            if(oneSub.groupnames){
+                                if(oneSub.groupnames != ""){
+                                    msg+='\nGrupa: ' + oneSub.groupnames;
+                                }
+                            }
+                            if(oneSub.note){
+                                if(oneSub.note != ""){
+                                    msg+='\nKomentarz: '  + oneSub.note;
+                                }
+                            }
+                            tableOfMesseges[tableOfMesseges.length]=msg;
+                            msg='';
+                        }
+                    }
+                }
+            }
+        }
+        setImmediate(function() {
+            callback(tableOfMesseges);
+        });
+    });
+}
+function tokenCheck(userId,body,callback){
+    
+    
+}
+function tokenGenerate(userId,body,callback){
+    
+    
+}
 exports.getSettings = getSettings;
 exports.getChanges = getChanges;
 exports.classList = classList;
 exports.message = message;
 exports.saveSettings = saveSettings;
 exports.picture = picture;
+exports.changesForMessenger = changesForMessenger
