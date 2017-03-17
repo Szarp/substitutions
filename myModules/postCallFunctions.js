@@ -49,8 +49,7 @@ function getSettings(userId,callback){
     })        
 }
 
-function getChanges(body,callback){ //resposne app's format changes
-                //console.log('response Changes')
+function getChanges(userId,body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
     }
@@ -71,7 +70,7 @@ function getChanges(body,callback){ //resposne app's format changes
 			objToSend['date']='ERROR';
         }
         res = objToSend;
-        setImmediate(function() {
+        setImmediate(function(){
             callback(res);
         });
     });
