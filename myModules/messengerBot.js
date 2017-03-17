@@ -2,6 +2,7 @@ var config = require('./config');
 var manageUsers = require('./manageUsers.js');
 var request = require('request');
 var facebook = require('./facebookComunication.js');
+var callFunc = require('./postCallFunctions.js');
 //var mongo = require('./mongoFunctions.js');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
@@ -56,6 +57,7 @@ function createButtons(tab, callback){
 }
 
 function sendSubstitutions(senderID, message){
+    var day ='today';
 	var body = {
 		'mode': 'classList',
 		'param': 'today'
@@ -72,10 +74,10 @@ function sendSubstitutions(senderID, message){
 		case '0':
 			break;
 		case '1':
-			body['param']='tomorrow'; //masz else, więc jak dam dobrze to przejdzie, chociaż ty piszesz źle
+			day='tomorrow'; //masz else, więc jak dam dobrze to przejdzie, chociaż ty piszesz źle
 			break;
 		case '2':
-			body['mode']='NO';
+			day='';
 			if(message.length>2){
 				createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 					callSendAPI(messageTS);
@@ -121,7 +123,7 @@ function sendSubstitutions(senderID, message){
 			});
 			break;*/
 		default:
-			body['mode']='NO';
+			day='';
 			createButtons([['postback', 'example', 'Przykład']], function(buttons){
 				var content={
 					'text': help,
@@ -133,7 +135,40 @@ function sendSubstitutions(senderID, message){
 			});
 			break;
 	};
-	if(body['mode'] != 'NO'){
+	if(day != ''){
+        var dayToMSG="";
+        callFunc.changesForMessenger(reqClass,day,function(allChanges){
+            if(allChanges.length != 0){
+                createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+					dayToMSG += ' Są zastępstwa dla klasy ' + reqClass;
+					var content={
+						text: dayToMSG,
+						buttons: buttons
+					}
+					createMessage('generic', senderID, content, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});   
+            }
+            else{
+                //var dayToMSG=''; 
+                if(allClasses.indexOf(reqClass) > -1){
+                    dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
+                }
+                else{
+                    for(var i = 1; i < allClasses.length; i++){
+								klasy += ', ' + allClasses[i];
+				    }
+			         dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+                }
+                createMessage('text', senderID, dayToMSG, function(messageTS){
+					callSendAPI(messageTS);
+				});
+            }
+            
+            
+        });
+    /*
 		manageUsers.postCall('0000', body, function(classes){
 			var is = 0;
 			for(var i = 0; i < classes.length; i++){
@@ -180,15 +215,17 @@ function sendSubstitutions(senderID, message){
 					callSendAPI(messageTS);
 				});
 			}
-		});
-	}
+		});*/
+	
+    }
 }
 
 function sendList(senderID, message){
-	var body = {
-		'mode': 'getChanges',
-		'param': 'today'
-	};
+    var day = 'today';
+//	var body = {
+//		'mode': 'getChanges',
+//		'param': 'today'
+//	};
 	if(message=='example'){
 		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			callSendAPI(messageTS);
@@ -201,12 +238,22 @@ function sendList(senderID, message){
 		});
 	}else{
 		if(message[0]=='1'){
-			body['param']='tomorrow';
+			day='tomorrow';
 		}
 		var reqClass = message[2] + message[3];
 		if(reqClass[1]=='g'){
 			reqClass += message[4];
 		}
+        callFunc.changesForMessenger(reqClass,day,function(allChanges){
+            for(var i=0;i<allChanges.length;i++){
+                //allChanges[i];
+                createMessage('text', senderID, allChanges[i], function(messageTS){
+                    callSendAPI(messageTS);
+				});
+                
+            }
+        })
+        /*
 		manageUsers.postCall('0000', body, function(obj){
 			var subs = obj['substitution'];
 			var msg = "";
@@ -271,7 +318,7 @@ function sendList(senderID, message){
 					nd = 1;
 				}
 			}
-		});
+		});*/
 	}
 }
 
