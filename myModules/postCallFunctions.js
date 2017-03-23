@@ -1,6 +1,7 @@
     var setTime = require('./setTime.js'),
         //callFunc = require('postCallFunctions.js'),
-        mongo = require('./mongoFunctions.js');
+        mongo = require('./mongoFunctions.js'),
+        secretToken = require('./secretTokenGenerator.js');
 
 var time = new setTime();
 var pageSettings = {
@@ -211,11 +212,45 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
     });
 }
 function tokenCheck(userId,body,callback){
-    
+    if(userId != "0000"){
+        secretToken.appCheck(userId,body.token,function(status){
+            var res =''
+            if(status == true){
+                res = 'Thanks for checking'; //pls edit it
+            }
+            else{
+                res = 'There was no match. Wrong token or read info once more';
+                
+            }
+            setImmediate(function() {
+                callback(res);
+            });    
+        })
+    }
+    else {
+        setImmediate(function() {
+            callback('You must be loged in');
+        });
+        
+    }
     
 }
-function tokenGenerate(userId,body,callback){
-    
+function tokenGenerate(userId,callback){
+    if(userId != "0000"){
+        secretToken.tokenGenerator(function(tok){
+            setImmediate(function() {
+                callback(tok.token);
+            });
+            
+        })
+        
+    }
+    else {
+        setImmediate(function() {
+            callback('You must be loged in');
+        });
+        
+    }
     
 }
 exports.getSettings = getSettings;
@@ -225,3 +260,5 @@ exports.message = message;
 exports.saveSettings = saveSettings;
 exports.picture = picture;
 exports.changesForMessenger = changesForMessenger
+exports.tokenGenerate = tokenGenerate;
+exports.tokenCheck = tokenCheck;

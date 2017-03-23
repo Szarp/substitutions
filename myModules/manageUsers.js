@@ -82,6 +82,16 @@ var matchingModes ={
     picture:{
         name:'picture',
         description:"Response personalized photo"
+    },
+    generateToken:{
+        name:'generateToken',
+        description:'Responses token for user'
+    
+    },
+    checkToken:{
+        name:'checkToken',
+        description:'Responses if there is match for tokens'
+    
     }
 }
     //var reqCookie=req.cookies.cookieName;
@@ -89,7 +99,7 @@ var matchingModes ={
 function postCall(userId,body,callback){
 
     var res='';
-    if(matchingModes[body.mode] != {}){
+    if(matchingModes[body.mode] != undefined){
     //console.log('Mode: '+req.body['mode']);
     //var body=req.body;
     
@@ -130,6 +140,20 @@ function postCall(userId,body,callback){
         }
         else if(body.mode=='picture'){
             callFunc.picture(userId,function(resText){
+                setImmediate(function() {
+                    callback(resText);
+                });
+            });
+        }
+        else if(body.mode=='generateToken'){
+            callFunc.tokenGenerate(userId,function(resText){
+                setImmediate(function() {
+                    callback(resText);
+                });
+            });
+        }
+        else if(body.mode=='checkToken'){
+            callFunc.tokenCheck(userId,body,function(resText){
                 setImmediate(function() {
                     callback(resText);
                 });
