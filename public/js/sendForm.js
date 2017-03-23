@@ -16,10 +16,33 @@ var patternOfDisplay = [
     'rodzaj'
 ]
 var btnEvents ={
-            saveBtn:function(){takeValuesFromForm()},
-            tommorowBtn:function(){requestForChanges('tommorow')},
-            todayBtn:function(){requestForChanges('today')},
-        }
+    saveBtn:function(){takeValuesFromForm()},
+    tommorowBtn:function(){requestForChanges('tommorow')},
+    todayBtn:function(){requestForChanges('today')},
+    generateBtn:function(){tokenValidation('generateToken')},
+    checkBtn:function(){tokenValidation('checkToken')}
+}
+
+function tokenValidation(mode){
+    var url = 'postCall';
+    var form = {};
+    form['mode']=mode;
+    if(mode=='checkToken'){
+        form['token']=document.getElementById('tokenCheck').innerHTML;
+    }
+    sendObj(url,form,function(obj){
+        console.log('after validation:',obj)
+        
+        //add comunicat with message or token
+            
+        
+    })
+    
+    
+    
+}
+
+
 function setValuesToForm(params){
     var formList=['setClass','setNotification'];
     for(var i=0;i<params.length;i++){
