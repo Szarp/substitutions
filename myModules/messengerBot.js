@@ -65,7 +65,7 @@ function sendSubstitutions(senderID, message){
 	var oMessage=message;
 	message = message.toLowerCase();
 	var opt = message[0];
-	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc';
+	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplkiację Messenger lub odwiedź bota przez przeglądarkę';
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
@@ -144,7 +144,7 @@ function sendSubstitutions(senderID, message){
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
                 createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
-					dayToMSG += ' Są zastępstwa dla klasy ' + reqClass;
+					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
 						buttons: buttons
