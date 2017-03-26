@@ -40,11 +40,17 @@ function tokenValidation(mode){
         var msg = obj.params;
 		if(msg.token){
 			document.getElementById('tknField').innerHTML = msg.token;
-			var insert = '<div id="msgTOKEN" class="info" style="display: table;"><div id="msgBoxData">Token został wygenerowany.</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div></div>';
+			var insert = document.createElement("div");
+			insert.id = "msgTOKEN";
+			insert.className = "info";
+			insert.innerHTML = '<div id="msgBoxData">Token został wygenerowany.</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
 		} else {
-			var insert = '<div id="msgTOKEN" class="message" style="display: table;"><div id="msgBoxData">' + msg + '</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div></div>';
+			var insert = document.createElement("div");
+			insert.id = "msgTOKEN";
+			insert.className = "message";
+			insert.innerHTML = '<div id="msgBoxData">' + msg + '</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
 		}
@@ -162,7 +168,10 @@ function sendMessage(){
 	form['param']=el.value;
 	//console.log(el.value);
 	sendObj(url,form,function(responseText){
-		var insert = '<div id="infoMSG" class="info" style="display: table;"><div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg(infoMSG)">✖</div></div>';
+		var insert = document.createElement("div");
+			insert.id = "infoMSG";
+			insert.className = "info";
+			insert.innerHTML = '<div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg(infoMSG)">✖</div>';
 		var msgArea = document.getElementById('msgArea');
 		msgArea.appendChild(insert);
 		document.getElementById('messageArea').value='';
@@ -215,7 +224,10 @@ function sendObj (url,json_obj,callback){
             if(res['err'] == true){
                 //console.log(res.message)
 				var resMsg = res.message;
-				var insert = '<div id="msgLOGIN" class="message" style="display: table;"><div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg(msgLOGIN)">✖</div></div>';
+				var insert = document.createElement("div");
+					insert.id = "msgLOGIN";
+					insert.className = "message";
+					insert.innerHTML = '<div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg(msgLOGIN)">✖</div>';
 				var msgArea = document.getElementById('msgArea');
 				msgArea.appendChild(insert);
             }

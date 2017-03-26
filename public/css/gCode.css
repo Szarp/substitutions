@@ -384,7 +384,9 @@ border-color: #5CA941;
 	border-width: 2px;
 	padding: 3px;
 	background-color: rgba(135, 197, 49, 0.8); /*#87C531CC; changed, because didn't work in Chrome*/
-	margin-bottom: 10px;
+	max-width: 590px;
+	margin: auto;
+	margin-top: 5px;
 }
 .message{
 	display: table;
