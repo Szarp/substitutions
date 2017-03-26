@@ -37,20 +37,19 @@ function tokenValidation(mode){
         form['token']=document.getElementById('tokenCheck').innerHTML;
     }
     sendObj(url,form,function(obj){
-        var msg = obj.params;
-		if(msg.token){
-			document.getElementById('tknField').innerHTML = msg.token;
+		if(obj.token){
+			document.getElementById('tknField').innerHTML = obj.token;
 			var insert = document.createElement("div");
 			insert.id = "msgTOKEN";
 			insert.className = "info";
-			insert.innerHTML = '<div id="msgBoxData">Token został wygenerowany.</div><div class="closeButton" onclick="closeMsg("msgTOKEN")">✖</div>';
+			insert.innerHTML = '<div id="msgBoxData">Token został wygenerowany.</div><div class="closeButton" onclick="closeMsg('+"'msgTOKEN'"+')">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
 		} else {
 			var insert = document.createElement("div");
 			insert.id = "msgTOKEN";
 			insert.className = "message";
-			insert.innerHTML = '<div id="msgBoxData">' + msg + '</div><div class="closeButton" onclick="closeMsg("msgTOKEN")">✖</div>';
+			insert.innerHTML = '<div id="msgBoxData">' + obj + '</div><div class="closeButton" onclick="closeMsg('+"'msgTOKEN'"+')">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
 		}
@@ -171,7 +170,7 @@ function sendMessage(){
 		var insert = document.createElement("div");
 			insert.id = "infoMSG";
 			insert.className = "info";
-			insert.innerHTML = '<div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg("infoMSG")">✖</div>';
+			insert.innerHTML = '<div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg('+"'infoMSG'"+')">✖</div>';
 		var msgArea = document.getElementById('msgArea');
 		msgArea.appendChild(insert);
 		document.getElementById('messageArea').value='';
@@ -227,7 +226,7 @@ function sendObj (url,json_obj,callback){
 				var insert = document.createElement("div");
 					insert.id = "msgLOGIN";
 					insert.className = "message";
-					insert.innerHTML = '<div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg("msgLOGIN")">✖</div>';
+					insert.innerHTML = '<div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg('+"'msgLOGIN'"+')">✖</div>';
 				var msgArea = document.getElementById('msgArea');
 				msgArea.appendChild(insert);
             }
