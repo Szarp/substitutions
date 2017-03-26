@@ -8,7 +8,7 @@ How to configure your server.
 
 ### Setting up HTTPS
 
-Your certificates and key should be placed in `./certs/` and named `wsskey.pem` (key), `wsscert.pem` (certificate) and `cacert.pem` (CA certificate).
+Your certificates and key should be placed in `certs/` and named `wsskey.pem` (key), `wsscert.pem` (certificate) and `cacert.pem` (CA certificate).
 
 If you don't have SSL certificates you can generate them for free using [Let's encrypt](https://letsencrypt.org/)
 
@@ -37,11 +37,21 @@ Read how to [setup a webhook](https://developers.facebook.com/docs/messenger-pla
 
 ### Dependencies
 
-Run `npm install` to install all required modules.
+To install all required modules run:
+```bash
+$ npm install
+```
 
 ## Sterting
 
-To start a server (listening on port 8080) run `node index.js` or `npm start`.
+To start a server (listening on port 8080) run:
+```bash
+$ node index.js
+```
+or 
+```bash
+$ npm start
+```
 
 ## License
 
