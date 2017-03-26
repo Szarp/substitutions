@@ -123,6 +123,7 @@ function sendSubstitutions(senderID, message){
 			});
 			break;*/
 		case '4':
+			day='';
 			var tkn = oMessage.substring(1);
 			if(!tkn){
 				secretToken.messRequest(senderID, function(token){
@@ -263,10 +264,10 @@ function sendList(senderID, message){
 		createMessage('text', senderID, 'Mam jakąś propozycję/pytanie:\n2 Możecie poprawić ??? na stronie i w bocie zmienić ???', function(messageTS){
 			callSendAPI(messageTS);
 		});
-		createMessage('text', senderID, 'Chcę wygenerować token do łączenia kont do wpisania na stronie:\n5', function(messageTS){
+		createMessage('text', senderID, 'Chcę wygenerować token do łączenia kont do wpisania na stronie:\n4', function(messageTS){
 			callSendAPI(messageTS);
 		});
-		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na domek.emadar.eu]):\n5 11111', function(messageTS){
+		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na domek.emadar.eu]):\n4 11111', function(messageTS){
 			callSendAPI(messageTS);
 		});
 	}else{
