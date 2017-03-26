@@ -45,10 +45,7 @@
      </div>
     </li>
 </ul>
-	<div id="msgBox" class="message" style="display: none;">
-		<div id="msgBoxData"></div>
-		<div class="closeButton" onclick="closeMsg()">✖</div>
-	</div>
+	<div id="msgArea"></div>
 	<div class="flex-container nowrap mainContentSize" id="mainContent" >
         <div class="" id="substitutionList"   >
             <div  class="item-size  boxed-group" id="elementsContent">
@@ -132,10 +129,6 @@
                 </div>
         </div>
         <div id="homePage" class="" style="display:none;">
-			<div id="infoBox" class="info" style="display: none;">
-				<div id="infoBoxData"></div>
-				<div class="closeButton" onclick="closeInfo()">✖</div>
-			</div>
             <div  class="boxed-group" >
                     <h3>Home</h3>
                     <div class="boxed-group-inner" style="text-align: justify;">
@@ -165,7 +158,7 @@
                             
                             <tr>
                                 <td> Generuj Token: </td>
-                                <td></td>
+                                <td id="tknField"></td>
                                 <td class="btn" id="generateBtn" >Generuj</td>
                                 
                             </tr>

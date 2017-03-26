@@ -216,10 +216,10 @@ function tokenCheck(userId,body,callback){
         secretToken.appCheck(userId,body.token,function(status){
             var res =''
             if(status == true){
-                res = 'Thanks for checking'; //pls edit it
+                res = 'Dziękujemy. Konto zostało połączone.';
             }
             else{
-                res = 'There was no match. Wrong token or read info once more';
+                res = 'Token nieprawidłowy. Spróbuj jeszcze raz.';
                 
             }
             setImmediate(function() {
@@ -229,7 +229,7 @@ function tokenCheck(userId,body,callback){
     }
     else {
         setImmediate(function() {
-            callback('You must be loged in');
+            callback('You must be loged in.');
         });
         
     }
@@ -247,7 +247,7 @@ function tokenGenerate(userId,callback){
     }
     else {
         setImmediate(function() {
-            callback('You must be loged in');
+            callback('You must be loged in.');
         });
         
     }

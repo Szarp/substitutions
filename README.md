@@ -35,6 +35,14 @@ Read how to [generate app token](https://developers.facebook.com/docs/facebook-l
 
 Read how to [setup a webhook](https://developers.facebook.com/docs/messenger-platform/guides/setup#webhook_setup) and [get a page access token](https://developers.facebook.com/docs/messenger-platform/guides/setup#page_access_token).
 
+### Dependencies
+
+Run `npm install` to install all required modules.
+
+## Sterting
+
+To start a server (listening on port 8080) run `node index.js` or `npm start`.
+
 ## License
 
 See the [LICENSE](LICENSE.md) (MIT).

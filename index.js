@@ -48,11 +48,11 @@ app.use(function (req, res, next) {
         randomNumber=randomNumber.substring(2,randomNumber.length);
         res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: false });
         console.log('cookie created successfully');
-    } 
+    }
     else{
-    // yes, cookie was already present 
+    // yes, cookie was already present
         console.log('cookie exists', cookie);
-    } 
+    }
     next(); // <-- important!
 });
 
@@ -88,7 +88,7 @@ app.get('/webhook', function(req, res) {
 	} else {
 		console.error("Failed validation. Make sure the validation tokens match.");
 		res.sendStatus(403);
-	}  
+	}
 });
 
 app.post('/webhook', function (req, res) {
@@ -121,14 +121,14 @@ app.post('/postCall',function(req,res){
     console.log('user session: ',userId);
     console.log('Mode: '+req.body['mode']);
     console.log('user session: ',userId);
-        mangeUsers.postCall(userId,req.body,function(resText){
-            if(userId == '0000' && req.body['mode'] == 'getSettings'){
-                res.send(JSON.stringify({err:true,message:"Please log in using your Facebook account",params:resText}));
-            }
-            else{
-                res.send(JSON.stringify({err:false,message:"",params:resText}));
-            }
-        })
+	mangeUsers.postCall(userId,req.body,function(resText){
+		if(userId == '0000' && req.body['mode'] == 'getSettings'){
+			res.send(JSON.stringify({err:true,message:"Please log in using your Facebook account",params:resText}));
+		}
+		else{
+			res.send(JSON.stringify({err:false,message:"",params:resText}));
+		}
+	})
 })
 
 app.get('/redirect', function(req, res){
@@ -150,7 +150,7 @@ app.get('/redirect', function(req, res){
 				res.redirect('/index');
 			}
 		});
-	} 
+	}
 });
 
 app.get('/deredirect', function(req, res){
@@ -168,11 +168,11 @@ setInterval(function(){
             myFunc.subs(time.displayTime(),function(x){
                 console.log('downloaded changes');
             });
-        });               
+        });
     });
 }, 1000*60*60*1); //now running once per hour
 
-setTimeout(function () { 
+setTimeout(function () {
 	time.tommorowIs();
     myFunc.subs(time.displayTime(),function(y){
         time.todayIs();
@@ -181,12 +181,12 @@ setTimeout(function () {
             myFunc.subs(time.displayTime(),function(x){
                 console.log('downloaded changes');
             });
-        });               
+        }); 
     });
 }, 1000); //download substitutions 1 second after start
 
 setTimeout(function(){
-	cookie.deleteOld();    
+	cookie.deleteOld();
 },1000*60*60*24*30); //remove cookies (session) after 30 days
 
 https.createServer(opts, app).listen(8088);

@@ -23,6 +23,12 @@ var btnEvents ={
     checkBtn:function(){tokenValidation('checkToken')}
 }
 
+function closeMsg(elID){
+	var msgArea = document.getElementById('msgArea');
+	var toRemove = document.getElementById(elID);
+	msgArea.removeChild(toRemove);
+}
+
 function tokenValidation(mode){
     var url = 'postCall';
     var form = {};
@@ -31,17 +37,19 @@ function tokenValidation(mode){
         form['token']=document.getElementById('tokenCheck').innerHTML;
     }
     sendObj(url,form,function(obj){
-        console.log('after validation:',obj)
-        
-        //add comunicat with message or token
-            
-        
+        var msg = obj.params;
+		if(msg.token){
+			document.getElementById('tknField').innerHTML = msg.token;
+			var insert = '<div id="msgTOKEN" class="info" style="display: table;"><div id="msgBoxData">Token został wygenerowany.</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div></div>';
+			var msgArea = document.getElementById('msgArea');
+			msgArea.appendChild(insert);
+		} else {
+			var insert = '<div id="msgTOKEN" class="message" style="display: table;"><div id="msgBoxData">' + msg + '</div><div class="closeButton" onclick="closeMsg(msgTOKEN)">✖</div></div>';
+			var msgArea = document.getElementById('msgArea');
+			msgArea.appendChild(insert);
+		}
     })
-    
-    
-    
 }
-
 
 function setValuesToForm(params){
     var formList=['setClass','setNotification'];
@@ -56,7 +64,6 @@ function setValuesToForm(params){
         }
     }
 }
-
 
 function changeDisplayForChanges(oneClass){
     console.log(oneClass.innerHTML);
@@ -145,14 +152,6 @@ function requestForChanges(type){
     });
 }
 
-
-
-
-
-function closeInfo(){
-	var infB = document.getElementById('infoBox');
-	infB.style.display = 'none';
-}
 function sendMessage(){
 	var url = 'postCall';
 	var form = {};
@@ -162,9 +161,10 @@ function sendMessage(){
 	var infBData = document.getElementById('infoBoxData');
 	form['param']=el.value;
 	//console.log(el.value);
-	sendObj(url,form,function(responeText){
-		infB.style.display = 'table';
-		infBData.innerHTML=responeText;
+	sendObj(url,form,function(responseText){
+		var insert = '<div id="infoMSG" class="info" style="display: table;"><div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg(infoMSG)">✖</div></div>';
+		var msgArea = document.getElementById('msgArea');
+		msgArea.appendChild(insert);
 		document.getElementById('messageArea').value='';
 	})
 	//el.innerHTML='hi';
@@ -215,11 +215,9 @@ function sendObj (url,json_obj,callback){
             if(res['err'] == true){
                 //console.log(res.message)
 				var resMsg = res.message;
-				var msg = '<a class="msgLink" href="/login">' + resMsg + '</a>';
-				var msgB = document.getElementById('msgBox');
-				var msgBData = document.getElementById('msgBoxData');
-				msgB.style.display = 'table';
-				msgBData.innerHTML=msg;
+				var insert = '<div id="msgLOGIN" class="message" style="display: table;"><div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg(msgLOGIN)">✖</div></div>';
+				var msgArea = document.getElementById('msgArea');
+				msgArea.appendChild(insert);
             }
             //console.log('resText',res);
             callback(res.params);
@@ -245,15 +243,7 @@ function filtrEvents(){
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
 	}
 }
-function closeMsg(){
-	var msgB = document.getElementById('msgBox');
-	msgB.style.display = 'none';
-}
-function closeInfo(){
-	var infB = document.getElementById('infoBox');
-	infB.style.display = 'none';
 
-}
 function btnClicked(type){
     console.log('hello',type);
     var idList={today:'todayBtn',tommorow:'tommorowBtn'};
