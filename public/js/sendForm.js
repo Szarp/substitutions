@@ -37,8 +37,8 @@ function tokenValidation(mode){
         form['token']=document.getElementById('tokenCheck').innerHTML;
     }
     sendObj(url,form,function(obj){
-		if(obj.token){
-			document.getElementById('tknField').innerHTML = obj.token;
+		if(obj>=00000 && obj<=99999){
+			document.getElementById('tknField').innerHTML = obj;
 			var insert = document.createElement("div");
 			insert.id = "msgTOKEN";
 			insert.className = "info";
