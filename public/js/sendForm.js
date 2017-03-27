@@ -49,7 +49,11 @@ function tokenValidation(mode){
 		} else {
 			var insert = document.createElement("div");
 			insert.id = "msgTOKEN";
-			insert.className = "message";
+			if(obj != "Dziękujemy. Konto zostało połączone."){
+				insert.className = "message";
+			} else {
+				insert.className = "info";
+			}
 			insert.innerHTML = '<div id="msgBoxData">' + obj + '</div><div class="closeButton" onclick="closeMsg('+"'msgTOKEN'"+')">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
