@@ -1,11 +1,12 @@
 var express = require('express'),
 	fs= require('fs'),
 	https =require('https'),
-	myFunc = require(__dirname+'/myModules/zsoServerComunication.js'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	request= require('request'),
 	MongoClient = require('mongodb').MongoClient,
+	compression = require('compression'),
+	helmet = require('helmet'),
 	mongo=require(__dirname+'/myModules/mongoFunctions.js'),
 	setTime = require(__dirname+'/myModules/setTime.js'),
 	mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
@@ -13,7 +14,7 @@ var express = require('express'),
 	link = require(__dirname+'/myModules/fbLinks.js'),
 	config = require(__dirname+'/myModules/config'),
 	messenger = require(__dirname+'/myModules/messengerBot.js'),
-	compression = require('compression');
+	myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
 
 var app = express();
 var cookie = new session.sessionCreator();
@@ -36,7 +37,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
 app.use(compression()); //use gzip compression
-
+app.use(helmet()); //Set http headers to protect from eg. clickjacking
 
 //setting cookie on first login
 app.use(function (req, res, next) {

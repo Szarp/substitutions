@@ -86,7 +86,11 @@ function createPersonToken(code,callback){
         if(e){console.log('req problem: '+e);}
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
         setImmediate(function() {
+			if(body != undefined && != 'undefined'){
                 callback(JSON.parse(body)['access_token']);
+			} else {
+				callback('err');
+			}
         });
     });
 }

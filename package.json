@@ -30,7 +30,8 @@
 		"mongodb": "^2.2.25",
 		"body-parser": "^1.17.1",
 		"cookie-parser": "^1.4.3",
-		"compression": "^1.6.2"
+		"compression": "^1.6.2",
+		"helmet": "^3.5.0"
 	},
 	"private": "true",
 	"license": "MIT"
