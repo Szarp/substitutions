@@ -29,10 +29,13 @@ function closeMsg(elID){
 	msgArea.removeChild(toRemove);
 }
 
-function copy(elem){
+function copy(elem, msg){
 	var succeed = copyToClipboard(elem);
 	if(!succeed){
 		alert("Copy not supported or blocked. Press Ctrl+c to copy.");
+		document.getElementById(msg).innerHTML = "Błąd kopiowania";
+	} else {
+		document.getElementById(msg).innerHTML = "Skopiowano";
 	}
 }
 
@@ -100,11 +103,11 @@ function tokenValidation(mode){
 			var insert = document.createElement("div");
 			insert.id = "msgTOKEN";
 			insert.className = "info";
-			insert.innerHTML = '<div id="msgBoxData">Twój token to: <span id="tok" class="tooltip">' + obj + '<span class="tooltiptext">Kliknij aby skopiować</span></span></div><div class="closeButton" onclick="closeMsg('+"'msgTOKEN'"+')">✖</div>';
+			insert.innerHTML = '<div id="msgBoxData">Twój token to: <span class="tooltip"><span id="tok">' + obj + '</span><span id="copyTooltip" class="tooltiptext">Kliknij aby skopiować</span></span></div><div class="closeButton" onclick="closeMsg('+"'msgTOKEN'"+')">✖</div>';
 			var msgArea = document.getElementById('msgArea');
 			msgArea.appendChild(insert);
 			document.getElementById("tok").addEventListener("click", function() {
-				copy(document.getElementById("tok"));
+				copy(document.getElementById("tok"), "copyTooltip");
 			});;
 		} else {
 			var insert = document.createElement("div");
