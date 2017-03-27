@@ -79,7 +79,7 @@ function matchTokens(medium,token,callback){ //checking if exist same tokens
     //searching by secret token
     mongo.findByParam({"system.connected":false,"system.secret.token":token} ,{"system.secret":"1"},medium,function(a){
         //console.log('is thre some person',a[0]);
-        if(a.length == 1){ //if exist one element
+        if(a && a.length == 1){ //if exist one element
             var person =a[0].system.secret;
             //console.log('is there token',person);
             var time = new Date().getTime()
