@@ -186,10 +186,11 @@ function sendSubstitutions(senderID, message){
                     dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
                 }
                 else{
+					var klasy = allClasses[0]
                     for(var i = 1; i < allClasses.length; i++){
-								klasy += ', ' + allClasses[i];
+						klasy += ', ' + allClasses[i];
 				    }
-			         dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+					dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
                 }
                 createMessage('text', senderID, dayToMSG, function(messageTS){
 					callSendAPI(messageTS);
