@@ -237,7 +237,7 @@ function tokenCheck(userId,body,callback){
 }
 function tokenGenerate(userId,callback){
     if(userId != "0000"){
-        secretToken.tokenGenerator(function(tok){
+        secretToken.appRequest(function(tok){
             setImmediate(function() {
                 callback(tok.token);
             });
