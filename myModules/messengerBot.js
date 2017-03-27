@@ -126,7 +126,6 @@ function sendSubstitutions(senderID, message){
 			day='';
 			var tkn = oMessage.substring(2);
 			if(!tkn){
-				var 
 				secretToken.messRequest(senderID, function(token){
 					var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
 					createMessage('text', senderID, txt, function(messageTS){
