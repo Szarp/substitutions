@@ -89,7 +89,7 @@ function createPersonToken(code,callback){
 			if(body != undefined && body != 'undefined'){
                 callback(JSON.parse(body)['access_token']);
 			} else {
-				throw 
+				callback('err');
 			}
         });
     });
