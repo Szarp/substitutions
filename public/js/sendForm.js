@@ -34,7 +34,8 @@ function tokenValidation(mode){
     var form = {};
     form['mode']=mode;
     if(mode=='checkToken'){
-        form['token']=document.getElementById('tokenCheck').innerHTML;
+		var str = document.getElementById('tokenCheck').value;
+		form['token']= parseInt(str);
     }
     sendObj(url,form,function(obj){
 		if(obj>=00000 && obj<=99999){

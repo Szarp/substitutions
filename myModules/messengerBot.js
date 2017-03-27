@@ -126,6 +126,7 @@ function sendSubstitutions(senderID, message){
 			day='';
 			var tkn = oMessage.substring(2);
 			if(!tkn){
+				var 
 				secretToken.messRequest(senderID, function(token){
 					var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
 					createMessage('text', senderID, txt, function(messageTS){
@@ -133,6 +134,8 @@ function sendSubstitutions(senderID, message){
 					});
 				});
 			} else {
+				tkn = parseInt(tkn);
+				console.log("Token received: " + tkn);
 				secretToken.messCheck(senderID, tkn, function(res){
 					if(res){
 						createMessage('text', senderID, 'Konto zostało połączone. (y)', function(messageTS){
