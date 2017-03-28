@@ -232,19 +232,26 @@ function sendMessage(){
 	var el = document.getElementById('messageArea');
 	var infB = document.getElementById('infoBox');
 	var infBData = document.getElementById('infoBoxData');
-	form['param']=el.value;
-	//console.log(el.value);
-	sendObj(url,form,function(responseText){
+	var msg = el.value;
+	if(msg.length > 5){
+		form['param']=msg;
+		sendObj(url,form,function(responseText){
+			var insert = document.createElement("div");
+				insert.id = "infoMSG";
+				insert.className = "info";
+				insert.innerHTML = '<div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg('+"'infoMSG'"+')">✖</div>';
+			var msgArea = document.getElementById('msgArea');
+			msgArea.appendChild(insert);
+			document.getElementById('messageArea').value='';
+		})
+	} else {
 		var insert = document.createElement("div");
 			insert.id = "infoMSG";
-			insert.className = "info";
-			insert.innerHTML = '<div id="msgBoxData">' + responseText + '</div><div class="closeButton" onclick="closeMsg('+"'infoMSG'"+')">✖</div>';
+			insert.className = "message";
+			insert.innerHTML = '<div id="msgBoxData">Proszę nie wysyłaj pustych wiadomości.</div><div class="closeButton" onclick="closeMsg('+"'infoMSG'"+')">✖</div>';
 		var msgArea = document.getElementById('msgArea');
 		msgArea.appendChild(insert);
-		document.getElementById('messageArea').value='';
-	})
-	//el.innerHTML='hi';
-	
+	}
 }
 function onLoadFunc(){
     //console.log('hi2');
@@ -270,7 +277,12 @@ function onLoadFunc(){
 			scope: './'
 		});
     }
-    
+	document.getElementById("tokenCheck").addEventListener('keypress', function (e) {
+		var key = e.which || e.keyCode;
+		if (key === 13) { // 13 is enter
+			tokenValidation('checkToken');
+		}
+	});
     //console.log(settings1);
 }
 

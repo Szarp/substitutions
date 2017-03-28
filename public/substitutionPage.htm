@@ -133,7 +133,7 @@
                     <h3>Home</h3>
                     <div class="boxed-group-inner" style="text-align: justify;">
                       Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
-                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" ></textarea>  </div>
+                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>  </div>
                         <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
 
                     </div>
@@ -164,7 +164,7 @@
                             </tr>
                             <tr>
                                 <td> Sprawdź Token: </td>
-                                <td><input type="text" id="tokenCheck" style="width: 94%"></td>
+                                <td><input type="number" name="token" min="0" max="100000" id="tokenCheck" style="width: 94%" placeholder="Wpisz token"></td>
                                 <td class="btn" id="checkBtn" >Sprawdź</td>
                                 
                             </tr>

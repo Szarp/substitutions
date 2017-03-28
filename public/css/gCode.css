@@ -461,3 +461,11 @@ border-color: #5CA941;
     visibility: visible;
 	opacity: 1;
 }
+/*display input with type number as normal (text) input*/
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
