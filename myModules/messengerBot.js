@@ -2,7 +2,8 @@ var config = require('./config');
 var manageUsers = require('./manageUsers.js');
 var request = require('request');
 var facebook = require('./facebookComunication.js');
-//var mongo = require('./mongoFunctions.js');
+var callFunc = require('./postCallFunctions.js');
+var secretToken = require('./secretTokenGenerator.js');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","2a","2b","2c","2d","3a","3b","3c","3d","1ga","1gb","1gc","1gd","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
@@ -56,6 +57,7 @@ function createButtons(tab, callback){
 }
 
 function sendSubstitutions(senderID, message){
+    var day ='today';
 	var body = {
 		'mode': 'classList',
 		'param': 'today'
@@ -63,7 +65,7 @@ function sendSubstitutions(senderID, message){
 	var oMessage=message;
 	message = message.toLowerCase();
 	var opt = message[0];
-	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc';
+	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplkiację Messenger lub odwiedź bota przez przeglądarkę';
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
@@ -72,10 +74,10 @@ function sendSubstitutions(senderID, message){
 		case '0':
 			break;
 		case '1':
-			body['param']='tomorrow'; //masz else, więc jak dam dobrze to przejdzie, chociaż ty piszesz źle
+			day='tomorrow'; //masz else, więc jak dam dobrze to przejdzie, chociaż ty piszesz źle
 			break;
 		case '2':
-			body['mode']='NO';
+			day='';
 			if(message.length>2){
 				createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 					callSendAPI(messageTS);
@@ -120,8 +122,34 @@ function sendSubstitutions(senderID, message){
 				});
 			});
 			break;*/
+		case '4':
+			day='';
+			var tkn = oMessage.substring(2);
+			if(!tkn){
+				secretToken.messRequest(senderID, function(token){
+					var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
+					createMessage('text', senderID, txt, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});
+			} else {
+				tkn = parseInt(tkn);
+				console.log("Token received: " + tkn);
+				secretToken.messCheck(senderID, tkn, function(res){
+					if(res){
+						createMessage('text', senderID, 'Konto zostało połączone. (y)', function(messageTS){
+							callSendAPI(messageTS);
+						});
+					} else {
+						createMessage('text', senderID, 'Wystąpił błąd. Spróbuj jeszcze raz.', function(messageTS){
+							callSendAPI(messageTS);
+						});
+					}
+				});
+			}
+			break;
 		default:
-			body['mode']='NO';
+			day='';
 			createButtons([['postback', 'example', 'Przykład']], function(buttons){
 				var content={
 					'text': help,
@@ -133,7 +161,45 @@ function sendSubstitutions(senderID, message){
 			});
 			break;
 	};
-	if(body['mode'] != 'NO'){
+	if(day != ''){
+        if(opt == 0){
+			var dayToMSG = 'Dzisiaj';
+		}else{
+			var dayToMSG = 'Jutro';
+		}
+        callFunc.changesForMessenger(reqClass,day,function(allChanges){
+            if(allChanges.length != 0){
+                createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
+					var content={
+						text: dayToMSG,
+						buttons: buttons
+					}
+					createMessage('generic', senderID, content, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});   
+            }
+            else{
+                //var dayToMSG=''; 
+                if(allClasses.indexOf(reqClass) > -1){
+                    dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
+                }
+                else{
+					var klasy = allClasses[0]
+                    for(var i = 1; i < allClasses.length; i++){
+						klasy += ', ' + allClasses[i];
+				    }
+					dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+                }
+                createMessage('text', senderID, dayToMSG, function(messageTS){
+					callSendAPI(messageTS);
+				});
+            }
+            
+            
+        });
+    /*
 		manageUsers.postCall('0000', body, function(classes){
 			var is = 0;
 			for(var i = 0; i < classes.length; i++){
@@ -180,15 +246,17 @@ function sendSubstitutions(senderID, message){
 					callSendAPI(messageTS);
 				});
 			}
-		});
-	}
+		});*/
+	
+    }
 }
 
 function sendList(senderID, message){
-	var body = {
-		'mode': 'getChanges',
-		'param': 'today'
-	};
+    var day = 'today';
+//	var body = {
+//		'mode': 'getChanges',
+//		'param': 'today'
+//	};
 	if(message=='example'){
 		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			callSendAPI(messageTS);
@@ -199,14 +267,29 @@ function sendList(senderID, message){
 		createMessage('text', senderID, 'Mam jakąś propozycję/pytanie:\n2 Możecie poprawić ??? na stronie i w bocie zmienić ???', function(messageTS){
 			callSendAPI(messageTS);
 		});
+		createMessage('text', senderID, 'Chcę wygenerować token do łączenia kont do wpisania na stronie:\n4', function(messageTS){
+			callSendAPI(messageTS);
+		});
+		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na domek.emadar.eu]):\n4 11111', function(messageTS){
+			callSendAPI(messageTS);
+		});
 	}else{
 		if(message[0]=='1'){
-			body['param']='tomorrow';
+			day='tomorrow';
 		}
 		var reqClass = message[2] + message[3];
 		if(reqClass[1]=='g'){
 			reqClass += message[4];
 		}
+        callFunc.changesForMessenger(reqClass,day,function(allChanges){
+            for(var i=0;i<allChanges.length;i++){
+                //allChanges[i];
+                createMessage('text', senderID, allChanges[i], function(messageTS){
+                    callSendAPI(messageTS);
+				});
+            }
+        })
+        /*
 		manageUsers.postCall('0000', body, function(obj){
 			var subs = obj['substitution'];
 			var msg = "";
@@ -271,7 +354,7 @@ function sendList(senderID, message){
 					nd = 1;
 				}
 			}
-		});
+		});*/
 	}
 }
 
@@ -304,7 +387,7 @@ function receivedMessage(event) {
 
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
-	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc';
+	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
 	/*facebook.messengerUserInfo(senderID, function(userData){
 		console.log(userData);
 		console.log('Wiadomość od ' + userData['first_name'] + ' ' + userData['last_name']);

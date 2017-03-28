@@ -45,10 +45,7 @@
      </div>
     </li>
 </ul>
-	<div id="msgBox" class="message" style="display: none;">
-		<div id="msgBoxData"></div>
-		<div class="closeButton" onclick="closeMsg()">✖</div>
-	</div>
+	<div id="msgArea"></div>
 	<div class="flex-container nowrap mainContentSize" id="mainContent" >
         <div class="" id="substitutionList"   >
             <div  class="item-size  boxed-group" id="elementsContent">
@@ -132,15 +129,11 @@
                 </div>
         </div>
         <div id="homePage" class="" style="display:none;">
-			<div id="infoBox" class="info" style="display: none;">
-				<div id="infoBoxData"></div>
-				<div class="closeButton" onclick="closeInfo()">✖</div>
-			</div>
             <div  class="boxed-group" >
                     <h3>Home</h3>
                     <div class="boxed-group-inner" style="text-align: justify;">
                       Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
-                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" ></textarea>  </div>
+                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>  </div>
                         <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
 
                     </div>
@@ -151,12 +144,36 @@
         <div id="about1" class="" style="display:none;">
             <div  class="boxed-group" >
                     <h3>O mnie</h3>
-                    <div class="boxed-group-inner">
-                      Strona poświęcona co ta aplikacja tak naprawdę robi  
+                         <div class="boxed-group-inner" >
+                    <div class="boxed-group-section first" >
+                        <table>
+                          <!--<tr>
+                            <td>                         
+                               Info:
+                            </td>
+                              <td></td>
+                            <td class="btn" id="infoBtn" >Zobacz</td>
 
-
+                          </tr>-->
+                            
+                            <tr>
+                                <td> Generuj Token: </td>
+                                <td id="tknField"></td>
+                                <td class="btn" id="generateBtn" >Generuj</td>
+                                
+                            </tr>
+                            <tr>
+                                <td> Sprawdź Token: </td>
+                                <td><input type="number" name="token" min="0" max="100000" id="tokenCheck" style="width: 94%" placeholder="Wpisz token"></td>
+                                <td class="btn" id="checkBtn" >Sprawdź</td>
+                                
+                            </tr>
+                        </table>
+                        
                     </div>
-                    
+     
+
+                </div>
                 </div>
 
         </div>
@@ -167,7 +184,7 @@
                     <div class="boxed-group-section first" >
                         <table>
                           <tr>
-                            <td>class:</td>
+                            <td>Class:</td>
                             <td>                        
                                 <select  id="setClass">
                                     <option  value="">set</option>
@@ -200,7 +217,7 @@
                             </td>
                           </tr>
                             <tr>
-                                <td>notification:</td>
+                                <td>Notification on Messenger:</td>
                                 <td>                        
                                     <select  id="setNotification">
                                         <option value="">set</option>

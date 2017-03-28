@@ -24,57 +24,40 @@ function whoGetSubstitution(){
     
     
 }
-createClassList();
-function createClassList(){
-    
-    var classList=[];
-    time.tommorowIs();
-    classListFromDate(time.displayTime(),function(list){
-        console.log(list);
-    })
-    //time.displayTime();
 
-}
-//notification(['2ga'],function(){
-//    console.log('a');
-//});
- function notification(classList,callback){
+
+//notificationList(function(a){console.log(a);})
+ function notificationList(callback){
      var name='person';
         //[collection,{data}]
         //var collectionName = collection;
         //var data = paramsToModify;
      
         var url = 'mongodb://localhost:27017/test2';
-        MongoClient.connect(url, function(err, db) {
-            var userList=[];
-            assert.equal(null,err);
-            var collection=db.collection(name);
-            collection.find().forEach(function(doc){
-                console.log("hi",doc.personal.settings);
-                if(doc.settings =='' || doc.settings == undefined ||doc.settings == null){
-                 //do nothing   
-                }
-                else{
-                    if(doc.settings['notification']=='yes'){
-                        if(classList.indexOf(doc.settings['setClass']) != -1){
-                            sendToId(doc._id,function(errMes){
-                                console.log(errMes);
-                            })
-                        }
-                    }
-                }
-               //console.log("hi",doc.settings)
-            });
-            //console.log('hi', userList);
+        mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
+            console.log(a);
+            var list=[];
+            var arr={};
+            for(var i=0;i<a.length;i++){
+                arr['id']=a[i].personal['id'];
+                arr['class']=a[i].personal.settings['setClass'];
+                list[i]=arr;
+                arr={};
+            }
+            
             setImmediate(function(){
-                callback();
-            });   
-        db.close();
-      });
+					callback(list);
+            }); 
+            
+        })
       
         
         //db.close();
  }
+//notification(['2ga'],function(){
+//    console.log('a');
+//});
+
     
 function classListFromDate(date,callback){
     //var classList=[];

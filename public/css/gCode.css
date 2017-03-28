@@ -384,7 +384,9 @@ border-color: #5CA941;
 	border-width: 2px;
 	padding: 3px;
 	background-color: rgba(135, 197, 49, 0.8); /*#87C531CC; changed, because didn't work in Chrome*/
-	margin-bottom: 10px;
+	max-width: 590px;
+	margin: auto;
+	margin-top: 5px;
 }
 .message{
 	display: table;
@@ -420,4 +422,50 @@ border-color: #5CA941;
 }
 .substitution:hover{
 	font-weight: bold;
+}
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+/*tooltips under text*/
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    left: 50%;
+    margin-left: -60px;
+	/*animation*/
+	opacity: 0;
+    transition: opacity 0.5s;
+}
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+	opacity: 1;
+}
+/*display input with type number as normal (text) input*/
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
 }

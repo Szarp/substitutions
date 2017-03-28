@@ -4,31 +4,43 @@ var MongoClient = require('mongodb').MongoClient,
     Module to comunicate with mongo
     
     */
-function findByParam(paramAndValue,collectionName,callback){
+function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
     var url = 'mongodb://localhost:27017/test2';
     MongoClient.connect(url, function(err, db) {
         assert.equal(null,err);
         var collection=db.collection(collectionName);
         var arrayOfElements=[];
-        collection.find({},{fields:paramAndValue}).each(function(e, doc) {
-              
+        //var x =collection.find({});
+        //console.log('x',x);
+        //var buffer=[];
+        collection.find(paramAndValue,paramsToDisplay).toArray(function(e, doc) {
+              //console.log(doc);
             if(doc){
-                for(k in paramAndValue){
+                //console.log(doc);
+                //console.log(e);
+                /*for(k in paramAndValue){
                     //console.log(doc[k]);
                     if(doc[k]==paramAndValue[k]){
                         arrayOfElements[arrayOfElements.length]=doc;
                       //console.log('ho',doc);
                     }
                 }
+                */
+                setImmediate(function() {
+                    callback(doc);
+                });
+            
+                //buffer[buffer.length]=doc;
             }
             else{
+                //console.log('hi');
                 setImmediate(function() {
-                    callback(arrayOfElements);
+                    callback(null);
                 });
             }
         });    
         db.close();
-        })
+    })
   
     
 }    

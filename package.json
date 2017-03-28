@@ -1,0 +1,38 @@
+{
+	"name": "Substitutions",
+	"description": "Server downloading substitutions from *.edupage.org sites and presenting them on mobile-friendly website and sending them on Messenger",
+	"version": "0.6.0",
+	"author": "Szarp",
+	"main": "index.js",
+	"contributors": [{
+		"name": "krzysdz"
+	}],
+	"scripts": {
+		"test": "echo No command given\nTry 'start'",
+		"start": "node index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Szarp/substitutions"
+	},
+	"bugs": {
+		"url": "https://github.com/Szarp/substitutions/issues"
+	},
+	"keywords": [
+		"substitutions",
+		"zastępstwa",
+		"*.edupage.org",
+		"messenger"
+	],
+	"dependencies": {
+		"express": "^4.12.2",
+		"request": "^2.81.0",
+		"mongodb": "^2.2.25",
+		"body-parser": "^1.17.1",
+		"cookie-parser": "^1.4.3",
+		"compression": "^1.6.2",
+		"helmet": "^3.5.0"
+	},
+	"private": "true",
+	"license": "MIT"
+}
