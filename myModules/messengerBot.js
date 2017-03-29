@@ -211,19 +211,19 @@ function sendSubstitutions(senderID, message){
 
 function substitutionNotification(newSub, oldSub, callback){
 	for(var i = newSub.length-1; i >= 0; i--){
-		var newEl = newSub[i];
+		var newEl = JSON.stringify(newSub[i]);
 		for(var e = 0; e < oldSub.length; e++){
-			var oldEl = oldSub[e];
+			var oldEl = JSON.stringify(oldSub[e]);
 			if(newEl == oldEl){
 				newSub.splice(i, 1);
 				oldSub.splice(e, 1);
-				console.log("Removed");
 			}
 		}
 	}
-	console.log("Left: " + newSub + "\n and: " + oldSub);
+	Array.prototype.push.apply(newSub, oldSub);
+	console.log("Changes: " + newSub);
 	setImmediate(function(){
-		callback("Old:\n" + oldSub + "\nNew:\n" + newSub);
+		callback(newSub);
 	});
 }
 
