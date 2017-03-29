@@ -47,7 +47,7 @@ app.use(function (req, res, next) {
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2,randomNumber.length);
-        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: false });
+        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: true });
         console.log('cookie created successfully');
     }
     else{
@@ -182,7 +182,7 @@ setTimeout(function () {
             myFunc.subs(time.displayTime(),function(x){
                 console.log('downloaded changes');
             });
-        }); 
+        });
     });
 }, 1000); //download substitutions 1 second after start
 
