@@ -1,8 +1,13 @@
-#Lokalizacja
+# Lokalizacja
+
 /home/krzys/substitutions
-#komendy
+
+# komendy
+
 jak masz to obsługiwać
-##z gita
+
+## z gita
+
 te komendy jako user krzys
 
 `git fetch --all` - pobierasz z gita
@@ -12,11 +17,14 @@ te komendy jako user krzys
 Potem po prostu `git pull`
 
 `git checkout branch`  - zmieniasz na branch
-##uruchom
-`service botMSG start|restart|stop` - jako root
-#Pamiętaj aby zmienić port w crossServer na 8089 - po to powyższe komendy, żeby normalnie szło bez merga
 
-##Inne komendy
+## uruchom
+
+`service botMSG start|restart|stop` - jako root
+
+# Pamiętaj aby zmienić port w crossServer na 8089 - po to powyższe komendy, żeby normalnie szło bez merga
+
+## Inne komendy
 
 Execute as root:
 
