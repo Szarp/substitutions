@@ -223,12 +223,57 @@ function substitutionNotification(newSub, oldSub, callback){
 	}
 	Array.prototype.push.apply(newSub, oldSub);
 	console.log("Changes: " + newSub);
-	mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true}, 'person', function(a){
-		console.log(a);
-		console.log(JSON.stringify(a));
-	});
+	if(newSub.length>0){
+		for(var i = 0; i < newSub.length; i++){
+			var oneSub = newSub[i];
+			var classIDs = oneSub.classes;
+			mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": classIDs}, {"personal.id": true}, 'person', function(a){
+				var changes = oneSub['changes'];
+				if(oneSub.cancelled[0]){
+					msg+='anulowanie';
+				}else {
+					msg+='Typ: ' + oneSub.substitution_types;
+				}
+				msg+='\nLekcja: ' + oneSub.periods;
+				msg+='\nNauczyciel: ' + oneSub.teachers;
+				if(changes){
+					if(changes.teachers){
+						msg+=' => ' + changes.teachers;
+					}
+				}
+				msg+='\nPrzedmiot: ' + oneSub.subjects;
+				if(changes){
+					if(changes.subjects){
+						msg+= ' => ' + changes.subjects;
+					}
+				}
+				msg+='\nSala: ' + oneSub.classrooms;
+				if(changes){
+					if(changes.classrooms){
+						msg+=' => ' + changes.classrooms;
+					}
+				}
+				msg+='\nKlasa: ' + classIDs;
+				if(oneSub.groupnames){
+					if(oneSub.groupnames != ""){
+						msg+='\nGrupa: ' + oneSub.groupnames;
+					}
+				}
+				if(oneSub.note){
+					if(oneSub.note != ""){
+						msg+='\nKomentarz: '  + oneSub.note;
+					}
+				}
+				var receipentId = a.personal.id;
+				createMessage('text', receipentId, msg, function(messageTS){
+					callSendAPI(messageTS);
+					callback(messageTS);
+				});
+			});
+		}
+	}
 	setImmediate(function(){
-		callback(newSub);
+		callback("Sent substitutions: " + JSON.stringify(newSub));
 	});
 }
 
