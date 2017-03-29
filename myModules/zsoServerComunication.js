@@ -32,7 +32,7 @@ var getSomeSubstitution = function(date,callback){
 		convertToSubstitutions(data,function(convertedData){
 			if(day != ''){
 				callFunc.getChanges({param:day}, function(obj){
-					messenger.notification(convertedData, obj, function(res){
+					messenger.notification(convertedData, obj['substitution'], function(res){
 						console.log(res);
 					});
 				});
