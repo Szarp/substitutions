@@ -206,64 +206,11 @@ function sendSubstitutions(senderID, message){
 				});
             }
         });
-    /*
-		manageUsers.postCall('0000', body, function(classes){
-			var is = 0;
-			for(var i = 0; i < classes.length; i++){
-				if(classes[i] == reqClass){
-					is++;
-				}
-			}
-			if(opt == 0){
-				var dayToMSG = 'Dzisiaj';
-			} else {
-				var dayToMSG = 'Jutro';
-			}
-			if(is > 0){
-				createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
-					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
-					var content={
-						text: dayToMSG,
-						buttons: buttons
-					}
-					createMessage('generic', senderID, content, function(messageTS){
-						callSendAPI(messageTS);
-					});
-				});
-			} else {
-				if(reqClass.length != undefined){
-					dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
-					var exist = false;
-					for(var i = 0; i < allClasses.length; i++){
-						if(reqClass == allClasses[i]){
-							exist=true;
-						}
-					}
-					if(!exist){
-						var klasy = allClasses[0];
-						for(var i = 1; i < allClasses.length; i++){
-								klasy += ', ' + allClasses[i];
-						}
-						dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
-					}
-				} else {
-					dayToMSG = 'Nie podałeś klasy :/'
-				}
-				createMessage('text', senderID, dayToMSG, function(messageTS){
-					callSendAPI(messageTS);
-				});
-			}
-		});*/
-	
     }
 }
 
 function sendList(senderID, message){
     var day = 'today';
-//	var body = {
-//		'mode': 'getChanges',
-//		'param': 'today'
-//	};
 	if(message=='example'){
 		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			callSendAPI(messageTS);
@@ -290,78 +237,11 @@ function sendList(senderID, message){
 		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             for(var i=0;i<allChanges.length;i++){
-                //allChanges[i];
                 createMessage('text', senderID, allChanges[i], function(messageTS){
                     callSendAPI(messageTS);
 				});
             }
         })
-        /*
-		manageUsers.postCall('0000', body, function(obj){
-			var subs = obj['substitution'];
-			var msg = "";
-			var nd = 0;
-			for(var i = 0; i < subs.length; i++){
-				var oneSub = subs[i];
-				var classIDs = oneSub.classes;
-				if(classIDs){
-					for(var n = 0; n < classIDs.length; n++){
-						if(classIDs[n] == reqClass){
-							var changes = oneSub['changes'];
-							if(oneSub.cancelled[0]){
-								msg+='anulowanie';
-							} else {
-								msg+='Typ: ' + oneSub.substitution_types;
-							}
-							msg+='\nLekcja: ' + oneSub.periods;
-							msg+='\nNauczyciel: ' + oneSub.teachers;
-							if(changes){
-								if(changes.teachers){
-									msg+=' => ' + changes.teachers;
-								}
-							}
-							msg+='\nPrzedmiot: ' + oneSub.subjects;
-							if(changes){
-								if(changes.subjects){
-									msg+= ' => ' + changes.subjects;
-								}
-							}
-							msg+='\nSala: ' + oneSub.classrooms;
-							if(changes){
-								if(changes.classrooms){
-									msg+=' => ' + changes.classrooms;
-								}
-							}
-							if(oneSub.groupnames){
-								if(oneSub.groupnames != ""){
-									msg+='\nGrupa: ' + oneSub.groupnames;
-								}
-							}
-							if(oneSub.note){
-								if(oneSub.note != ""){
-									msg+='\nKomentarz: '  + oneSub.note;
-								}
-							}
-							createMessage('text', senderID, msg, function(messageTS){
-								callSendAPI(messageTS);
-							});
-							msg='';
-						}
-					}
-				} else if(nd == 0) {
-					if(message[0] == 0){
-						var dayToMSG = 'dzisiaj.';
-					} else {
-						var dayToMSG = 'jutro.';
-					}
-					var msg = 'Brak danych na ' + dayToMSG;
-					createMessage('text', senderID, msg, function(messageTS){
-						callSendAPI(messageTS);
-					});
-					nd = 1;
-				}
-			}
-		});*/
 	}
 }
 
@@ -395,11 +275,6 @@ function receivedMessage(event) {
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
 	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
-	/*facebook.messengerUserInfo(senderID, function(userData){
-		console.log(userData);
-		console.log('Wiadomość od ' + userData['first_name'] + ' ' + userData['last_name']);
-	});*/
-	
 
 	if (messageText) {
 		sendSubstitutions(senderID, messageText);
