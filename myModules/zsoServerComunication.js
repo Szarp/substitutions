@@ -4,15 +4,39 @@ var mongo = require('./mongoFunctions.js'),
 	request= require('request'),
 	jsonFromHtml = require('./getJsonFromHtml.js'),
 	userMod = require('./getSubstitution.js'),
-	querystring = require('querystring');
+	querystring = require('querystring'),
+	messenger = require('./messengerBot.js'),
+	setTime = require('./setTime.js'),
+	callFunc = require('./postCallFunctions.js');
 
 /*
 	module to comunicate with ZSO11 server
 */
 
+var time = new setTime();
+
 var getSomeSubstitution = function(date,callback){
+	time.tommorowIs();
+	var tomorrow = time.displayTime();
+	var day = '';
+	if (date == tomorrow){
+		day = 'tomorrow';
+	} else {
+		time.todayIs();
+		var today = time.displayTime();
+		if (date == today){
+			day = 'today';
+		}
+	}
 	getData(date,function(data){
 		convertToSubstitutions(data,function(convertedData){
+			if(day != ''){
+				callFunc.getChanges({param:day}, function(obj){
+					messenger.notification(convertedData, obj, function(res){
+						console.log(res);
+					});
+				});
+			}
 			classListFromDate(convertedData,function(res){
 				var dataToSave={};
 				dataToSave['substitution']=convertedData;

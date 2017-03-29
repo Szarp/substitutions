@@ -209,6 +209,12 @@ function sendSubstitutions(senderID, message){
     }
 }
 
+function substitutionNotification(newSub, oldSub, callback){
+	setImmediate(function(){
+		callback("Old:\n" + oldSub + "\nNew:\n");
+	}
+}
+
 function sendList(senderID, message){
     var day = 'today';
 	if(message=='example'){
@@ -320,3 +326,6 @@ function callSendAPI(messageData) {
 
 exports.receivedPostback=receivedPostback;
 exports.receivedMessage=receivedMessage;
+exports.notification=substitutionNotification;
+exports.createMessage=createMessage;
+exports.callSendAPI=callSendAPI;

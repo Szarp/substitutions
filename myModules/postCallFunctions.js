@@ -58,7 +58,7 @@ function getChanges(body,callback){ //resposne app's format changes
         time.tommorowIs();
     }
     console.log('requested date: ',time.displayTime());
-    mongo.findById(time.displayTime(),'substitutions',function(err,obj){    //console.log(err,obj);
+    mongo.findById(time.displayTime(),'substitutions',function(err,obj){
         if(err){console.log('err in sending substitutions')}
         var objToSend={};
         if(obj){
