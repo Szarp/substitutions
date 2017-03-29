@@ -212,7 +212,7 @@ function sendSubstitutions(senderID, message){
 function substitutionNotification(newSub, oldSub, callback){
 	setImmediate(function(){
 		callback("Old:\n" + oldSub + "\nNew:\n");
-	}
+	});
 }
 
 function sendList(senderID, message){
