@@ -227,55 +227,110 @@ function substitutionNotification(newSub, oldSub, callback){
 			}
 		}
 	}
-	Array.prototype.push.apply(newSub, oldSub);
-	console.log("Changes: " + newSub);
+//	Array.prototype.push.apply(newSub, oldSub);
+	console.log("New: " + newSub);
 	if(newSub.length>0){
 		for(var i = 0; i < newSub.length; i++){
 			var oneSub = newSub[i];
 			var classIDs = oneSub.classes;
 			mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": classIDs}, {"personal.id": true}, 'person', function(a){
-				var changes = oneSub['changes'];
-				var msg;
-				if(oneSub.cancelled[0]){
-					msg+='anulowanie';
-				}else {
-					msg+='Typ: ' + oneSub.substitution_types;
-				}
-				msg+='\nLekcja: ' + oneSub.periods;
-				msg+='\nNauczyciel: ' + oneSub.teachers;
-				if(changes){
-					if(changes.teachers){
-						msg+=' => ' + changes.teachers;
+				if(a && a.personal && a.personal.id){
+					var changes = oneSub['changes'];
+					var msg = "Nowe zastępstwo:\n";
+					if(oneSub.cancelled[0]){
+						msg+='anulowanie';
+					}else {
+						msg+='Typ: ' + oneSub.substitution_types;
 					}
-				}
-				msg+='\nPrzedmiot: ' + oneSub.subjects;
-				if(changes){
-					if(changes.subjects){
-						msg+= ' => ' + changes.subjects;
+					msg+='\nLekcja: ' + oneSub.periods;
+					msg+='\nNauczyciel: ' + oneSub.teachers;
+					if(changes){
+						if(changes.teachers){
+							msg+=' => ' + changes.teachers;
+						}
 					}
-				}
-				msg+='\nSala: ' + oneSub.classrooms;
-				if(changes){
-					if(changes.classrooms){
-						msg+=' => ' + changes.classrooms;
+					msg+='\nPrzedmiot: ' + oneSub.subjects;
+					if(changes){
+						if(changes.subjects){
+							msg+= ' => ' + changes.subjects;
+						}
 					}
-				}
-				msg+='\nKlasa: ' + classIDs;
-				if(oneSub.groupnames){
-					if(oneSub.groupnames != ""){
-						msg+='\nGrupa: ' + oneSub.groupnames;
+					msg+='\nSala: ' + oneSub.classrooms;
+					if(changes){
+						if(changes.classrooms){
+							msg+=' => ' + changes.classrooms;
+						}
 					}
-				}
-				if(oneSub.note){
-					if(oneSub.note != ""){
-						msg+='\nKomentarz: '  + oneSub.note;
+					msg+='\nKlasa: ' + classIDs;
+					if(oneSub.groupnames){
+						if(oneSub.groupnames != ""){
+							msg+='\nGrupa: ' + oneSub.groupnames;
+						}
 					}
+					if(oneSub.note){
+						if(oneSub.note != ""){
+							msg+='\nKomentarz: '  + oneSub.note;
+						}
+					}
+					var receipentId = a.personal.id;
+					createMessage('text', receipentId, msg, function(messageTS){
+						callSendAPI(messageTS);
+						//callback(messageTS);
+					});
 				}
-				var receipentId = a.personal.id;
-				createMessage('text', receipentId, msg, function(messageTS){
-					callSendAPI(messageTS);
-					callback(messageTS);
-				});
+			});
+		}
+	}
+	console.log("Removed substitutions: " + oldSub);
+	if(oldSub.length>0){
+		for(var i = 0; i < oldSub.length; i++){
+			var oneSub = oldSub[i];
+			var classIDs = oneSub.classes;
+			mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": classIDs}, {"personal.id": true}, 'person', function(a){
+				if(a && a.personal && a.personal.id){
+					var changes = oneSub['changes'];
+					var msg = "Usunięte zastępstwo:\n";
+					if(oneSub.cancelled[0]){
+						msg+='anulowanie';
+					}else {
+						msg+='Typ: ' + oneSub.substitution_types;
+					}
+					msg+='\nLekcja: ' + oneSub.periods;
+					msg+='\nNauczyciel: ' + oneSub.teachers;
+					if(changes){
+						if(changes.teachers){
+							msg+=' => ' + changes.teachers;
+						}
+					}
+					msg+='\nPrzedmiot: ' + oneSub.subjects;
+					if(changes){
+						if(changes.subjects){
+							msg+= ' => ' + changes.subjects;
+						}
+					}
+					msg+='\nSala: ' + oneSub.classrooms;
+					if(changes){
+						if(changes.classrooms){
+							msg+=' => ' + changes.classrooms;
+						}
+					}
+					msg+='\nKlasa: ' + classIDs;
+					if(oneSub.groupnames){
+						if(oneSub.groupnames != ""){
+							msg+='\nGrupa: ' + oneSub.groupnames;
+						}
+					}
+					if(oneSub.note){
+						if(oneSub.note != ""){
+							msg+='\nKomentarz: '  + oneSub.note;
+						}
+					}
+					var receipentId = a.personal.id;
+					createMessage('text', receipentId, msg, function(messageTS){
+						callSendAPI(messageTS);
+						//callback(messageTS);
+					});
+				}
 			});
 		}
 	}
