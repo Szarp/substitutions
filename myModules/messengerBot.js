@@ -235,6 +235,7 @@ function substitutionNotification(newSub, oldSub, callback){
 			var classIDs = oneSub.classes;
 			mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": classIDs}, {"personal.id": true}, 'person', function(a){
 				var changes = oneSub['changes'];
+				var msg;
 				if(oneSub.cancelled[0]){
 					msg+='anulowanie';
 				}else {
