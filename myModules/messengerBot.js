@@ -211,6 +211,12 @@ function sendSubstitutions(senderID, message){
 }
 
 function substitutionNotification(newSub, oldSub, callback){
+	if(newSub == '' || newSub == 'no substitutions'){
+		newSub = [];
+	}
+	if(oldSub == '' || oldSub == 'no substitutions'){
+		oldSub = [];
+	}
 	for(var i = newSub.length-1; i >= 0; i--){
 		var newEl = JSON.stringify(newSub[i]);
 		for(var e = 0; e < oldSub.length; e++){
