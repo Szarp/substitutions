@@ -236,6 +236,8 @@ function substitutionNotification(day, newSub, oldSub, callback){
 		day = 'jutro';
 	} else if(day == 'today'){
 		day = 'dzisiaj';
+	} else if(day == 'TDAT'){
+		day = 'pojutrze';
 	}
 	differencesBetweenSubs(newSub,oldSub,function(newAndOld){
         var newSub=newAndOld[0];
@@ -277,7 +279,7 @@ function substitutionNotification(day, newSub, oldSub, callback){
 						mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": oneClass}, {"personal.id": true}, 'person', function(a){
 							if(a && a.personal && a.personal.id){
 								messengerTypeChange(oneSub,function(msg){ 
-									msg = "Usunięte zastępstwo:\n"+msg;
+									msg = "Usunięte zastępstwo na " + day + ":\n"+msg;
 									var receipentId = a.personal.id;
 									createMessage('text', receipentId, msg, function(messageTS){
 										callSendAPI(messageTS);

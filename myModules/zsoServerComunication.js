@@ -26,6 +26,12 @@ var getSomeSubstitution = function(date,callback){
 		var today = time.displayTime();
 		if (date == today){
 			day = 'today';
+		} else {
+			time.theDayAfterTomorrowIs();
+			var tdat = time.displayTime();
+			if (date == tdat){
+				day = 'TDAT'; //The Day After Tomorrow
+			}
 		}
 	}
 	getData(date,function(data){

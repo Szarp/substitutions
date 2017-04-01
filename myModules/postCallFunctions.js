@@ -53,8 +53,9 @@ function getSettings(userId,callback){
 function getChanges(body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
-    }
-    else{
+    } else if(body['param']=='TDAT'){
+		time.theDayAfterTomorrowIs();
+	} else {
         time.tommorowIs();
     }
     console.log('requested date: ',time.displayTime());
