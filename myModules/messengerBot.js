@@ -261,8 +261,8 @@ function substitutionNotification(day, newSub, oldSub, callback){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', receipentId, msg, function(messageTS){
 													callSendAPI(messageTS);
-												}
-											}
+												});
+											});
 										}
 									}
 								}
@@ -280,8 +280,8 @@ function substitutionNotification(day, newSub, oldSub, callback){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', receipentId, msg, function(messageTS){
 													callSendAPI(messageTS);
-												}
-											}
+												});
+											});
 										}
 									}
 								}
