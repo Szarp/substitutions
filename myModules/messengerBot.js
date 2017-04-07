@@ -257,9 +257,9 @@ function substitutionNotification(day, newSub, oldSub, callback){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
 										if(oneClass == uClass){
-											messengerTypeChange(oneSub,function(subMsg){
+											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
-												createMessage('text', receipentId, msg, function(messageTS){
+												createMessage('text', uId, msg, function(messageTS){
 													callSendAPI(messageTS);
 												});
 											});
@@ -276,9 +276,9 @@ function substitutionNotification(day, newSub, oldSub, callback){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
 										if(oneClass == uClass){
-											messengerTypeChange(oneSub,function(subMsg){
+											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
-												createMessage('text', receipentId, msg, function(messageTS){
+												createMessage('text', uId, msg, function(messageTS){
 													callSendAPI(messageTS);
 												});
 											});
@@ -296,7 +296,7 @@ function substitutionNotification(day, newSub, oldSub, callback){
         });
     })
 }
-function messengerTypeChange(oneSub,callback){
+function messengerTypeChange(oneSub, uId, callback){
     var changes = oneSub['changes'];
     var msg = "";
 	var classIDs = oneSub.classes;
@@ -342,7 +342,7 @@ function messengerTypeChange(oneSub,callback){
 		}
 	}
     setImmediate(function(){
-		callback(msg);
+		callback(msg, uId);
 	});
 }
  function notificationList(callback){
