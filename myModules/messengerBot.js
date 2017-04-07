@@ -290,7 +290,7 @@ function substitutionNotification(day, newSub, oldSub, callback){
 					}
 				}
 			}
-		}
+		});
         setImmediate(function(){
             callback("Sent substitutions: " + newAndOld);
         });
