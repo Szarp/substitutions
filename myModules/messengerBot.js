@@ -217,6 +217,7 @@ function differencesBetweenSubs(newSub,oldSub,callback){
 	if(oldSub == '' || oldSub == 'no substitutions'){
 		oldSub = [];
 	}
+	var copyOfOld = oldSub;
 	for(var i = newSub.length-1; i >= 0; i--){
 		var newEl = JSON.stringify(newSub[i]);
 		for(var e = 0; e < oldSub.length; e++){
@@ -224,6 +225,17 @@ function differencesBetweenSubs(newSub,oldSub,callback){
 			if(newEl == oldEl){
 				newSub.splice(i, 1);
 				oldSub.splice(e, 1);
+			}
+		}
+	}
+	if(newSub.length > 0){
+		for(var i = copyOfOld.length-1; i >= 0; i--){
+			var cOldEl = JSON.stringify(copyOfOld[i]);
+			for(var e = 0; e < newSub.length; e++){
+				var cNewEl = JSON.stringify(newSub[e]);
+				if(cNewEl == cOldEl){
+					newSub.splice(e, 1);
+				}
 			}
 		}
 	}
