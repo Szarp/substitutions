@@ -36,13 +36,6 @@ var getSomeSubstitution = function(date,callback){
 	}
 	getData(date,function(data){
 		convertToSubstitutions(data,function(convertedData){
-			if(day != ''){
-				callFunc.getChanges({param:day}, function(obj){
-					messenger.notification(day, convertedData, obj['substitution'], function(res){
-						console.log(res);
-					});
-				});
-			}
 			classListFromDate(convertedData,function(res){
 				var dataToSave={};
 				dataToSave['substitution']=convertedData;
@@ -53,6 +46,9 @@ var getSomeSubstitution = function(date,callback){
 						console.log('save substitution '+  x.userList,x.date);
 						setImmediate(function() {
 							callback(convertedData);
+							messenger.notification(day, date, function(res){
+								console.log(res);
+							});
 						});
 					})
 				})

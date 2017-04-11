@@ -171,6 +171,11 @@ function sendSubstitutions(senderID, message){
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
                 createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+					if(reqClass == '1b' && opt == 0){
+						dayToMSG = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że dzisiaj";
+					} else if(reqClass == '1b'){
+						dayToMSG = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że jutro";
+					}
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
@@ -210,40 +215,53 @@ function sendSubstitutions(senderID, message){
     }
 }
 
-function differencesBetweenSubs(newSub,oldSub,callback){
-    if(newSub == '' || newSub == 'no substitutions'){
-		newSub = [];
-	}
-	if(oldSub == '' || oldSub == 'no substitutions'){
-		oldSub = [];
-	}
-	var copyOfOld = oldSub;
-	for(var i = newSub.length-1; i >= 0; i--){
-		var newEl = JSON.stringify(newSub[i]);
-		for(var e = 0; e < oldSub.length; e++){
-			var oldEl = JSON.stringify(oldSub[e]);
-			if(newEl == oldEl){
-				newSub.splice(i, 1);
-				oldSub.splice(e, 1);
+function differencesBetweenSubs(date, callback){
+	mongo.findByParam(date, 'substitutions', function(newSubObj){
+		var newSub = newSubObj.substitution;
+		mongo.findByParam(date, 'substitutionsBuffer', function(oldSubObj){
+			var oldSub = oldSubObj.substitution;
+			if(newSub == '' || newSub == 'no substitutions'){
+				newSub = [];
 			}
-		}
-	}
-	if(newSub.length > 0){
-		for(var i = copyOfOld.length-1; i >= 0; i--){
-			var cOldEl = JSON.stringify(copyOfOld[i]);
-			for(var e = 0; e < newSub.length; e++){
-				var cNewEl = JSON.stringify(newSub[e]);
-				if(cNewEl == cOldEl){
-					newSub.splice(e, 1);
+			if(oldSub == '' || oldSub == 'no substitutions'){
+				oldSub = [];
+			}
+			var copyOfOld = oldSub;
+			for(var i = newSub.length-1; i >= 0; i--){
+				var newEl = JSON.stringify(newSub[i]);
+				for(var e = 0; e < oldSub.length; e++){
+					var oldEl = JSON.stringify(oldSub[e]);
+					if(newEl == oldEl){
+						newSub.splice(i, 1);
+						oldSub.splice(e, 1);
+					}
 				}
 			}
+			if(newSub.length > 0){
+				for(var i = copyOfOld.length-1; i >= 0; i--){
+					var cOldEl = JSON.stringify(copyOfOld[i]);
+					for(var e = 0; e < newSub.length; e++){
+						var cNewEl = JSON.stringify(newSub[e]);
+						if(cNewEl == cOldEl){
+							newSub.splice(e, 1);
+						}
+					}
+				}
+			}
+			setImmediate(function(){
+				callback([newSub,oldSub]);
+				var dataToSave = {
+					substitution: newSubObj,
+					date = date
+				}
+				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
+					console.log("Saved to buffer");
+				});
+			});
 		}
 	}
-    setImmediate(function(){
-		callback([newSub,oldSub]);
-	});
 }
-function substitutionNotification(day, newSub, oldSub, callback){
+function substitutionNotification(day, date, callback){
 	if(day == 'tomorrow'){
 		day = 'jutro';
 	} else if(day == 'today'){
@@ -251,7 +269,7 @@ function substitutionNotification(day, newSub, oldSub, callback){
 	} else if(day == 'TDAT'){
 		day = 'pojutrze';
 	}
-	differencesBetweenSubs(newSub,oldSub,function(newAndOld){
+	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
         var oldSub=newAndOld[1];
 		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true}, 'person', function(usersList){

@@ -155,7 +155,13 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
     getChanges({param:day},function(obj){
         //console.log(obj)
         var tableOfMesseges=[];
-        var msg = "";
+		if(reqClass == '1b' && day == 'tomorrow'){
+			var msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
+		} else if(reqClass == '1b' && day == 'today'){
+			var msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
+		} else {
+			var msg = "";
+		}
         //console.log(obj);
         if(obj['substitution'] != 'no substitutions'){
             var subs = obj['substitution'];
