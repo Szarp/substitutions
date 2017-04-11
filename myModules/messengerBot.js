@@ -219,7 +219,11 @@ function differencesBetweenSubs(date, callback){
 	mongo.findById(date, 'substitutions', function(err, newSubObj){
 		var newSub = newSubObj.substitution;
 		mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
-			var oldSub = oldSubObj.substitution;
+			if(oldSub){
+				var oldSub = oldSubObj.substitution;
+			} else {
+				var oldSub = [];
+			}
 			if(newSub == '' || newSub == 'no substitutions'){
 				newSub = [];
 			}
