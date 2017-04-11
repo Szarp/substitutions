@@ -258,8 +258,8 @@ function differencesBetweenSubs(date, callback){
 					console.log("Saved to buffer");
 				});
 			});
-		}
-	}
+		});
+	});
 }
 function substitutionNotification(day, date, callback){
 	if(day == 'tomorrow'){
