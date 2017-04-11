@@ -155,13 +155,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
     getChanges({param:day},function(obj){
         //console.log(obj)
         var tableOfMesseges=[];
-		if(reqClass == '1b' && day == 'tomorrow'){
-			var msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
-		} else if(reqClass == '1b' && day == 'today'){
-			var msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
-		} else {
-			var msg = "";
-		}
+		var msg = "";
         //console.log(obj);
         if(obj['substitution'] != 'no substitutions'){
             var subs = obj['substitution'];
@@ -171,6 +165,11 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
                 if(classIDs){
                     for(var n = 0; n < classIDs.length; n++){
                         if(classIDs[n] == reqClass){
+							if(reqClass == '1b' && day == 'tomorrow'){
+								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
+							} else if(reqClass == '1b' && day == 'today'){
+								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
+							}
                             var changes = oneSub['changes'];
                             if(oneSub.cancelled[0]){
                                 msg+='anulowanie';
