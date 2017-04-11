@@ -255,7 +255,7 @@ function differencesBetweenSubs(date, callback){
 			setImmediate(function(){
 				callback([newSub,oldSub]);
 				var dataToSave = {
-					substitution: newSubObj,
+					substitution: newSub,
 					date: date
 				}
 				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
