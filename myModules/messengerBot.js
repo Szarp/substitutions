@@ -218,9 +218,9 @@ function sendSubstitutions(senderID, message){
 function differencesBetweenSubs(date, callback){
 	mongo.findById(date, 'substitutions', function(err, newSubObj){
 		var newSub = newSubObj.substitution;
-		var copyOfNew = newSub;
+		var copyOfNew = JSON.parse(JSON.stringify(newSub));
 		mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
-			if(oldSub){
+			if(oldSubObj && oldSubObj.substitution){
 				var oldSub = oldSubObj.substitution;
 			} else {
 				var oldSub = [];
