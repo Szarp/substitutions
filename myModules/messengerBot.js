@@ -218,6 +218,7 @@ function sendSubstitutions(senderID, message){
 function differencesBetweenSubs(date, callback){
 	mongo.findById(date, 'substitutions', function(err, newSubObj){
 		var newSub = newSubObj.substitution;
+		var copyOfNew = newSub;
 		mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
 			if(oldSub){
 				var oldSub = oldSubObj.substitution;
@@ -230,7 +231,7 @@ function differencesBetweenSubs(date, callback){
 			if(oldSub == '' || oldSub == 'no substitutions'){
 				oldSub = [];
 			}
-			var copyOfOld = oldSub;
+			//var copyOfOld = oldSub;
 			for(var i = newSub.length-1; i >= 0; i--){
 				var newEl = JSON.stringify(newSub[i]);
 				for(var e = 0; e < oldSub.length; e++){
@@ -241,7 +242,7 @@ function differencesBetweenSubs(date, callback){
 					}
 				}
 			}
-			if(newSub.length > 0){
+			/*if(newSub.length > 0){
 				for(var i = copyOfOld.length-1; i >= 0; i--){
 					var cOldEl = JSON.stringify(copyOfOld[i]);
 					for(var e = 0; e < newSub.length; e++){
@@ -251,11 +252,11 @@ function differencesBetweenSubs(date, callback){
 						}
 					}
 				}
-			}
+			}*/
 			setImmediate(function(){
 				callback([newSub,oldSub]);
 				var dataToSave = {
-					substitution: newSub,
+					substitution: copyOfNew,
 					date: date
 				}
 				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
