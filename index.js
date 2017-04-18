@@ -171,7 +171,7 @@ setInterval(function(){
             });
         });
     });
-}, 1000*60*60*1); //now running once per hour
+}, 1000*60*10); //now running once per 10 minutes
 
 setTimeout(function () {
 	time.tommorowIs();

@@ -53,12 +53,13 @@ function getSettings(userId,callback){
 function getChanges(body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
-    }
-    else{
+    } else if(body['param']=='TDAT'){
+		time.theDayAfterTomorrowIs();
+	} else {
         time.tommorowIs();
     }
     console.log('requested date: ',time.displayTime());
-    mongo.findById(time.displayTime(),'substitutions',function(err,obj){    //console.log(err,obj);
+    mongo.findById(time.displayTime(),'substitutions',function(err,obj){
         if(err){console.log('err in sending substitutions')}
         var objToSend={};
         if(obj){
@@ -154,7 +155,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
     getChanges({param:day},function(obj){
         //console.log(obj)
         var tableOfMesseges=[];
-        var msg = "";
+		var msg = "";
         //console.log(obj);
         if(obj['substitution'] != 'no substitutions'){
             var subs = obj['substitution'];
@@ -164,6 +165,11 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
                 if(classIDs){
                     for(var n = 0; n < classIDs.length; n++){
                         if(classIDs[n] == reqClass){
+							if(reqClass == '1b' && day == 'tomorrow'){
+								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
+							} else if(reqClass == '1b' && day == 'today'){
+								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
+							}
                             var changes = oneSub['changes'];
                             if(oneSub.cancelled[0]){
                                 msg+='anulowanie';

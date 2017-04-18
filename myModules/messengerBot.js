@@ -4,6 +4,7 @@ var request = require('request');
 var facebook = require('./facebookComunication.js');
 var callFunc = require('./postCallFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
+var mongo = require('./mongoFunctions.js');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","2a","2b","2c","2d","3a","3b","3c","3d","1ga","1gb","1gc","1gd","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
@@ -65,7 +66,7 @@ function sendSubstitutions(senderID, message){
 	var oMessage=message;
 	message = message.toLowerCase();
 	var opt = message[0];
-	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplkiację Messenger lub odwiedź bota przez przeglądarkę';
+	var help = 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplikację Messenger lub odwiedź bota przez przeglądarkę';
 	var reqClass = message[2] + message[3];
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
@@ -170,6 +171,11 @@ function sendSubstitutions(senderID, message){
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
                 createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+					if(reqClass == '1b' && opt == 0){
+						dayToMSG = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że dzisiaj";
+					} else if(reqClass == '1b'){
+						dayToMSG = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że jutro";
+					}
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
@@ -181,82 +187,229 @@ function sendSubstitutions(senderID, message){
 				});   
             }
             else{
-                //var dayToMSG=''; 
                 if(allClasses.indexOf(reqClass) > -1){
                     dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
                 }
                 else{
+					var exist = false;
 					var klasy = allClasses[0]
-                    for(var i = 1; i < allClasses.length; i++){
-						klasy += ', ' + allClasses[i];
-				    }
-					dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+					for(var i = 0; i < allClasses.length; i++){
+						if(reqClass == allClasses[i]){
+							exist=true;
+						}
+						if (i > 0){
+							klasy += ', ' + allClasses[i];
+						}
+					}
+					if(!exist){
+						dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+					} else {
+						dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy;
+					}
                 }
                 createMessage('text', senderID, dayToMSG, function(messageTS){
 					callSendAPI(messageTS);
 				});
             }
-            
-            
         });
-    /*
-		manageUsers.postCall('0000', body, function(classes){
-			var is = 0;
-			for(var i = 0; i < classes.length; i++){
-				if(classes[i] == reqClass){
-					is++;
-				}
-			}
-			if(opt == 0){
-				var dayToMSG = 'Dzisiaj';
-			} else {
-				var dayToMSG = 'Jutro';
-			}
-			if(is > 0){
-				createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
-					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
-					var content={
-						text: dayToMSG,
-						buttons: buttons
-					}
-					createMessage('generic', senderID, content, function(messageTS){
-						callSendAPI(messageTS);
-					});
-				});
-			} else {
-				if(reqClass.length != undefined){
-					dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
-					var exist = false;
-					for(var i = 0; i < allClasses.length; i++){
-						if(reqClass == allClasses[i]){
-							exist=true;
-						}
-					}
-					if(!exist){
-						var klasy = allClasses[0];
-						for(var i = 1; i < allClasses.length; i++){
-								klasy += ', ' + allClasses[i];
-						}
-						dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
-					}
-				} else {
-					dayToMSG = 'Nie podałeś klasy :/'
-				}
-				createMessage('text', senderID, dayToMSG, function(messageTS){
-					callSendAPI(messageTS);
-				});
-			}
-		});*/
-	
     }
 }
 
+function differencesBetweenSubs(date, callback){
+	mongo.findById(date, 'substitutions', function(err, newSubObj){
+		var newSub = newSubObj.substitution;
+		var copyOfNew = JSON.parse(JSON.stringify(newSub));
+		mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
+			if(oldSubObj && oldSubObj.substitution){
+				var oldSub = oldSubObj.substitution;
+			} else {
+				var oldSub = [];
+			}
+			if(newSub == '' || newSub == 'no substitutions'){
+				newSub = [];
+			}
+			if(oldSub == '' || oldSub == 'no substitutions'){
+				oldSub = [];
+			}
+			//var copyOfOld = oldSub;
+			for(var i = newSub.length-1; i >= 0; i--){
+				var newEl = JSON.stringify(newSub[i]);
+				for(var e = 0; e < oldSub.length; e++){
+					var oldEl = JSON.stringify(oldSub[e]);
+					if(newEl == oldEl){
+						newSub.splice(i, 1);
+						oldSub.splice(e, 1);
+					}
+				}
+			}
+			/*if(newSub.length > 0){
+				for(var i = copyOfOld.length-1; i >= 0; i--){
+					var cOldEl = JSON.stringify(copyOfOld[i]);
+					for(var e = 0; e < newSub.length; e++){
+						var cNewEl = JSON.stringify(newSub[e]);
+						if(cNewEl == cOldEl){
+							newSub.splice(e, 1);
+						}
+					}
+				}
+			}*/
+			setImmediate(function(){
+				callback([newSub,oldSub]);
+				var dataToSave = {
+					substitution: copyOfNew,
+					date: date
+				}
+				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
+					console.log("Saved to buffer");
+				});
+			});
+		});
+	});
+}
+function substitutionNotification(day, date, callback){
+	if(day == 'tomorrow'){
+		day = 'jutro';
+	} else if(day == 'today'){
+		day = 'dzisiaj';
+	} else if(day == 'TDAT'){
+		day = 'pojutrze';
+	}
+	differencesBetweenSubs(date, function(newAndOld){
+        var newSub=newAndOld[0];
+        var oldSub=newAndOld[1];
+		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true}, 'person', function(usersList){
+			if(usersList){
+				for(var a = 0; a < usersList.length; a++){
+					var oneUser = usersList[a];
+					if(oneUser && oneUser.personal && oneUser.personal.id && oneUser.personal.settings.setClass){
+						var uClass = oneUser.personal.settings.setClass;
+						var receipentId = oneUser.personal.id;
+						if(newSub.length>0){
+							for(var i = 0; i < newSub.length; i++){
+								var oneSub = newSub[i];
+								var classIDs = oneSub.classes;
+								if(classIDs){
+									for(var n = 0; n < classIDs.length; n++){
+										var oneClass = classIDs[n];
+										if(oneClass == uClass){
+											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
+												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
+												createMessage('text', uId, msg, function(messageTS){
+													callSendAPI(messageTS);
+												});
+											});
+										}
+									}
+								}
+							}
+						}
+						if(oldSub.length>0){
+							for(var i = 0; i < oldSub.length; i++){
+								var oneSub = oldSub[i];
+								var classIDs = oneSub.classes;
+								if(classIDs){
+									for(var n = 0; n < classIDs.length; n++){
+										var oneClass = classIDs[n];
+										if(oneClass == uClass){
+											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
+												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
+												createMessage('text', uId, msg, function(messageTS){
+													callSendAPI(messageTS);
+												});
+											});
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+        setImmediate(function(){
+            callback("Sent substitutions: " + newAndOld);
+        });
+    })
+}
+function messengerTypeChange(oneSub, uId, callback){
+    var changes = oneSub['changes'];
+    var msg = "";
+	var classIDs = oneSub.classes;
+	if(classIDs){
+		var oneClass = classIDs[0];
+		for(var n = 1; n < classIDs.length; n++){
+			oneClass += ", " + classIDs[n];
+		}
+		if(oneSub.cancelled[0]){
+			msg+='anulowanie';
+		}else {
+			msg+='Typ: ' + oneSub.substitution_types;
+		}
+		msg+='\nLekcja: ' + oneSub.periods;
+		msg+='\nNauczyciel: ' + oneSub.teachers;
+		if(changes){
+			if(changes.teachers){
+				   msg+=' => ' + changes.teachers;
+			}
+		}
+		msg+='\nPrzedmiot: ' + oneSub.subjects;
+		if(changes){
+			if(changes.subjects){
+				msg+= ' => ' + changes.subjects;
+			}
+		}
+		msg+='\nSala: ' + oneSub.classrooms;
+		if(changes){
+			if(changes.classrooms){
+				msg+=' => ' + changes.classrooms;
+			}
+		}
+		msg+='\nKlasa: ' + oneClass;
+		if(oneSub.groupnames){
+			if(oneSub.groupnames != ""){
+				msg+='\nGrupa: ' + oneSub.groupnames;
+			}
+		}
+		if(oneSub.note){
+			if(oneSub.note != ""){
+				msg+='\nKomentarz: '  + oneSub.note;
+			}
+		}
+	}
+    setImmediate(function(){
+		callback(msg, uId);
+	});
+}
+ function notificationList(callback){
+     var name='person';
+        //[collection,{data}]
+        //var collectionName = collection;
+        //var data = paramsToModify;
+     
+        var url = 'mongodb://localhost:27017/test2';
+        mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
+            console.log(a);
+            var list=[];
+            var arr={};
+            for(var i=0;i<a.length;i++){
+                arr['id']=a[i].personal['id'];
+                arr['class']=a[i].personal.settings['setClass'];
+                list[i]=arr;
+                arr={};
+            }
+            
+            setImmediate(function(){
+					callback(list);
+            }); 
+            
+        })
+      
+        
+        //db.close();
+ }
+
 function sendList(senderID, message){
     var day = 'today';
-//	var body = {
-//		'mode': 'getChanges',
-//		'param': 'today'
-//	};
 	if(message=='example'){
 		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			callSendAPI(messageTS);
@@ -283,78 +436,11 @@ function sendList(senderID, message){
 		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             for(var i=0;i<allChanges.length;i++){
-                //allChanges[i];
                 createMessage('text', senderID, allChanges[i], function(messageTS){
                     callSendAPI(messageTS);
 				});
             }
         })
-        /*
-		manageUsers.postCall('0000', body, function(obj){
-			var subs = obj['substitution'];
-			var msg = "";
-			var nd = 0;
-			for(var i = 0; i < subs.length; i++){
-				var oneSub = subs[i];
-				var classIDs = oneSub.classes;
-				if(classIDs){
-					for(var n = 0; n < classIDs.length; n++){
-						if(classIDs[n] == reqClass){
-							var changes = oneSub['changes'];
-							if(oneSub.cancelled[0]){
-								msg+='anulowanie';
-							} else {
-								msg+='Typ: ' + oneSub.substitution_types;
-							}
-							msg+='\nLekcja: ' + oneSub.periods;
-							msg+='\nNauczyciel: ' + oneSub.teachers;
-							if(changes){
-								if(changes.teachers){
-									msg+=' => ' + changes.teachers;
-								}
-							}
-							msg+='\nPrzedmiot: ' + oneSub.subjects;
-							if(changes){
-								if(changes.subjects){
-									msg+= ' => ' + changes.subjects;
-								}
-							}
-							msg+='\nSala: ' + oneSub.classrooms;
-							if(changes){
-								if(changes.classrooms){
-									msg+=' => ' + changes.classrooms;
-								}
-							}
-							if(oneSub.groupnames){
-								if(oneSub.groupnames != ""){
-									msg+='\nGrupa: ' + oneSub.groupnames;
-								}
-							}
-							if(oneSub.note){
-								if(oneSub.note != ""){
-									msg+='\nKomentarz: '  + oneSub.note;
-								}
-							}
-							createMessage('text', senderID, msg, function(messageTS){
-								callSendAPI(messageTS);
-							});
-							msg='';
-						}
-					}
-				} else if(nd == 0) {
-					if(message[0] == 0){
-						var dayToMSG = 'dzisiaj.';
-					} else {
-						var dayToMSG = 'jutro.';
-					}
-					var msg = 'Brak danych na ' + dayToMSG;
-					createMessage('text', senderID, msg, function(messageTS){
-						callSendAPI(messageTS);
-					});
-					nd = 1;
-				}
-			}
-		});*/
 	}
 }
 
@@ -388,11 +474,6 @@ function receivedMessage(event) {
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
 	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
-	/*facebook.messengerUserInfo(senderID, function(userData){
-		console.log(userData);
-		console.log('Wiadomość od ' + userData['first_name'] + ' ' + userData['last_name']);
-	});*/
-	
 
 	if (messageText) {
 		sendSubstitutions(senderID, messageText);
@@ -436,65 +517,8 @@ function callSendAPI(messageData) {
   });  
 }
 
-/*function sendTextMessage(recipientId, messageText) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      text: messageText
-    }
-  };
-
-  callSendAPI(messageData);
-}*/
-
-/*function sendGenericMessage(recipientId) {
-  var messageData = {
-    recipient: {
-      id: recipientId
-    },
-    message: {
-      attachment: {
-        type: "template",
-        payload: {
-          template_type: "generic",
-          elements: [{
-            title: "rift",
-            subtitle: "Next-generation virtual reality",
-            item_url: "https://www.oculus.com/en-us/rift/",               
-            image_url: "http://messengerdemo.parseapp.com/img/rift.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/rift/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for first bubble",
-            }],
-          }, {
-            title: "touch",
-            subtitle: "Your Hands, Now in VR",
-            item_url: "https://www.oculus.com/en-us/touch/",               
-            image_url: "http://messengerdemo.parseapp.com/img/touch.png",
-            buttons: [{
-              type: "web_url",
-              url: "https://www.oculus.com/en-us/touch/",
-              title: "Open Web URL"
-            }, {
-              type: "postback",
-              title: "Call Postback",
-              payload: "Payload for second bubble",
-            }]
-          }]
-        }
-      }
-    }
-  };  
-
-  callSendAPI(messageData);
-}*/
-
 exports.receivedPostback=receivedPostback;
 exports.receivedMessage=receivedMessage;
+exports.notification=substitutionNotification;
+exports.createMessage=createMessage;
+exports.callSendAPI=callSendAPI;
