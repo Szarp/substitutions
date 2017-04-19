@@ -1,7 +1,7 @@
 {
 	"name": "Substitutions",
 	"description": "Server downloading substitutions from *.edupage.org sites and presenting them on mobile-friendly website and sending them on Messenger",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"author": "Szarp",
 	"main": "index.js",
 	"contributors": [{

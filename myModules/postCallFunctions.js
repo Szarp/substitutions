@@ -1,7 +1,6 @@
-    var setTime = require('./setTime.js'),
-        //callFunc = require('postCallFunctions.js'),
-        mongo = require('./mongoFunctions.js'),
-        secretToken = require('./secretTokenGenerator.js');
+var setTime = require('./setTime.js'),
+	mongo = require('./mongoFunctions.js'),
+	secretToken = require('./secretTokenGenerator.js');
 
 var time = new setTime();
 var pageSettings = {
@@ -164,7 +163,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
                 var classIDs = oneSub.classes;
                 if(classIDs){
                     for(var n = 0; n < classIDs.length; n++){
-                        if(classIDs[n] == reqClass){
+                        if(classIDs[n] == reqClass && oneSub.cancelled[0] || classIDs[n] == reqClass && oneSub.classIDs && oneSub.classIDs.length == 1 && oneSub.substitution_types){
 							if(reqClass == '1b' && day == 'tomorrow'){
 								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
 							} else if(reqClass == '1b' && day == 'today'){
