@@ -283,9 +283,28 @@ function onLoadFunc(){
 			tokenValidation('checkToken');
 		}
 	});
+	document.getElementById("tBtn").addEventListener('click', changeMode);
     //console.log(settings1);
 }
 
+var umode = 'teacher';
+function changeMode(){
+	if(umode == 'teacher'){
+		document.getElementById("teacher_select").style.display = "";
+		document.getElementById("tBtn").classList.add('sel');
+		document.getElementById("uBtn").classList.remove('sel');
+		document.getElementById("uBtn").addEventListener('click', changeMode);
+		document.getElementById("tBtn").removeEventListener('click', changeMode);
+		umode = 'user';
+	} else {
+		document.getElementById("teacher_select").style.display = "none";
+		document.getElementById("uBtn").classList.add('sel');
+		document.getElementById("tBtn").classList.remove('sel');
+		document.getElementById("tBtn").addEventListener('click', changeMode);
+		document.getElementById("uBtn").removeEventListener('click', changeMode);
+		umode = 'teacher';
+	}
+}
 
 /* #####################jakieś śmieci#################### */
 function sendObj (url,json_obj,callback){

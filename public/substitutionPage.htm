@@ -29,25 +29,25 @@
  
 
 <ul class="navigation navDisplay navSize" >
-  <li><a id="navbar_home" href="#home">Home</a></li>
-  <li><a id="navbar_substitution" href="#changes">Zastępstwa</a></li>
-  <li><a id="navbar_settings" href="#settings">Ustawienia</a></li>
-  <li style="float:right"> <p id="navbar_photo" href="#about"><img id="personPictureVer" src=""/></p></li>
+  <li><a class="menuElem" id="navbar_home">Home</a></li>
+  <li><a class="menuElem" id="navbar_substitution">Zastępstwa</a></li>
+  <li><a class="menuElem" id="navbar_settings">Ustawienia</a></li>
+  <li style="float:right"> <a class="menuElem" id="navbar_photo" style="padding: 0"><img id="personPictureVer" alt="Profile picture"/></a></li>
 </ul>
 <ul class="drop dropDisplay">
     <li >
      <a href="javascript:void(0)" >Menu</a>
      <div class="dropdown-content">
-       <a id="navbar_homeD" href="#home">Home</a>
-       <a id="navbar_substitutionD" href="#changes">Zastępstwa</a>
-       <a id="navbar_settingsD" href="#settings">Ustawienia</a>
-       <p id="navbar_photoD" href="#about"><img id="personPictureHor" src=""/></p>
+       <a class="menuElem" id="navbar_homeD">Home</a>
+       <a class="menuElem" id="navbar_substitutionD">Zastępstwa</a>
+       <a class="menuElem" id="navbar_settingsD">Ustawienia</a>
+       <a class="menuElem" id="navbar_photoD" style="padding: 3px 0px 10px 0px; max-width: 42px; max-height: 42px; margin: auto;"><img id="personPictureHor" alt="Profile picture"/></a>
      </div>
     </li>
 </ul>
 	<div id="msgArea"></div>
 	<div class="flex-container nowrap mainContentSize" id="mainContent" >
-        <div class="" id="substitutionList"   >
+        <div id="substitutionList">
             <div  class="item-size  boxed-group" id="elementsContent">
                     <h3>Zastępstwa</h3>
                     <div class="boxed-group-inner" style="padding:0px; ">
@@ -56,7 +56,6 @@
                             <ul>
                                 <li class="btn" id="todayBtn" >today</li>
                                 <li class="btn" id="tommorowBtn"  >tomorrow</li>
-                        <!--        <li id="chooseBtn" onclick="">choose</li> --> 
                             </ul>
                         </div>
                          <div id="forDay">
@@ -128,12 +127,12 @@
                     </div>
                 </div>
         </div>
-        <div id="homePage" class="" style="display:none;">
+        <div id="homePage" style="display:none;">
             <div  class="boxed-group" >
                     <h3>Home</h3>
                     <div class="boxed-group-inner" style="text-align: justify;">
                       Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
-                        <div  id=""><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>  </div>
+                        <div><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>  </div>
                         <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
 
                     </div>
@@ -141,7 +140,7 @@
                 </div>
 
         </div>        
-        <div id="about1" class="" style="display:none;">
+        <div id="about1" style="display:none;">
             <div  class="boxed-group" >
                     <h3>O mnie</h3>
                          <div class="boxed-group-inner" >
@@ -180,12 +179,18 @@
         <div id="settingsMenu" class=" pageStyle" style="display:none;">
             <div class="boxed-group">
                 <h3>Settings</h3>
+				<table class="userSelector">
+					<tr>
+						<td id="uBtn" class="userSelectorType sel">Uczeń</td>
+						<td id="tBtn" class="userSelectorType">Nauczyciel</td>
+					</tr>
+				</table>
                 <div class="boxed-group-inner" >
                     <div class="boxed-group-section first" >
                         <table>
                           <tr>
                             <td>Class:</td>
-                            <td>                        
+                            <td>
                                 <select  id="setClass">
                                     <option  value="all">All</option>
                                     <option  value="1ga">1ga</option>
@@ -215,9 +220,15 @@
                                 </select>
                             </td>
                           </tr>
+							<tr id="teacher_select" style="display: none">
+								<td>Nauczyciel</td>
+								<td>
+									<select id="teacher"></select>
+								</td>
+							</tr>
                             <tr>
                                 <td>Notification on Messenger:</td>
-                                <td>                        
+                                <td>
                                     <select  id="setNotification">
                                         <option value="yes">yes</option>
                                         <option value="no">no</option>
@@ -225,10 +236,8 @@
                                 </td>
                             </tr>
                         </table>
-                        <a id="saveBtn" class="edit-btn btn" onclick="">Save settings</a>
+                        <a id="saveBtn" class="edit-btn btn">Save settings</a>
                     </div>
-     
-
                 </div>
             </div>
         </div>
