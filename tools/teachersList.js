@@ -32,7 +32,7 @@ mongo.findByParam({}, {"substitution": true, "date": true, "teachersList": true}
 				oneDayTeachers = uniq(oneDayTeachers); //remove duplicates and sort
 				var date = oneDay._id; //get day id (date)
 				oneDay.teachersList = oneDayTeachers; //add teacher list
-				mongo.modifyById(date, 'substitutions', oneDay){ //replace day object in db with a new one including teachersList
+				mongo.modifyById(date, 'substitutions', oneDay, function(){ //replace day object in db with a new one including teachersList
 					console.log("Added following teachers to", date, ":\n", oneDayTeachers) //saved successfully, log saved list
 				});
 			} else {
