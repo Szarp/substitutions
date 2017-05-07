@@ -267,12 +267,14 @@ function differencesBetweenSubs(date, callback){
 	});
 }
 function substitutionNotification(day, date, callback){
+	var days = ['niedzielę','poniedziałek','wtorek','środę','czwartek','piątek','sobotę'];
+	var now = new Date();
 	if(day == 'tomorrow'){
-		day = 'jutro';
+		day = days[now.getDay() + 1];
 	} else if(day == 'today'){
-		day = 'dzisiaj';
+		day = days[now.getDay()];
 	} else if(day == 'TDAT'){
-		day = 'pojutrze';
+		day = days[now.getDay() + 2];
 	}
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
