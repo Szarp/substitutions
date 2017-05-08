@@ -54,6 +54,16 @@ var getSomeSubstitution = function(date,callback){
 							});
 						})
 					})
+					mongo.findById('all', 'teachers', function(erro, obj){
+						var beforeTe = obj.teachers;
+						var newTe = beforeTe.concat(teachers);
+						newTe = uniq(newTe);
+						if(newTe.prototype.equals(beforeTe)){
+							mongo.modifyById('all', 'teachers', {'teachers': teachers}, function(){
+								console.log('Teachers list updated');
+							})
+						}
+					})
 				})
 			})
 		})
@@ -284,6 +294,42 @@ function getGPIDandGSH (data,callback){ //take params to send request
 		callback([gpid,gsh]);
 	});
 }
+
+/*
+	define Array.prototype.equals - campares arrays and returns true if they are the same
+	doesn't work with objects as elements of an array (2 same objects always are different)
+	source: http://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript/14853974#14853974
+*/
+
+// Warn if overriding existing method
+if(Array.prototype.equals)
+	console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
+// attach the .equals method to Array's prototype to call it on any array
+Array.prototype.equals = function (array) {
+	// if the other array is a falsy value, return
+	if (!array)
+		return false;
+
+	// compare lengths - can save a lot of time
+	if (this.length != array.length)
+		return false;
+
+	for (var i = 0, l=this.length; i < l; i++) {
+		// Check if we have nested arrays
+		if (this[i] instanceof Array && array[i] instanceof Array) {
+			// recurse into the nested arrays
+			if (!this[i].equals(array[i]))
+				return false;
+		}
+		else if (this[i] != array[i]) {
+			// Warning - two different object instances will never be equal: {x:20} != {x:20}
+			return false;
+		}
+	}
+	return true;
+}
+// Hide method from for-in loops
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
 exports.subs = getSomeSubstitution;
 exports.getData = getData;
