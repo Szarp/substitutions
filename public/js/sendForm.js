@@ -233,7 +233,6 @@ function requestForChanges(type){
         z.displayData();
         getClassList(form);
 		getTeachersList(form);
-		fillTeachers();
        // console.log(obj);
     });
 }
@@ -294,6 +293,7 @@ function onLoadFunc(){
 		}
 	});
 	document.getElementById("tBtn").addEventListener('click', changeMode);
+	fillTeachers();
 }
 
 var umode = 'teacher';
@@ -372,9 +372,9 @@ function filtrEvents(){
 	}
 }
 function filtrTEvents(teachersList){
-	var elInsert;
+	var elInsert = "Nauczyciele: ";
 	for(var i = 0; i < teachersList.length; i++){
-		elInsert += '<div class="substitution" id="' + teachersList[i] + '">' + teachersList[i] + '</div>';
+		elInsert += '<div class="substitution" id="' + teachersList[i] + '">' + teachersList[i] + '</div> ';
 	}
 	document.getElementById("forTeachers").innerHTML = elInsert;
 	for(var i = 0; i < teachersList.length; i++){
@@ -482,17 +482,13 @@ function translateChanges(){
     }
 	this.changeContainsTeacher = function(oneChange){
 		var teacherId = oneChange['teachers'];
-		for(var i = 0; i < teacherId; i++){
-			if(this.teacherName == teacherId[i]){
-				return true;
-			}
+		if(this.teacherName == teacherId){
+			return true;
 		}
 		if(oneChange.changes && oneChange.changes.teachers){
 			var altTeacherId = oneChange.changes.teachers;
-			for(var i = 0; i < altTeacherId; i++){
-				if(this.teacherName == altTeacherId[i]){
-					return true;
-				}
+			if(this.teacherName == altTeacherId){
+				return true;
 			}
 		}
 		return false;
