@@ -141,6 +141,7 @@ function setValuesToForm(params){
 function changeDisplayForChanges(oneClass){
     console.log(oneClass.innerHTML);
      z.setClassName(oneClass.innerHTML);
+	 z.setTeacherName('no');
      z.displayData();
 }
 function displayChangesForT(oneTeacher){
