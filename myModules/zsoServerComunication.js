@@ -190,9 +190,12 @@ function downloadData(date,callback){
 			body: formData,
 			method: 'POST'
 		}, function (err, res, body) {
-			assert.equal(null,err);
 			setImmediate(function() {
-				callback(body.length<100,body);
+				if(err){
+					callback(true, body);
+				} else {
+					callback(body.length<100,body);
+				}
 			});
 		});
 	});

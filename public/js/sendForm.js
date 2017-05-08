@@ -144,35 +144,25 @@ function changeDisplayForChanges(oneClass){
      z.displayData();
 }
 function takeValuesFromForm(){
-    //console.log('hi');
     var form={};
     form['setClass'] = document.getElementById('setClass').value;
     form['notification'] = document.getElementById('setNotification').value;
+	form['teacher'] = document.getElementById('teacher').value;
     var url = 'postCall';
     form['mode'] = 'saveSettings';
-    //console.log(form);
     z.setClassName(form.setClass);
     z.displayData();
     sendObj(url,form,function(obj){
-        //var json = JSON.parse(obj); 
         console.log('saveSettings',obj);
     });
-    //console.log('param from form',a,b);
 }
 function getClassList(form){
     var url = 'postCall';
     form['mode']='classList';
-    //console.log('clsasList',form);
-    
     sendObj(url,form,function(obj){
-        //var json = obj;
         classList=obj;
        filtrEvents();
-        //set.saveData(json);
-        //console.log('obj',json);
-        
     });
-    
 }
 function getPicture(){
     var url = 'postCall';
@@ -290,18 +280,27 @@ function onLoadFunc(){
 var umode = 'teacher';
 function changeMode(){
 	if(umode == 'teacher'){
+		//change mode to 'teacher'
 		document.getElementById("teacher_select").style.display = "";
 		document.getElementById("tBtn").classList.add('sel');
 		document.getElementById("uBtn").classList.remove('sel');
 		document.getElementById("uBtn").addEventListener('click', changeMode);
 		document.getElementById("tBtn").removeEventListener('click', changeMode);
+		document.getElementById("noClass").disabled = false;
+		document.getElementById("noClass").style.display = "";
 		umode = 'user';
 	} else {
+		//switch back to user mode
 		document.getElementById("teacher_select").style.display = "none";
 		document.getElementById("uBtn").classList.add('sel');
 		document.getElementById("tBtn").classList.remove('sel');
 		document.getElementById("tBtn").addEventListener('click', changeMode);
 		document.getElementById("uBtn").removeEventListener('click', changeMode);
+		document.getElementById("noClass").disabled = true;
+		document.getElementById("noClass").style.display = "none";
+		if(document.getElementById("setClass").value == 'no'){
+			document.getElementById("setClass").value = 'all';
+		}
 		umode = 'teacher';
 	}
 }

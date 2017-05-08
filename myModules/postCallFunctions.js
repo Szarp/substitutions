@@ -112,6 +112,7 @@ function saveSettings(userId,body,callback){ //saves settings from app
         var form={};
         form['setClass'] = body.setClass;
         form['notification'] = body.notification;
+		form['setTeacher'] = body.teacher;
          mongo.modifyById(userId,'person',{"personal.settings":form},function(){
             res = 'ok';
             setImmediate(function() {

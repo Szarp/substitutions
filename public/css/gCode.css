@@ -490,4 +490,5 @@ input::-webkit-inner-spin-button {
 .sel{
 	color: black;
 	background-color: #e0e0e0;
+	cursor: default;
 }
