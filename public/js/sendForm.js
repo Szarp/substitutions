@@ -145,6 +145,7 @@ function changeDisplayForChanges(oneClass){
 }
 function displayChangesForT(oneTeacher){
 	z.setTeacherName(oneTeacher.innerHTML);
+	z.setClassName('no');
 	z.displayData();
 }
 function takeValuesFromForm(){
@@ -481,13 +482,11 @@ function translateChanges(){
         }
     }
 	this.changeContainsTeacher = function(oneChange){
-		var teacherId = oneChange['teachers'];
-		if(this.teacherName == teacherId){
+		if(this.teacherName == oneChange['teachers']){
 			return true;
 		}
 		if(oneChange.changes && oneChange.changes.teachers){
-			var altTeacherId = oneChange.changes.teachers;
-			if(this.teacherName == altTeacherId){
+			if(this.teacherName == oneChange.changes.teachers){
 				return true;
 			}
 		}
