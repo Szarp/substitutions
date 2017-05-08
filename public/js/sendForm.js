@@ -193,11 +193,16 @@ function getTeachersList(form){
 	});
 }
 
-function fillTeachers(){
+function fillTeachers(obj){
+	var selT = obj.formValues[2];
 	sendObj('postCall', {'mode': 'allTeachers'}, function(alltList){
-		var elInsert;
+		var elInsert = '<option value="---">---</option>';
 		for(var i = 0; i < alltList.length; i++){
-			elInsert += '<option value="' + alltList[i] + '">' + alltList[i] + '</option>';
+			if(alltList[i] != selT){
+				elInsert += '<option value="' + alltList[i] + '">' + alltList[i] + '</option>';
+			} else {
+				elInsert += '<option selected value="' + alltList[i] + '">' + alltList[i] + '</option>';
+			}
 		}
 		document.getElementById("teacher").innerHTML = elInsert;
 	});
@@ -281,7 +286,8 @@ function onLoadFunc(){
 		z.setTeacherName(settings1.formValues[2]);
 		setValuesToForm(settings1['formValues'])
 		getPicture();
-		requestForChanges('today'); 
+		requestForChanges('today');
+		fillTeachers(obj);
 	});
 	if('serviceWorker' in navigator){
 		navigator.serviceWorker.register('/service-worker.js', {
@@ -295,7 +301,6 @@ function onLoadFunc(){
 		}
 	});
 	document.getElementById("tBtn").addEventListener('click', changeMode);
-	fillTeachers();
 }
 
 var umode = 'teacher';
