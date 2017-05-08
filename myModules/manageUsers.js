@@ -159,6 +159,20 @@ function postCall(userId,body,callback){
                 });
             });
         }
+		else if(body.mode=='teachersList'){
+			callFunc.teachersList(body,function(resText){
+				setImmediate(function(){
+					callback(resText);
+				});
+			});
+		}
+		else if(body.mode=='allTeachers'){
+			callFunc.allTeachers(function(resText){
+				setImmediate(function(){
+					callback(resText);
+				});
+			});
+		}
     }
     else {
         res = 'no matches in postCall'

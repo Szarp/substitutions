@@ -40,6 +40,9 @@ function getSettings(userId,callback){
         var table=[];
         table[0]=params.setClass;
         table[1]=params.notification;
+		if(params.setTeacher){
+			table[2]=params.setTeacher;
+		}
         pageSettings['formValues']=table;
         res = pageSettings; 
         setImmediate(function() {
@@ -75,6 +78,35 @@ function getChanges(body,callback){ //resposne app's format changes
             callback(res);
         });
     });
+}
+function allTeachers(callback){
+	mongo.findById('all', 'teachers', function(err, obj){
+		if(err){
+			console.log('Error getting teachersList');
+		} else {
+			var res = obj.teachers;
+			setImmediate(function(){
+				callback(res);
+			});
+		}
+	});
+}
+function teachersList(body, callback){
+	if(body['param']=='today'){
+		time.todayIs();
+	} else {
+		time.tommorowIs();
+	}
+	mongo.findById(time.displayTime(), 'substitutions', function(err, obj){
+		if(err){
+			console.log('Error getting substitutions');
+		} else {
+			var res = obj.teachersList;
+			setImmediate(function(){
+				callback(res);
+			});
+		}
+	});
 }
 function classList(body,callback){ //response classList from day
                 //console.log('response Changes')
@@ -268,3 +300,5 @@ exports.picture = picture;
 exports.changesForMessenger = changesForMessenger
 exports.tokenGenerate = tokenGenerate;
 exports.tokenCheck = tokenCheck;
+exports.teachersList = teachersList;
+exports.allTeachers = allTeachers;
