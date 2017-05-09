@@ -180,6 +180,69 @@ function picture(userId,callback){ //res id's picture
         });
     }
 }
+
+function changesTeacherForMessenger(reqTeacher, day, callback){
+	getChanges({param:day},function(obj){
+		var tableOfMesseges=[];
+		var msg = "";
+		if(obj['substitution'] != 'no substitutions'){
+            var subs = obj['substitution'];
+            for(var i = 0; i < subs.length; i++){
+                var oneSub = subs[i];
+                var teacherIDs = oneSub.teachers.toLowerCase();
+				var altTeacherId = 'nothing';
+				if(oneSub.changes && oneSub.changes.teachers){
+					altTeacherId = oneSub.changes.teachers.toLowerCase();
+				}
+                if(teacherIDs){
+					if(teacherIDs == reqTeacher && oneSub.cancelled[0] || teacherIDs == reqClass && oneSub.substitution_types || altTeacherId == reqTeacher){
+						var changes = oneSub['changes'];
+						if(oneSub.cancelled[0]){
+							msg+='anulowanie';
+						}else {
+							msg+='Typ: ' + oneSub.substitution_types;
+						}
+						msg+='\nLekcja: ' + oneSub.periods;
+						msg+='\nNauczyciel: ' + oneSub.teachers;
+						if(changes){
+							if(changes.teachers){
+								msg+=' => ' + changes.teachers;
+							}
+						}
+						msg+='\nPrzedmiot: ' + oneSub.subjects;
+						if(changes){
+							if(changes.subjects){
+								msg+= ' => ' + changes.subjects;
+							}
+						}
+						msg+='\nSala: ' + oneSub.classrooms;
+						if(changes){
+							if(changes.classrooms){
+								msg+=' => ' + changes.classrooms;
+							}
+						}
+						if(oneSub.groupnames){
+							if(oneSub.groupnames != ""){
+								msg+='\nGrupa: ' + oneSub.groupnames;
+							}
+						}
+						if(oneSub.note){
+							if(oneSub.note != ""){
+								msg+='\nKomentarz: '  + oneSub.note;
+							}
+						}
+						tableOfMesseges[tableOfMesseges.length]=msg;
+						msg='';
+					}
+                }
+            }
+        }
+        setImmediate(function() {
+            callback(tableOfMesseges);
+        });
+    });
+}
+
 //res: Table of messages to send
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
     //reqClass String [class]
@@ -297,8 +360,9 @@ exports.classList = classList;
 exports.message = message;
 exports.saveSettings = saveSettings;
 exports.picture = picture;
-exports.changesForMessenger = changesForMessenger
+exports.changesForMessenger = changesForMessenger;
 exports.tokenGenerate = tokenGenerate;
 exports.tokenCheck = tokenCheck;
 exports.teachersList = teachersList;
 exports.allTeachers = allTeachers;
+exports.changesTeacherForMessenger = changesTeacherForMessenger;

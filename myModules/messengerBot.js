@@ -71,6 +71,7 @@ function sendSubstitutions(senderID, message){
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
 	}
+	var reqTeacher = message.substring(2);
 	switch(opt){
 		case '0':
 			break;
@@ -187,28 +188,43 @@ function sendSubstitutions(senderID, message){
 				});   
             }
             else{
-                if(allClasses.indexOf(reqClass) > -1){
-                    dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
-                }
-                else{
-					var exist = false;
-					var klasy = allClasses[0]
-					for(var i = 0; i < allClasses.length; i++){
-						if(reqClass == allClasses[i]){
-							exist=true;
+				callFunc.changesTeacherForMessenger(reqTeacher,day,function(allChanges){
+					if(allChanges.length != 0){
+						createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+							dayToMSG += ' są zastępstwa dla ' + reqTeacher;
+							var content={
+								text: dayToMSG,
+								buttons: buttons
+							}
+							createMessage('generic', senderID, content, function(messageTS){
+								callSendAPI(messageTS);
+							});
+						});
+					}else{
+						if(allClasses.indexOf(reqClass) > -1){
+							dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
 						}
-						if (i > 0){
-							klasy += ', ' + allClasses[i];
+						else{
+							var exist = false;
+							var klasy = allClasses[0]
+							for(var i = 0; i < allClasses.length; i++){
+								if(reqClass == allClasses[i]){
+									exist=true;
+								}
+								if (i > 0){
+									klasy += ', ' + allClasses[i];
+								}
+							}
+							if(!exist){
+								dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+							} else {
+								dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy;
+							}
 						}
+						createMessage('text', senderID, dayToMSG, function(messageTS){
+							callSendAPI(messageTS);
+						});
 					}
-					if(!exist){
-						dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
-					} else {
-						dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy;
-					}
-                }
-                createMessage('text', senderID, dayToMSG, function(messageTS){
-					callSendAPI(messageTS);
 				});
             }
         });
@@ -279,21 +295,30 @@ function substitutionNotification(day, date, callback){
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
         var oldSub=newAndOld[1];
-		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true}, 'person', function(usersList){
+		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true, "personal.settings.setTeacher": true}, 'person', function(usersList){
 			if(usersList){
 				for(var a = 0; a < usersList.length; a++){
 					var oneUser = usersList[a];
 					if(oneUser && oneUser.personal && oneUser.personal.id && oneUser.personal.settings.setClass){
+						var uTeacher = "---";
+						if(oneUser.personal.settings.setTeacher){
+							uTeacher = oneUser.personal.settings.setTeacher;
+						}
 						var uClass = oneUser.personal.settings.setClass;
 						var receipentId = oneUser.personal.id;
 						if(newSub.length>0){
 							for(var i = 0; i < newSub.length; i++){
 								var oneSub = newSub[i];
 								var classIDs = oneSub.classes;
+								var teacherIDs = oneSub.teachers;
+								var altTeacherIDs = "nothing";
+								if(oneSub.changes && oneSub.changes.teachers){
+									altTeacherIDs = oneSub.changes.teachers;
+								}
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if(oneClass == uClass){
+										if(oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
@@ -309,10 +334,15 @@ function substitutionNotification(day, date, callback){
 							for(var i = 0; i < oldSub.length; i++){
 								var oneSub = oldSub[i];
 								var classIDs = oneSub.classes;
+								var teacherIDs = oneSub.teachers;
+								var altTeacherIDs = "nothing";
+								if(oneSub.changes && oneSub.changes.teachers){
+									altTeacherIDs = oneSub.changes.teachers;
+								}
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if(oneClass == uClass){
+										if(oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
