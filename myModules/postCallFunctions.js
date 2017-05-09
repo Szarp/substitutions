@@ -189,13 +189,13 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
             var subs = obj['substitution'];
             for(var i = 0; i < subs.length; i++){
                 var oneSub = subs[i];
-                var teacherIDs = oneSub.teachers.toLowerCase();
+                var teacherIDs = oneSub.teachers[0].toLowerCase();
 				var altTeacherId = 'nothing';
 				if(oneSub.changes && oneSub.changes.teachers){
-					altTeacherId = oneSub.changes.teachers.toLowerCase();
+					altTeacherId = oneSub.changes.teachers[0].toLowerCase();
 				}
                 if(teacherIDs){
-					if(teacherIDs == reqTeacher && oneSub.cancelled[0] || teacherIDs == reqClass && oneSub.substitution_types || altTeacherId == reqTeacher){
+					if(teacherIDs == reqTeacher && oneSub.cancelled[0] || teacherIDs == reqTeacher && oneSub.substitution_types || altTeacherId == reqTeacher){
 						var changes = oneSub['changes'];
 						if(oneSub.cancelled[0]){
 							msg+='anulowanie';

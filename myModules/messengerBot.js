@@ -71,7 +71,7 @@ function sendSubstitutions(senderID, message){
 	if(reqClass[1]=='g'){
 		reqClass += message[4];
 	}
-	var reqTeacher = message.substring(2);
+	var reqTeacher = oMessage.substring(2);
 	switch(opt){
 		case '0':
 			break;
@@ -188,7 +188,7 @@ function sendSubstitutions(senderID, message){
 				});   
             }
             else{
-				callFunc.changesTeacherForMessenger(reqTeacher,day,function(allChanges){
+				callFunc.changesTeacherForMessenger(reqTeacher.toLowerCase(),day,function(allChanges){
 					if(allChanges.length != 0){
 						createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
 							dayToMSG += ' są zastępstwa dla ' + reqTeacher;
@@ -467,11 +467,22 @@ function sendList(senderID, message){
 			reqClass += message[4];
 		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
-            for(var i=0;i<allChanges.length;i++){
-                createMessage('text', senderID, allChanges[i], function(messageTS){
-                    callSendAPI(messageTS);
+			if(allChanges.length != 0){
+				for(var i=0;i<allChanges.length;i++){
+					createMessage('text', senderID, allChanges[i], function(messageTS){
+						callSendAPI(messageTS);
+					});
+				}
+			} else {
+				var reqTeacher = message.substring(2);
+				callFunc.changesTeacherForMessenger(reqTeacher,day,function(allChanges){
+					for(var i=0;i<allChanges.length;i++){
+						createMessage('text', senderID, allChanges[i], function(messageTS){
+							callSendAPI(messageTS);
+						});
+					}
 				});
-            }
+			}
         })
 	}
 }
