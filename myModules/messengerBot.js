@@ -203,6 +203,9 @@ function sendSubstitutions(senderID, message){
 					}else{
 						if(allClasses.indexOf(reqClass) > -1){
 							dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
+							createMessage('text', senderID, dayToMSG, function(messageTS){
+								callSendAPI(messageTS);
+							});
 						}
 						else{
 							var exist = false;
@@ -216,14 +219,20 @@ function sendSubstitutions(senderID, message){
 								}
 							}
 							if(!exist){
-								dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy;
+								dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
 							} else {
-								dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy;
+								dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
 							}
+							createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
+								var content={
+									text: dayToMSG,
+									buttons: buttons
+								}
+								createMessage('generic', senderID, content, function(messageTS){
+									callSendAPI(messageTS);
+								});
+							});
 						}
-						createMessage('text', senderID, dayToMSG, function(messageTS){
-							callSendAPI(messageTS);
-						});
 					}
 				});
             }
@@ -457,6 +466,33 @@ function sendList(senderID, message){
 		});
 		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na domek.emadar.eu]):\n4 11111', function(messageTS){
 			callSendAPI(messageTS);
+		});
+	}else if (message=='teachers'){
+		mongo.findById('all', 'teachers', function(err, obj){
+			if(!err){
+				var a = 0;
+				var msg = 'Dostępni nauczyciele to: ';
+				for(var i = 0; i < obj.teachers.length; i++){
+					msg += '\n' + obj.teachers[i];
+					a++;
+					if(a == 10){
+						createMessage('text', senderID, msg, function(messageTS){
+							callSendAPI(messageTS);
+						});
+						a = 0;
+						msg = '';
+					} else if (i == (obj.teachers.length-1)){
+						createMessage('text', senderID, msg, function(messageTS){
+							callSendAPI(messageTS);
+						});
+					}
+				}
+			} else {
+				console.log("Error getting teachers list");
+				createMessage('text', senderID, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
+					callSendAPI(messageTS);
+				});
+			}
 		});
 	}else{
 		if(message[0]=='1'){
