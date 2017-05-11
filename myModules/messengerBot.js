@@ -470,7 +470,7 @@ function sendList(senderID, message){
 	}else if (message=='teachers'){
 		mongo.findById('all', 'teachers', function(err, obj){
 			if(!err){
-				var a = 0;
+				/*var a = 0;
 				var msg = 'Dostępni nauczyciele to: ';
 				for(var i = 0; i < obj.teachers.length; i++){
 					msg += '\n' + obj.teachers[i];
@@ -486,7 +486,8 @@ function sendList(senderID, message){
 							callSendAPI(messageTS);
 						});
 					}
-				}
+				}*/
+				sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, senderID);
 			} else {
 				console.log("Error getting teachers list");
 				createMessage('text', senderID, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
@@ -520,6 +521,23 @@ function sendList(senderID, message){
 				});
 			}
         })
+	}
+}
+
+function sTL(teachers, msg, i, senderID){
+	console.log(msg, i, senderID);
+	msg += '\n' + teachers[i];
+	if(i != 0 && i%10 == 0 || i == (teachers.length-1)){
+		createMessage('text', senderID, msg, function(messageTS){
+			callSendAPIwC(messageTS, function(err){
+				if(!err){
+					msg = '';
+					sTL(teachers, msg, (i+1), senderID);
+				}
+			});
+		});
+	} else if(i < teachers.length){
+		sTL(teachers, msg, (i+1), senderID);
 	}
 }
 
@@ -569,6 +587,31 @@ function receivedMessage(event) {
 				createMessage('text', adm1, txt, function(messageTS){
 					callSendAPI(messageTS);
 				});
+			});
+		}
+	});
+}
+
+function callSendAPIwC(messageData, callback){
+	request({
+		uri: 'https://graph.facebook.com/v2.7/me/messages',
+		qs: { access_token: config.pageToken },
+		method: 'POST',
+		json: messageData
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var recipientId = body.recipient_id;
+			var messageId = body.message_id;
+			console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId);
+			setImmediate(function(){
+				callback(null);
+			});
+		} else {
+			console.error("Unable to send message.");
+			console.error(response);
+			console.error(error);
+			setImmediate(function(){
+				callback(true);
 			});
 		}
 	});
