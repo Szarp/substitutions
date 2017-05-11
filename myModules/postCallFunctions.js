@@ -261,9 +261,9 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
                     for(var n = 0; n < classIDs.length; n++){
                         if(classIDs[n] == reqClass && oneSub.cancelled[0] || classIDs[n] == reqClass && oneSub.substitution_types){
 							if(reqClass == '1b' && day == 'tomorrow'){
-								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
+								msg = "Wspaniała Dosia przewidziała zastępstwa i powiada wam, że takie zastępstwo mieć jutro będziecie:\n";
 							} else if(reqClass == '1b' && day == 'today'){
-								msg = "Wspaniały Sebastian przewidział zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
+								msg = "Wspaniała Dosia przewidziała zastępstwa i powiada wam, że takie zastępstwo dziś macie:\n";
 							}
                             var changes = oneSub['changes'];
                             if(oneSub.cancelled[0]){
