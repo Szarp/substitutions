@@ -92,7 +92,15 @@ var matchingModes ={
         name:'checkToken',
         description:'Responses if there is match for tokens'
     
-    }
+    },
+	teachersList:{
+		name: 'teachersList',
+		description:'Respond with list of teachers, who have substitution given day'
+	},
+	allTeachers:{
+		name: 'allTeachers',
+		description: 'Give list with all known teachers'
+	}
 }
     //var reqCookie=req.cookies.cookieName;
     //var userId=cookie.findIfSessionExist(reqCookie);
@@ -159,6 +167,20 @@ function postCall(userId,body,callback){
                 });
             });
         }
+		else if(body.mode=='teachersList'){
+			callFunc.teachersList(body,function(resText){
+				setImmediate(function(){
+					callback(resText);
+				});
+			});
+		}
+		else if(body.mode=='allTeachers'){
+			callFunc.allTeachers(function(resText){
+				setImmediate(function(){
+					callback(resText);
+				});
+			});
+		}
     }
     else {
         res = 'no matches in postCall'

@@ -125,7 +125,7 @@ function tokenValidation(mode){
 }
 
 function setValuesToForm(params){
-    var formList=['setClass','setNotification'];
+    var formList=['setClass','setNotification','teacher'];
     for(var i=0;i<params.length;i++){
         var sel = document.getElementById(formList[i]);
         var opts = sel.options;
@@ -141,38 +141,34 @@ function setValuesToForm(params){
 function changeDisplayForChanges(oneClass){
     console.log(oneClass.innerHTML);
      z.setClassName(oneClass.innerHTML);
+	 z.setTeacherName('no');
      z.displayData();
 }
+function displayChangesForT(oneTeacher){
+	z.setTeacherName(oneTeacher.innerHTML);
+	z.setClassName('no');
+	z.displayData();
+}
 function takeValuesFromForm(){
-    //console.log('hi');
     var form={};
     form['setClass'] = document.getElementById('setClass').value;
     form['notification'] = document.getElementById('setNotification').value;
+	form['teacher'] = document.getElementById('teacher').value;
     var url = 'postCall';
     form['mode'] = 'saveSettings';
-    //console.log(form);
     z.setClassName(form.setClass);
     z.displayData();
     sendObj(url,form,function(obj){
-        //var json = JSON.parse(obj); 
         console.log('saveSettings',obj);
     });
-    //console.log('param from form',a,b);
 }
 function getClassList(form){
     var url = 'postCall';
     form['mode']='classList';
-    //console.log('clsasList',form);
-    
     sendObj(url,form,function(obj){
-        //var json = obj;
         classList=obj;
        filtrEvents();
-        //set.saveData(json);
-        //console.log('obj',json);
-        
     });
-    
 }
 function getPicture(){
     var url = 'postCall';
@@ -188,6 +184,28 @@ function getPicture(){
     })
     
     
+}
+
+function getTeachersList(form){
+	form['mode'] = 'teachersList';
+	sendObj('postCall', form, function(obj){
+		filtrTEvents(obj);
+	});
+}
+
+function fillTeachers(obj){
+	var selT = obj.formValues[2];
+	sendObj('postCall', {'mode': 'allTeachers'}, function(alltList){
+		var elInsert = '<option value="---">---</option>';
+		for(var i = 0; i < alltList.length; i++){
+			if(alltList[i] != selT){
+				elInsert += '<option value="' + alltList[i] + '">' + alltList[i] + '</option>';
+			} else {
+				elInsert += '<option selected value="' + alltList[i] + '">' + alltList[i] + '</option>';
+			}
+		}
+		document.getElementById("teacher").innerHTML = elInsert;
+	});
 }
 
 function requestForChanges(type){
@@ -221,6 +239,7 @@ function requestForChanges(type){
         }
         z.displayData();
         getClassList(form);
+		getTeachersList(form);
        // console.log(obj);
     });
 }
@@ -254,38 +273,63 @@ function sendMessage(){
 	}
 }
 function onLoadFunc(){
-    //console.log('hi2');
-    var url='postCall';
-    var form={};
-    form['mode']='getSettings';
-    sendObj(url,form,function(obj){
-    //    console.log(JSON.parse(obj));
-        settings1 = obj;
-       // console.log('hi',settings1);
-        set.saveData(settings1.event);
-    set.addChangeClick();
-    set.addClicks();
-        z.setFields(settings1['fields']);
-        z.setClassName(settings1.formValues[0]);
-    setValuesToForm(settings1['formValues'])
-    getPicture();
-        //set.saveData(settings1);
-    requestForChanges('today'); 
-    });
+	var url='postCall';
+	var form={};
+	form['mode']='getSettings';
+	sendObj(url,form,function(obj){
+		settings1 = obj;
+		set.saveData(settings1.event);
+		set.addChangeClick();
+		set.addClicks();
+		z.setFields(settings1['fields']);
+		z.setClassName(settings1.formValues[0]);
+		z.setTeacherName(settings1.formValues[2]);
+		setValuesToForm(settings1['formValues'])
+		getPicture();
+		requestForChanges('today');
+		fillTeachers(obj);
+	});
 	if('serviceWorker' in navigator){
 		navigator.serviceWorker.register('/service-worker.js', {
 			scope: './'
 		});
-    }
+	}
 	document.getElementById("tokenCheck").addEventListener('keypress', function (e) {
 		var key = e.which || e.keyCode;
 		if (key === 13) { // 13 is enter
 			tokenValidation('checkToken');
 		}
 	});
-    //console.log(settings1);
+	document.getElementById("tBtn").addEventListener('click', changeMode);
 }
 
+var umode = 'teacher';
+function changeMode(){
+	if(umode == 'teacher'){
+		//change mode to 'teacher'
+		document.getElementById("teacher_select").style.display = "";
+		document.getElementById("tBtn").classList.add('sel');
+		document.getElementById("uBtn").classList.remove('sel');
+		document.getElementById("uBtn").addEventListener('click', changeMode);
+		document.getElementById("tBtn").removeEventListener('click', changeMode);
+		document.getElementById("noClass").disabled = false;
+		document.getElementById("noClass").style.display = "";
+		umode = 'user';
+	} else {
+		//switch back to user mode
+		document.getElementById("teacher_select").style.display = "none";
+		document.getElementById("uBtn").classList.add('sel');
+		document.getElementById("tBtn").classList.remove('sel');
+		document.getElementById("tBtn").addEventListener('click', changeMode);
+		document.getElementById("uBtn").removeEventListener('click', changeMode);
+		document.getElementById("noClass").disabled = true;
+		document.getElementById("noClass").style.display = "none";
+		if(document.getElementById("setClass").value == 'no'){
+			document.getElementById("setClass").value = 'all';
+		}
+		umode = 'teacher';
+	}
+}
 
 /* #####################jakieś śmieci#################### */
 function sendObj (url,json_obj,callback){
@@ -333,6 +377,18 @@ function filtrEvents(){
 		el.className = "substitution";
         el.addEventListener('click',function(){ changeDisplayForChanges(this)},false);
 	}
+}
+function filtrTEvents(teachersList){
+	var elInsert = "Nauczyciele: ";
+	for(var i = 0; i < teachersList.length; i++){
+		elInsert += '<div class="substitution" id="' + teachersList[i] + '">' + teachersList[i] + '</div> ';
+	}
+	document.getElementById("forTeachers").innerHTML = elInsert;
+	for(var i = 0; i < teachersList.length; i++){
+		el = document.getElementById(teachersList[i]);
+		el.addEventListener('click', function(){displayChangesForT(this)}, false);
+	}
+	document.getElementById("forTeachers").style.display = '';
 }
 
 function btnClicked(type){
@@ -394,6 +450,7 @@ function translateChanges(){
     this.divId='changesContainer';
     this.parsedData="";
     this.finalTables="";
+	this.teacherName="";
     this.setClassName=function(className){
         this.className= className;
     }
@@ -403,6 +460,9 @@ function translateChanges(){
         this.fields=fields;
         
     }
+	this.setTeacherName=function(teacherName){
+		this.teacherName = teacherName;
+	}
     //this.fields=settings1['fields'];
     this.displayData=function(){
         console.log('changes for class',this.className);
@@ -415,38 +475,43 @@ function translateChanges(){
         for(var j=0;j<this.data.length;j++){
             console.log('dataLength',this.data.length);
             var findParam=this.changeContainsClass(this.data[j]);
-            if(findParam){
-            var oneChangeObj=this.assignParams(this.data[j]);
-            this.finalTables+=this.createElement(oneChangeObj);
-            //console.log(string);
-            //+=string;
-            //this.parsedData="";
+			var findTeacher=this.changeContainsTeacher(this.data[j]);
+            if(findParam || findTeacher){
+				var oneChangeObj=this.assignParams(this.data[j]);
+				this.finalTables+=this.createElement(oneChangeObj);
             }
-            //console.log(fi//);
         }
         if(this.finalTables == ""){
-            //this.addToArray('brak','zastępstw',0);
             string='nic';
-            //
             this.finalTables+=string;
             this.parsedData="";
-            //this.finalTables==
         }
     }
+	this.changeContainsTeacher = function(oneChange){
+		if(this.teacherName == oneChange['teachers']){
+			return true;
+		}
+		if(oneChange.changes && oneChange.changes.teachers){
+			if(this.teacherName == oneChange.changes.teachers){
+				return true;
+			}
+		}
+		return false;
+	}
     this.changeContainsClass = function(oneChange){
-    if(this.className =='all'||this.className==""){
-        //console.log('null on change');
-        return true;
-    };
-    var classId=oneChange['classes'];
-        for(var i=0;i<classId.length;i++){
-            if(this.className == classId[i]){
-                //console.log('full on change');
-                return true;
-            }
-        }
-    return false;
-}
+		if(this.className =='all'||this.className==""){
+			//console.log('null on change');
+			return true;
+		};
+		var classId=oneChange['classes'];
+		for(var i=0;i<classId.length;i++){
+			if(this.className == classId[i]){
+				//console.log('full on change');
+				return true;
+			}
+		}
+		return false;
+	}
     this.addToArray=function(keyText,keyValue,tabs){
         var text = this.createElement(keyText,keyValue,tabs);
         if(text !=""){

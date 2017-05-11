@@ -21,8 +21,8 @@ function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
 					callback(null);
 				});
 			}
+			db.close();
 		});
-		db.close();
 	})
 }
 

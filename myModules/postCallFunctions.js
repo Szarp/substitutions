@@ -40,6 +40,9 @@ function getSettings(userId,callback){
         var table=[];
         table[0]=params.setClass;
         table[1]=params.notification;
+		if(params.setTeacher){
+			table[2]=params.setTeacher;
+		}
         pageSettings['formValues']=table;
         res = pageSettings; 
         setImmediate(function() {
@@ -75,6 +78,35 @@ function getChanges(body,callback){ //resposne app's format changes
             callback(res);
         });
     });
+}
+function allTeachers(callback){
+	mongo.findById('all', 'teachers', function(err, obj){
+		if(err){
+			console.log('Error getting teachersList');
+		} else {
+			var res = obj.teachers;
+			setImmediate(function(){
+				callback(res);
+			});
+		}
+	});
+}
+function teachersList(body, callback){
+	if(body['param']=='today'){
+		time.todayIs();
+	} else {
+		time.tommorowIs();
+	}
+	mongo.findById(time.displayTime(), 'substitutions', function(err, obj){
+		if(err){
+			console.log('Error getting substitutions');
+		} else {
+			var res = obj.teachersList;
+			setImmediate(function(){
+				callback(res);
+			});
+		}
+	});
 }
 function classList(body,callback){ //response classList from day
                 //console.log('response Changes')
@@ -112,6 +144,7 @@ function saveSettings(userId,body,callback){ //saves settings from app
         var form={};
         form['setClass'] = body.setClass;
         form['notification'] = body.notification;
+		form['setTeacher'] = body.teacher;
          mongo.modifyById(userId,'person',{"personal.settings":form},function(){
             res = 'ok';
             setImmediate(function() {
@@ -147,6 +180,69 @@ function picture(userId,callback){ //res id's picture
         });
     }
 }
+
+function changesTeacherForMessenger(reqTeacher, day, callback){
+	getChanges({param:day},function(obj){
+		var tableOfMesseges=[];
+		var msg = "";
+		if(obj['substitution'] != 'no substitutions'){
+            var subs = obj['substitution'];
+            for(var i = 0; i < subs.length; i++){
+                var oneSub = subs[i];
+                var teacherIDs = oneSub.teachers[0].toLowerCase();
+				var altTeacherId = 'nothing';
+				if(oneSub.changes && oneSub.changes.teachers){
+					altTeacherId = oneSub.changes.teachers[0].toLowerCase();
+				}
+                if(teacherIDs){
+					if(teacherIDs == reqTeacher && oneSub.cancelled[0] || teacherIDs == reqTeacher && oneSub.substitution_types || altTeacherId == reqTeacher){
+						var changes = oneSub['changes'];
+						if(oneSub.cancelled[0]){
+							msg+='anulowanie';
+						}else {
+							msg+='Typ: ' + oneSub.substitution_types;
+						}
+						msg+='\nLekcja: ' + oneSub.periods;
+						msg+='\nNauczyciel: ' + oneSub.teachers;
+						if(changes){
+							if(changes.teachers){
+								msg+=' => ' + changes.teachers;
+							}
+						}
+						msg+='\nPrzedmiot: ' + oneSub.subjects;
+						if(changes){
+							if(changes.subjects){
+								msg+= ' => ' + changes.subjects;
+							}
+						}
+						msg+='\nSala: ' + oneSub.classrooms;
+						if(changes){
+							if(changes.classrooms){
+								msg+=' => ' + changes.classrooms;
+							}
+						}
+						if(oneSub.groupnames){
+							if(oneSub.groupnames != ""){
+								msg+='\nGrupa: ' + oneSub.groupnames;
+							}
+						}
+						if(oneSub.note){
+							if(oneSub.note != ""){
+								msg+='\nKomentarz: '  + oneSub.note;
+							}
+						}
+						tableOfMesseges[tableOfMesseges.length]=msg;
+						msg='';
+					}
+                }
+            }
+        }
+        setImmediate(function() {
+            callback(tableOfMesseges);
+        });
+    });
+}
+
 //res: Table of messages to send
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
     //reqClass String [class]
@@ -264,6 +360,9 @@ exports.classList = classList;
 exports.message = message;
 exports.saveSettings = saveSettings;
 exports.picture = picture;
-exports.changesForMessenger = changesForMessenger
+exports.changesForMessenger = changesForMessenger;
 exports.tokenGenerate = tokenGenerate;
 exports.tokenCheck = tokenCheck;
+exports.teachersList = teachersList;
+exports.allTeachers = allTeachers;
+exports.changesTeacherForMessenger = changesTeacherForMessenger;

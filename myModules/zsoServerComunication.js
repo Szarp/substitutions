@@ -37,23 +37,66 @@ var getSomeSubstitution = function(date,callback){
 	getData(date,function(data){
 		convertToSubstitutions(data,function(convertedData){
 			classListFromDate(convertedData,function(res){
-				var dataToSave={};
-				dataToSave['substitution']=convertedData;
-				dataToSave['userList']=res;
-				console.log('before saving'+ dataToSave['userList']);
-				saveSubstitutions(date,dataToSave,function(){
-					mongo.findById(date,'substitutions',function(err,x){
-						console.log('save substitution '+  x.userList,x.date);
-						setImmediate(function() {
-							callback(convertedData);
-							messenger.notification(day, date, function(res){
-								console.log(res);
+				teachersList(convertedData, function(teachers){
+					var dataToSave={};
+					dataToSave['substitution']=convertedData;
+					dataToSave['userList']=res;
+					dataToSave['teachersList'] = teachers;
+					console.log('before saving'+ dataToSave['userList']);
+					saveSubstitutions(date,dataToSave,function(){
+						mongo.findById(date,'substitutions',function(err,x){
+							console.log('save substitution '+  x.userList,x.date,x.teachersList);
+							setImmediate(function() {
+								callback(convertedData);
+								messenger.notification(day, date, function(res){
+									console.log(res);
+								});
 							});
-						});
+						})
+					})
+					mongo.findById('all', 'teachers', function(erro, obj){
+						var beforeTe = obj.teachers;
+						var newTe = beforeTe.concat(teachers);
+						newTe = uniq(newTe);
+						if(!arrayEqual(newTe, beforeTe)){
+							mongo.modifyById('all', 'teachers', {'teachers': teachers}, function(){
+								console.log('Teachers list updated');
+							})
+						}
 					})
 				})
 			})
 		})
+	})
+}
+
+function teachersList(convertedData, callback){
+	var teachers = [];
+	if(convertedData != 'no substitutions'){
+		for(var n = 0; n < convertedData.length; n++){
+			var oneSub = convertedData[n];
+			if(oneSub.teachers){
+				teachers = teachers.concat(oneSub.teachers);
+			}
+			if(oneSub.changes && oneSub.changes.teachers){
+				teachers = teachers.concat(oneSub.changes.teachers);
+			}
+		}
+		teachers = uniq(teachers);
+		setImmediate(function(){
+			callback(teachers);
+		});
+	} else {
+		setImmediate(function(){
+			callback([]);
+		});
+	}
+}
+
+//function sorting array and removing duplicates
+function uniq(a) {
+	return a.sort().filter(function(item, pos, ary){
+		return !pos || item != ary[pos - 1];
 	})
 }
 
@@ -147,9 +190,12 @@ function downloadData(date,callback){
 			body: formData,
 			method: 'POST'
 		}, function (err, res, body) {
-			assert.equal(null,err);
 			setImmediate(function() {
-				callback(body.length<100,body);
+				if(err){
+					callback(true, body);
+				} else {
+					callback(body.length<100,body);
+				}
 			});
 		});
 	});
@@ -200,6 +246,7 @@ function saveSubstitutions(date,data,callback){
 		dataToSave['substitution']=data.substitution;
 		dataToSave['userList']=data.userList;
 		dataToSave['date']=date;
+		dataToSave['teachersList'] = data.teachersList;
 	mongo.modifyById(date,'substitutions',dataToSave,function(){
 		setImmediate(function() {
 			callback(); //callback not necessary
@@ -249,6 +296,18 @@ function getGPIDandGSH (data,callback){ //take params to send request
 	setImmediate(function() {
 		callback([gpid,gsh]);
 	});
+}
+
+function arrayEqual(array0, array){
+	if (array0.length != array.length){
+		return false;
+	}
+	for (var i = 0; i < array0.length; i++) {
+		if (array0[i] != array[i]) {
+			return false;
+		}
+	}
+	return true;
 }
 
 exports.subs = getSomeSubstitution;
