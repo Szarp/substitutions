@@ -295,11 +295,11 @@ function substitutionNotification(day, date, callback){
 	var days = ['niedzielę','poniedziałek','wtorek','środę','czwartek','piątek','sobotę'];
 	var now = new Date();
 	if(day == 'tomorrow'){
-		day = days[now.getDay() + 1];
+		day = days[(now.getDay() + 1)%7];
 	} else if(day == 'today'){
 		day = days[now.getDay()];
 	} else if(day == 'TDAT'){
-		day = days[now.getDay() + 2];
+		day = days[(now.getDay() + 2)%7];
 	}
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];

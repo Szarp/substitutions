@@ -221,6 +221,13 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
 								msg+=' => ' + changes.classrooms;
 							}
 						}
+						msg+='\nKlasa: ';
+						for(var a = 0; a < oneSub.classes.length; a++){
+							if(a != 0){
+								msg+=', ';
+							}
+							msg+=oneSub.classes[a];
+						}
 						if(oneSub.groupnames){
 							if(oneSub.groupnames != ""){
 								msg+='\nGrupa: ' + oneSub.groupnames;
