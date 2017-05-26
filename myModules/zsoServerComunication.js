@@ -58,7 +58,7 @@ var getSomeSubstitution = function(date,callback){
 						var beforeTe = obj.teachers;
 						var newTe = beforeTe.concat(teachers);
 						newTe = uniq(newTe);
-						if(!arrayEqual(newTe, beforeTe)){
+						if(!arrayEqual(newTe, beforeTe) && newTe.length > beforeTe.length){
 							mongo.modifyById('all', 'teachers', {'teachers': teachers}, function(){
 								console.log('Teachers list updated');
 							})

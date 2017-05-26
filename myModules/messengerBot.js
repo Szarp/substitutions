@@ -208,29 +208,52 @@ function sendSubstitutions(senderID, message){
 							});
 						}
 						else{
-							var exist = false;
-							var klasy = allClasses[0]
-							for(var i = 0; i < allClasses.length; i++){
-								if(reqClass == allClasses[i]){
-									exist=true;
+							mongo.findById('all', 'teachers', function(err, obj){
+								var tList = obj.teachers;
+								var exist = false;
+								var tExist = false;
+								for(var z = 0; z < tList.length; z++){
+									if(tList[z].toLowerCase() == reqTeacher.toLowerCase()){
+										tExist = true;
+									}
 								}
-								if (i > 0){
-									klasy += ', ' + allClasses[i];
+								var klasy = allClasses[0]
+								for(var i = 0; i < allClasses.length; i++){
+									if(reqClass == allClasses[i]){
+										exist=true;
+									}
+									if (i > 0){
+										klasy += ', ' + allClasses[i];
+									}
 								}
-							}
-							if(!exist){
-								dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
-							} else {
-								dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
-							}
-							createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
-								var content={
-									text: dayToMSG,
-									buttons: buttons
+								if(!exist && !tExist && reqClass.length > 0){
+									dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';	
+									createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
+										var content={
+											text: dayToMSG,
+											buttons: buttons
+										}
+										createMessage('generic', senderID, content, function(messageTS){
+											callSendAPI(messageTS);
+										});
+									});
+								} else if(!exist && !tExist){
+									dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';	
+									createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
+										var content={
+											text: dayToMSG,
+											buttons: buttons
+										}
+										createMessage('generic', senderID, content, function(messageTS){
+											callSendAPI(messageTS);
+										});
+									});
+								} else {
+									dayToMSG += ' brak zastępstw dla ' + reqTeacher;
+									createMessage('text', senderID, dayToMSG, function(messageTS){
+										callSendAPI(messageTS);
+									});
 								}
-								createMessage('generic', senderID, content, function(messageTS){
-									callSendAPI(messageTS);
-								});
 							});
 						}
 					}
