@@ -153,7 +153,11 @@ function takeValuesFromForm(){
     var form={};
     form['setClass'] = document.getElementById('setClass').value;
     form['notification'] = document.getElementById('setNotification').value;
-	form['teacher'] = document.getElementById('teacher').value;
+	if(umode=='user'){ //save teacher if in teacher tab, set none when saving in user tab
+		form['teacher'] = document.getElementById('teacher').value;
+	} else {
+		form['teacher'] = '---';
+	}
     var url = 'postCall';
     form['mode'] = 'saveSettings';
     z.setClassName(form.setClass);
@@ -288,6 +292,10 @@ function onLoadFunc(){
 		getPicture();
 		requestForChanges('today');
 		fillTeachers(obj);
+		if(settings1.formValues[2] && settings1.formValues[2]!='---'){ //change mode to teacher if teacher selected and saved in db
+			changeMode();
+			console.error('!!!!!!!!!!!!!!!!!\n',settings1.formValues[2]);
+		}
 	});
 	if('serviceWorker' in navigator){
 		navigator.serviceWorker.register('/service-worker.js', {
