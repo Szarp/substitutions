@@ -172,11 +172,6 @@ function sendSubstitutions(senderID, message){
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
                 createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
-					if(reqClass == '1b' && opt == 0){
-						dayToMSG = "Wspaniała Dosia przewidziała zastępstwa i powiada wam, że dzisiaj";
-					} else if(reqClass == '1b'){
-						dayToMSG = "Wspaniała Dosia przewidziała zastępstwa i powiada wam, że jutro";
-					}
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
