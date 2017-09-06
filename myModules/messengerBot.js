@@ -7,7 +7,7 @@ var secretToken = require('./secretTokenGenerator.js');
 var mongo = require('./mongoFunctions.js');
 var adm1 = config.adm1;
 var adm2 = config.adm2;
-var allClasses = ["1a","1b","1c","1d","2a","2b","2c","2d","3a","3b","3c","3d","1ga","1gb","1gc","1gd","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
+var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
 
 function createMessage(type, id, content, callback){
 	var message = {
