@@ -118,6 +118,7 @@ function saveAndGenerate(medium,userId,callback){ //saving new token to id form 
     //id string
     mongo.findById(userId,medium,function(e,doc){ //protection for neer-time-tokens
         console.log(doc);
+        if(doc != null && doc != undefined){
         if(doc.system.secret != ''){
             var time = new Date().getTime()+1000*60*60*24;
             var lastTime = doc.system.secret.time;
@@ -144,9 +145,11 @@ function saveAndGenerate(medium,userId,callback){ //saving new token to id form 
                    });
                 });  
             });
-        } 
+        }
+        }else{
+           callback("An error occured (db, token, line 121 - doc is null/undefined) please contact admins and send them this message (use '2 your_report_message' eg. '2 coś padło, pomóżcie' to report this error or tell them directly)");
+        }
     });
-    
 }
 //ret: array with secret and time
 function tokenGenerator(callback){  //generates secret token and adds time

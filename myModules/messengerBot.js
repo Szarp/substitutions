@@ -589,14 +589,6 @@ function receivedMessage(event) {
 	var messageText = message.text;
 	var messageAttachments = message.attachments;
 	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
-
-	if (messageText) {
-		sendSubstitutions(senderID, messageText);
-	} else {
-		createMessage('text', senderID, help, function(messageTS){
-			callSendAPI(messageTS);
-		});
-	}
 	facebook.messengerSavePerson(senderID, function(res){
 		console.log('saving done');
 		if(res==='saved'){
@@ -608,6 +600,13 @@ function receivedMessage(event) {
 			});
 		}
 	});
+	if (messageText) {
+		sendSubstitutions(senderID, messageText);
+	} else {
+		createMessage('text', senderID, help, function(messageTS){
+			callSendAPI(messageTS);
+		});
+	}
 }
 
 function callSendAPIwC(messageData, callback){
