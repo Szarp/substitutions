@@ -1,6 +1,6 @@
 var express = require('express'),
 	fs= require('fs'),
-	https =require('https'),
+	https =require('spdy'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	request= require('request'),

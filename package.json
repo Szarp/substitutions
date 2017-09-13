@@ -25,13 +25,14 @@
 		"messenger"
 	],
 	"dependencies": {
-		"express": "^4.12.2",
+		"express": "^4.15.4",
 		"request": "^2.81.0",
-		"mongodb": "^2.2.25",
-		"body-parser": "^1.17.1",
+		"mongodb": "^2.2.31",
+		"body-parser": "^1.18.1",
 		"cookie-parser": "^1.4.3",
-		"compression": "^1.6.2",
-		"helmet": "^3.5.0"
+		"compression": "^1.7.0",
+		"helmet": "^3.8.1",
+		"spdy": "^3.4.7"
 	},
 	"private": "true",
 	"license": "MIT"
