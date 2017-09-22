@@ -9,6 +9,92 @@ var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
 
+function helpPageMessage(id){
+    return{
+        "recipient":{"id":id},
+        "message": {
+            "attachment": {"type": "template",
+                "payload": {
+                "template_type": "list",
+                "elements": [
+                {
+                    "title": "Zastępstwa dla szkol",
+                    //"image_url": "https://peterssendreceiveapp.ngrok.io/img/collection.png",
+                    "subtitle": "Help page",
+                    "buttons": [
+                        {
+                            "title": "Odwiedź stronę",
+                            "type": "web_url",
+                            "url": "https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "tall",
+                            "fallback_url": "https://www.facebook.com/Zastępstwa-dla-szkół"                        
+                        }
+                    ]
+                },
+                {
+                    "title": "0 klasa",
+                    "subtitle": "Użycie 0 1b zwroci nam wsystkie zastępstwa dla klasy 1b na dzisiaj",
+                    "buttons": [
+                        {
+                            "title": "Wyprobuj",
+                            "type": "postback",
+                            "payload":"0 1b"                
+                        }
+                    ]                
+                },
+                {
+                    "title": "1 klasa",
+                    "subtitle": "Użycie 1 1b zwroci nam wsystkie zastępstwa dla klasy 1b na jutro",
+                    "buttons": [
+                        {
+                            "title": "Wyprobuj",
+                            "type": "postback",
+                            "payload":"1 1b"                
+                        }
+                    ]                
+                },
+                {
+                    "title": "2 pytanie",
+                    "subtitle": "Użycie 2 Hej powiadomi administratorow, ktorzy odpowiedzą na pytanie",
+                    "buttons": [
+                        {
+                            "title": "Wyprobuj",
+                            "type": "postback",
+                            "payload":"2 Hey"                
+                        }
+                    ]                
+                },
+                {
+                    "title": "4",
+                    "subtitle": "Ta opcja generuje unikalny kod do łączenia kont",
+                    "buttons": [
+                        {
+                            "type":"web_url",
+                            "url":"https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
+                            "title":"Więcej informacji"          
+                        }
+                    ]                
+                },
+                {
+                    "title": "4 token",
+                    "subtitle": "Użycie 4 12345 połączy konto z wcześniej uzyskanego kodu",
+                    "buttons": [
+                        {
+                            "type":"web_url",
+                            "url":"https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
+                            "title":"Doweidz się więcej"          
+                        }
+                    ]                
+                }
+            ]
+        }
+    }
+}   
+    
+}
+ }
+
 function createMessage(type, id, content, callback){
 	var message = {
 		recipient: {
