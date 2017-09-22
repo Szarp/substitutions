@@ -154,7 +154,7 @@ function getParams(callback){
 					'gsh':params[1],
 					'cookie':cookie
 				}
-				saveToCollection(['testCollection',data],function(){
+				saveToCollection(['pageParams',data],function(){
 					console.log('data added: '+data);
 				})
 			});
@@ -168,7 +168,7 @@ function getParams(callback){
 
 function downloadData(date,callback){
 	var url1='http://zso11.edupage.org/gcall';
-	mongo.findById('params','testCollection',function(err1,params){
+	mongo.findById('params','pageParams',function(err1,params){
 		console.log('params',params);
 		var cookie=params['cookie'];
 		var form = {
@@ -213,7 +213,7 @@ var getCookie=function(callback){
 					'cookie':cookie
 				}
 				console.log(JSON.stringify(data));
-				mongo.modifyById('params','testCollection',data,function(){
+				mongo.modifyById('params','pageParams',data,function(){
 					console.log('cookies saved: '+data);
 					setImmediate(function() {
 						callback(data);
