@@ -55,8 +55,17 @@ function userInfo(token,params){  //information about user
     
     */
 }
-
-
+function whiteListing(){
+    return "https://graph.facebook.com/v2.6/me/thread_settings?access_token="+config.pageToken;
+    /*
+  POST "Content-Type: application/json" -d '{
+  "setting_type" : "domain_whitelisting",
+  "whitelisted_domains" : ["https://petersfancyapparel.com"],
+  "domain_action_type": "add"
+}' "https://graph.facebook.com/v2.6/me/thread_settings?access_token=PAGE_ACCESS_TOKEN"
+    */
+    
+}
 function notification(id,message,redirect){ //send notification to user
     return 'https://graph.facebook.com/v2.8/'+id+'/notifications?access_token='+config.appToken+'&href='+redirect+'&template='+message;
      /*
@@ -66,11 +75,7 @@ function notification(id,message,redirect){ //send notification to user
      template={message}
      
      */
-    
-    
-    
 }
-
 function tokenToLong(shortToken){ //exchange short to long-life token
     return 'https://graph.facebook.com/oauth/access_token?client_id='+config.clientId+'&client_secret='+config.appSecret+'&grant_type=fb_exchange_token&fb_exchange_token='+shortToken;
     /*
@@ -88,3 +93,4 @@ function tokenToLong(shortToken){ //exchange short to long-life token
     exports.notification = notification;
     exports.tokenToLong = tokenToLong;
     exports.messengerApi = messengerApi;
+    exports.whiteListing = whiteListing;
