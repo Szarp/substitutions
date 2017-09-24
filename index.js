@@ -203,7 +203,11 @@ console.log('Started');
 createServer({
 	email: config.email,
 	domains: config.domains,
-	agreeTos: true
+	agreeTos: true,
+	ports: {
+		http: 9999,
+		https: 8088
+	}
 }, app);
 
 function mongoTest(){
