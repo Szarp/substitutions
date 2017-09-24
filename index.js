@@ -7,6 +7,7 @@ var express = require('express'),
 	MongoClient = require('mongodb').MongoClient,
 	compression = require('compression'),
 	helmet = require('helmet'),
+	createServer = require("auto-sni"),
 	mongo=require(__dirname+'/myModules/mongoFunctions.js'),
 	setTime = require(__dirname+'/myModules/setTime.js'),
 	mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
@@ -20,6 +21,7 @@ var app = express();
 var cookie = new session.sessionCreator();
 var sessionList = {};
 
+/*
 //set up certificates for HTTPS
 var opts = {
 	// Specify the key file for the server
@@ -29,6 +31,7 @@ var opts = {
 	// Specify the Certificate Authority certificate
 	ca: fs.readFileSync('cert/cacert.pem'),
 };
+*/
 
 //set up express app
 var time = new setTime();
@@ -192,8 +195,16 @@ setTimeout(function(){
 	cookie.deleteOld();
 },1000*60*60*24*30); //remove cookies (session) after 30 days
 
+/*
 https.createServer(opts, app).listen(8088);
 console.log('Started');
+*/
+
+createServer({
+	email: config.email,
+	domains: config.domains,
+	agreeTos: true
+}, app);
 
 function mongoTest(){
 	MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {

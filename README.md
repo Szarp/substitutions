@@ -21,13 +21,15 @@ It should look like this:
 ```javascript
 var config = {};
 config.clientId = '1xxxxxxxxxxxxxx2'; //App id - displayed in app dashboard on developers.facebook.com
-config.url='https://your.url'; //website url
+config.url='https://your.url'; //website url (main, used to interact with Facebook)
 config.appSecret='4xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxc'; //App secret displayed in app dashboard
 config.appToken='0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQ'; //App token - see below
 config.webhookToken='WebhookVerificationToken'; //used to verify url of your webhook - more below
 config.pageToken='Exxxx...xxxxxxxxxxxxxxxF'; //Page access token - see below
 config.adm1='1xxxxxxxxxxxxxx1'; //1st adminitrator messenger id (new message and new user notifications)
 config.adm2='1xxxxxxxxxxxxxx8'; //2nd adminitrator messenger id (new message notifications)
+config.email='example@example.com'; //used to notify about expiring certificates
+config.domains=["example.com", "example.org", "subdomain.example.org"]; //domains for which certificates will be used (check auto-sni on GitHub)
 module.exports = config; //allow other modules to access your config
 ```
 
@@ -42,7 +44,7 @@ To install all required modules run:
 $ npm install
 ```
 
-## Sterting
+## Starting
 
 To start a server (listening on port 8080) run:
 ```bash
