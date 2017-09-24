@@ -28,8 +28,6 @@ config.webhookToken='WebhookVerificationToken'; //used to verify url of your web
 config.pageToken='Exxxx...xxxxxxxxxxxxxxxF'; //Page access token - see below
 config.adm1='1xxxxxxxxxxxxxx1'; //1st adminitrator messenger id (new message and new user notifications)
 config.adm2='1xxxxxxxxxxxxxx8'; //2nd adminitrator messenger id (new message notifications)
-config.email='example@example.com'; //used to notify about expiring certificates
-config.domains=["example.com", "example.org", "subdomain.example.org"]; //domains for which certificates will be used (check auto-sni on GitHub)
 module.exports = config; //allow other modules to access your config
 ```
 
