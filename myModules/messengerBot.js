@@ -748,22 +748,19 @@ function sendToMessengerBtn(event){
 	var timeOfAuth = event.timestamp;
 	var passThroughParam = event.optin.ref;
 	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
-	if(!(passThroughParam && passThroughParam.action && passThroughParam.id)){
-		console.error("passThroughParam is not complete");
+	if(!(passThroughParam)){
+		console.error("no passThroughParam received");
 	} else {
-		var action = passThroughParam.action;
-		var fbUID = passThroughParam.id;
-		if(action == connect){
-			secretToken.connectAccounts(fbUID, senderID, function () {
-				console.log("Accounts connected!");
-				mongo.modifyById(fbUID, person, {"personal.settings.notification": "yes"}, function(){
-					console.log("Notifications for", fbUID, "are on.");
-					createMessage('text', senderID, "Your account is now connected. Go to anulowano.pl and select class in settings", function(messageTS){
-						callSendAPI(messageTS);
-					})
-				})
-			});
-		}
+	var fbUID = passThroughParam;
+	secretToken.connectAccounts(fbUID, senderID, function () {
+		console.log("Accounts connected!");
+		mongo.modifyById(fbUID, person, {"personal.settings.notification": "yes"}, function(){
+			console.log("Notifications for", fbUID, "are on.");
+			createMessage('text', senderID, "Your account is now connected. Go to anulowano.pl and select class in settings", function(messageTS){
+				callSendAPI(messageTS);
+			})
+		})
+	});
 	}
 }
 

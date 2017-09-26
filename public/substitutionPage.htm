@@ -25,25 +25,6 @@
         
     </head>
     <body onload="onLoadFunc()">
-        <!--Facebook script - required for SendToMesener button-->
-        <script>
-            window.fbAsyncInit = function() {
-                FB.init({
-                    appId: "1082740245094082",
-                    xfbml: true,
-                    version: "v2.6"
-                });
-            };
-            (function(d, s, id){
-                var js, fjs = d.getElementsByTagName(s)[0];
-                if (d.getElementById(id)) { return; }
-                js = d.createElement(s); js.id = id;
-                js.src = "//connect.facebook.net/en_US/sdk.js";
-                fjs.parentNode.insertBefore(js, fjs);
-            }(document, 'script', 'facebook-jssdk'));
-        </script>
- 
-
 <ul class="navigation navDisplay navSize" >
   <li><a class="menuElem" id="navbar_home">Home</a></li>
   <li><a class="menuElem" id="navbar_substitution">Zastępstwa</a></li>
@@ -182,9 +163,7 @@
                                 
                             </tr>
                         </table>
-                        <div>
-                            <div class="fb-send-to-messenger" color="blue" size="xlarge" messenger_app_id="1082740245094082" data-ref="connect+1234" page_id="573446562859405"></div>
-                        </div>
+                        <div id="STMbtn" style="display: none;"></div>
                     </div>
      
 

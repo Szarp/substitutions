@@ -276,6 +276,14 @@ function sendMessage(){
 		msgArea.appendChild(insert);
 	}
 }
+function generateSTMbtn() {
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "STMbtn");
+    ifr.setAttribute("style", "border: none; max-height: 70px")
+    var pare = document.getElementById("STMbtn");
+    pare.appendChild(ifr);
+    pare.setAttribute("style", "display: initial");
+}
 function onLoadFunc(){
 	var url='postCall';
 	var form={};
@@ -308,7 +316,8 @@ function onLoadFunc(){
 			tokenValidation('checkToken');
 		}
 	});
-	document.getElementById("tBtn").addEventListener('click', changeMode);
+    document.getElementById("tBtn").addEventListener('click', changeMode);
+    generateSTMbtn();
 }
 
 var umode = 'teacher';
