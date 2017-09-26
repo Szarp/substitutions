@@ -279,7 +279,7 @@ function sendMessage(){
 function generateSTMbtn() {
     var ifr = document.createElement("iframe");
     ifr.setAttribute("src", "STMbtn");
-    ifr.setAttribute("style", "border: none; max-height: 70px")
+    ifr.setAttribute("style", "border: none; max-height: 85px")
     var pare = document.getElementById("STMbtn");
     pare.appendChild(ifr);
     pare.setAttribute("style", "display: initial");
