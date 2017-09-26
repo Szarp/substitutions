@@ -7,8 +7,11 @@ var link = require('./fbLinks.js');
 Make requests to facebook server
 
 */
-//whiteList("https://mdn-samples.mozilla.org/snippets/html/iframe-simple-contents.html",function(x){
-  //  console.log(x);
+//whiteList("https://anulowano.pl/demo/helpPage.htm",function(x){
+//    console.log(x);
+//})
+//messCodes(function(x){
+//    console.log(x);
 //})
 function messengerUserInfo(id,callback){
     
@@ -262,6 +265,7 @@ function createNotification(id,message,redirect,callback){
         }
     );
 }
+
 function whiteList(domain,callback){
     var form = {
             "setting_type" : "domain_whitelisting",
@@ -270,6 +274,41 @@ function whiteList(domain,callback){
         }
     var querystring = form.querystring;
     var url=link.whiteListing();
+    request({
+        url:url,
+        headers: {
+          //'Content-Length': 0,
+          'Content-Type':'application/json'
+        },
+        //uri: url,
+        json: true,
+        body:form,
+        method: 'POST'
+      },function (e, r, body) {
+            if(e){console.log('req problem: '+e);}
+            setImmediate(function() {
+                callback(body);
+            });
+            //console.log(body);  
+        }
+    );
+}
+function messCodes(callback){
+    /*
+"Content-Type: application/json" -d '{
+  "type": "standard",
+  "image_size": 1000
+}' "https://graph.facebook.com/v2.6/me/messenger_codes?access_token=<ACCESS_TOKEN>" 
+*/
+    var form = {
+            "type": "standard",
+            "image_size": 1000,
+        "data": {
+    "ref":"billboard-ad"
+  }\
+        }
+    var querystring = form.querystring;
+    var url=link.messCodes();
     request({
         url:url,
         headers: {
@@ -311,6 +350,8 @@ exports.createPersonToken=createPersonToken;
 exports.createPersonToken=createPersonToken;
 exports.messengerUserInfo=messengerUserInfo;
 exports.messengerSavePerson=messengerSavePerson;
+exports.whiteList=whiteList;
+exports.messCodes=messCodes;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;
