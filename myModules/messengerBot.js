@@ -5,6 +5,7 @@ var facebook = require('./facebookComunication.js');
 var callFunc = require('./postCallFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
 var mongo = require('./mongoFunctions.js');
+//mongo.url("ZSO11");
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
@@ -20,73 +21,47 @@ function helpPageMessage(id){
                 "elements": [
                 {
                     "title": "Zastępstwa dla szkol",
-                    //"image_url": "https://peterssendreceiveapp.ngrok.io/img/collection.png",
+                    "image_url": "http://www.zso11.zabrze.pl/wp-content/uploads/2017/03/galeria-1-1024x687.jpg",
                     "subtitle": "Help page",
                     "buttons": [
                         {
                             "title": "Odwiedź stronę",
                             "type": "web_url",
-                            "url": "https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
+                            "url": "https://anulowano.pl/demo/helpPage.htm",
                             "messenger_extensions": true,
-                            "webview_height_ratio": "tall",
-                            "fallback_url": "https://www.facebook.com/Zastępstwa-dla-szkół"                        
+                            "webview_height_ratio": "full",
+                            "fallback_url": "https://anulowano.pl/demo/helpPage.htm"                        
                         }
                     ]
                 },
                 {
-                    "title": "0 klasa",
-                    "subtitle": "Użycie 0 1b zwroci nam wsystkie zastępstwa dla klasy 1b na dzisiaj",
+                    "title": "Funkcje szkolne",
+                    "subtitle": "Dowiadywanie się o zastępstwach: dziś jutro; komunikacja z adminem",
                     "buttons": [
                         {
-                            "title": "Wyprobuj",
-                            "type": "postback",
-                            "payload":"0 1b"                
+                            "title": "Czytaj więcej",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/changes.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "full",
+                            "fallback_url": "https://anulowano.pl/demo/changes.htm"                        
                         }
-                    ]                
+                    ]              
                 },
                 {
-                    "title": "1 klasa",
-                    "subtitle": "Użycie 1 1b zwroci nam wsystkie zastępstwa dla klasy 1b na jutro",
+                    "title": "Olipiada",
+                    "image_url":"https://anulowano.pl/demo/zwt.png",
+                    "subtitle": "Projekt jest rozwijany na potrzeby olimiady projektow społecznych",
                     "buttons": [
                         {
-                            "title": "Wyprobuj",
-                            "type": "postback",
-                            "payload":"1 1b"                
+                            "title": "Więcej Info",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/olimpiada.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "full",
+                            "fallback_url": "https://anulowano.pl/demo/olimpiada.htm"                        
                         }
-                    ]                
-                },
-                {
-                    "title": "2 pytanie",
-                    "subtitle": "Użycie 2 Hej powiadomi administratorow, ktorzy odpowiedzą na pytanie",
-                    "buttons": [
-                        {
-                            "title": "Wyprobuj",
-                            "type": "postback",
-                            "payload":"2 Hey"                
-                        }
-                    ]                
-                },
-                {
-                    "title": "4",
-                    "subtitle": "Ta opcja generuje unikalny kod do łączenia kont",
-                    "buttons": [
-                        {
-                            "type":"web_url",
-                            "url":"https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
-                            "title":"Więcej informacji"          
-                        }
-                    ]                
-                },
-                {
-                    "title": "4 token",
-                    "subtitle": "Użycie 4 12345 połączy konto z wcześniej uzyskanego kodu",
-                    "buttons": [
-                        {
-                            "type":"web_url",
-                            "url":"https://www.facebook.com/Zastępstwa-dla-szkół-573446562859405/",
-                            "title":"Doweidz się więcej"          
-                        }
-                    ]                
+                    ]                   
                 }
             ]
         }
@@ -245,7 +220,8 @@ function sendSubstitutions(senderID, message){
 					'buttons': buttons
 				}
 				createMessage('generic', senderID, content, function(messageTS){
-					callSendAPI(messageTS);
+					//callSendAPI(messageTS);
+                    callSendAPI(helpPageMessage(senderID));
 				});
 			});
 			break;
@@ -647,6 +623,7 @@ function sTL(teachers, msg, i, senderID){
 }
 
 function receivedPostback(event) {
+    console.log('event',event);
 	var senderID = event.sender.id;
 	var recipientID = event.recipient.id;
 	var timeOfPostback = event.timestamp;
@@ -662,14 +639,15 @@ function receivedPostback(event) {
 }
 
 function receivedMessage(event) {
+    console.log('mes',event);
 	var senderID = event.sender.id;
 	var recipientID = event.recipient.id;
 	var timeOfMessage = event.timestamp;
 	var message = event.message;
 
-	console.log("Received message for user %d and page %d at %d with message:", 
-	senderID, recipientID, timeOfMessage);
-	console.log(JSON.stringify(message));
+	//console.log("Received message for user %d and page %d at %d with message:", 
+	//senderID, recipientID, timeOfMessage);
+	//console.log(JSON.stringify(message));
 
 	var messageId = message.mid;
 
@@ -742,6 +720,69 @@ function callSendAPI(messageData) {
     }
   });  
 }
+/*
+webhook { object: 'page',
+  entry: 
+   [ { id: '285771075161320',
+       time: 1506088130115,
+       messaging: [Array] } ] }
+mes { sender: { id: '1383716548353914' },
+  recipient: { id: '285771075161320' },
+  timestamp: 1506088129718,
+  message: 
+   { mid: 'mid.$cAAFZG6pxbEtk2x5ctleqdkUPGF6Q',
+     seq: 471247,
+     text: 'hj' } }
+Person 1383716548353914 was before
+saving done
+{ type: 'postback', title: 'Przykład', payload: 'example' }
+{"type":"postback","title":"Przykład","payload":"example"}
+[ { type: 'postback', title: 'Przykład', payload: 'example' } ]
+{ text: 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplikację Messenger lub odwiedź bota przez przeglądarkę',
+  buttons: [ { type: 'postback', title: 'Przykład', payload: 'example' } ] }
+Successfully sent generic message with id mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s to recipient 1383716548353914
+cookie created successfully
+webhook { object: 'page',
+  entry: 
+   [ { id: '285771075161320',
+       time: 1506088132111,
+       messaging: [Array] } ] }
+Webhook received unknown event:  { sender: { id: '1383716548353914' },
+  recipient: { id: '285771075161320' },
+  timestamp: 1506088132108,
+  delivery: 
+   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
+     watermark: 1506088131713,
+     seq: 0 } }
+cookie created successfully
+webhook { object: 'page',
+  entry: 
+   [ { id: '285771075161320',
+       time: 1506088132472,
+       messaging: [Array] } ] }
+Webhook received unknown event:  { sender: { id: '1383716548353914' },
+  recipient: { id: '285771075161320' },
+  timestamp: 1506088132469,
+  delivery: 
+   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
+     watermark: 1506088131713,
+     seq: 0 } }
+cookie created successfully
+webhook { object: 'page',
+  entry: 
+   [ { id: '285771075161320',
+       time: 1506088132312,
+       messaging: [Array] } ] }
+Webhook received unknown event:  { sender: { id: '1383716548353914' },
+  recipient: { id: '285771075161320' },
+  timestamp: 1506088132309,
+  delivery: 
+   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
+     watermark: 1506088131713,
+     seq: 0 } }
+
+
+*/
 
 exports.receivedPostback=receivedPostback;
 exports.receivedMessage=receivedMessage;
