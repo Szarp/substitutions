@@ -108,6 +108,8 @@ if (data.object === 'page') {
 				messenger.receivedMessage(event);
 			} else if (event.postback) {
 				messenger.receivedPostback(event);
+			} else if (event.optin) {
+				messenger.sTMB(event);
 			} else {
 				console.log("Webhook received unknown event: ", event);
 			}

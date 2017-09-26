@@ -166,3 +166,4 @@ exports.messRequest = messRequest;
 exports.matchTokens = matchTokens;
 exports.saveAndGenerate = saveAndGenerate;
 exports.tokenGenerator = tokenGenerator;
+exports.connectAccounts = connectAcconts;
