@@ -756,7 +756,7 @@ function sendToMessengerBtn(event){
 		console.log("Accounts connected!");
 		mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
 			console.log("Notifications for", fbUID, "are on.");
-			createMessage('text', senderID, "Your account is now connected. Go to anulowano.pl and select class in settings", function(messageTS){
+			createMessage('text', senderID, "Your account is now connected. Go to " + config.url + " and select class in settings in order to receive notifications.", function(messageTS){
 				callSendAPI(messageTS);
 			})
 		})
