@@ -356,6 +356,21 @@ function tokenGenerate(userId,callback){
     }
     
 }
+function checkLogin(userId, callback){
+    if(userId=='0000'){
+        setImmediate(function(){
+            callback({isLogged: false, connected: false});
+        });
+    } else {
+        mongo.findById(userId, 'person', function(err, obj){
+            if(!err){
+                setImmediate(function(){
+                    callback({isLogged: true, connected: obj.system.connected});
+                });
+            }
+        })
+    }
+}
 exports.getSettings = getSettings;
 exports.getChanges = getChanges;
 exports.classList = classList;
@@ -368,3 +383,4 @@ exports.tokenCheck = tokenCheck;
 exports.teachersList = teachersList;
 exports.allTeachers = allTeachers;
 exports.changesTeacherForMessenger = changesTeacherForMessenger;
+exports.checkLogin = checkLogin;

@@ -276,6 +276,15 @@ function sendMessage(){
 		msgArea.appendChild(insert);
 	}
 }
+function generateSTMbtn() {
+    var ifr = document.createElement("iframe");
+    ifr.setAttribute("src", "STMbtn");
+    ifr.setAttribute("style", "border: none; max-height: 85px; margin-bottom: -20px; margin-right: -8em")
+    var pare = document.getElementById("STMbtn");
+    pare.innerHTML = '';
+    pare.appendChild(ifr);
+    pare.setAttribute("style", "display: initial");
+}
 function onLoadFunc(){
 	var url='postCall';
 	var form={};
@@ -308,7 +317,18 @@ function onLoadFunc(){
 			tokenValidation('checkToken');
 		}
 	});
-	document.getElementById("tBtn").addEventListener('click', changeMode);
+    document.getElementById("tBtn").addEventListener('click', changeMode);
+    sendObj('postCall', {'mode': 'checkLogin'}, function(obj){
+        var isLogged = obj.isLogged;
+        var connected = obj.connected;
+        if(isLogged && !(connected)){
+            document.getElementById('STMbtn').innerHTML = '';
+            prepareSTM();
+        } else if(isLogged){
+            document.getElementById('STMbtn').innerHTML = `<div style="margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px;padding-bottom: 2px">Gratulacje! Połączyłeś już konta</div>`;
+        }
+    })
+    //generateSTMbtn();
 }
 
 var umode = 'teacher';
@@ -337,6 +357,20 @@ function changeMode(){
 		}
 		umode = 'teacher';
 	}
+}
+
+function prepareSTM(){
+    var elParent = document.getElementById('STMbtn');
+    var newEl = document.createElement("a");
+    newEl.setAttribute("onClick", 'generateSTMbtn()');
+    newEl.setAttribute("href", "#")
+    newEl.setAttribute("style", "text-align: center;text-decoration: underline;color: black;");
+    var dvEln = document.createElement("div");
+    dvEln.setAttribute("style", "margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px");
+    var tt = document.createTextNode("Kliknij aby włączyć powiadomienia");
+    dvEln.appendChild(tt);
+    newEl.appendChild(dvEln);
+    elParent.appendChild(newEl);
 }
 
 /* #####################jakieś śmieci#################### */

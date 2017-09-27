@@ -100,7 +100,11 @@ var matchingModes ={
 	allTeachers:{
 		name: 'allTeachers',
 		description: 'Give list with all known teachers'
-	}
+    },
+    checkLogin:{
+        name: 'checkLogin',
+        description: 'Chceck if user is logged in'
+    }
 }
     //var reqCookie=req.cookies.cookieName;
     //var userId=cookie.findIfSessionExist(reqCookie);
@@ -180,7 +184,14 @@ function postCall(userId,body,callback){
 					callback(resText);
 				});
 			});
-		}
+        }
+        else if(body.mode == 'checkLogin'){
+            callFunc.checkLogin(userId, function(resText){
+                setImmediate(function(){
+                    callback(resText);
+                })
+            });
+        }
     }
     else {
         res = 'no matches in postCall'

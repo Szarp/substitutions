@@ -742,8 +742,31 @@ function callSendAPI(messageData) {
   });  
 }
 
+function sendToMessengerBtn(event){
+	var senderID = event.sender.id;
+	var recipientID = event.recipient.id;
+	var timeOfAuth = event.timestamp;
+	var passThroughParam = event.optin.ref;
+	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
+	if(!(passThroughParam)){
+		console.error("no passThroughParam received");
+	} else {
+	var fbUID = passThroughParam;
+	secretToken.connectAccounts(fbUID, senderID, function () {
+		console.log("Accounts connected!");
+		mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
+			console.log("Notifications for", fbUID, "are on.");
+			createMessage('text', senderID, "Your account is now connected. Go to " + config.url + " and select class in settings in order to receive notifications.", function(messageTS){
+				callSendAPI(messageTS);
+			})
+		})
+	});
+	}
+}
+
 exports.receivedPostback=receivedPostback;
 exports.receivedMessage=receivedMessage;
 exports.notification=substitutionNotification;
 exports.createMessage=createMessage;
 exports.callSendAPI=callSendAPI;
+exports.sTMB=sendToMessengerBtn;
