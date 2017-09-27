@@ -357,9 +357,19 @@ function tokenGenerate(userId,callback){
     
 }
 function checkLogin(userId, callback){
-    setImmediate(function(){
-        callback((userId!='0000'))
-    });
+    if(userId=='0000'){
+        setImmediate(function(){
+            callback({isLogged: false, connected: false});
+        });
+    } else {
+        mongo.findById(userId, 'person', function(err, obj){
+            if(!err){
+                setImmediate(function(){
+                    callback({isLogged: true, connected: obj.system.connected});
+                });
+            }
+        })
+    }
 }
 exports.getSettings = getSettings;
 exports.getChanges = getChanges;
