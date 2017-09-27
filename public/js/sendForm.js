@@ -317,7 +317,7 @@ function onLoadFunc(){
 		}
 	});
     document.getElementById("tBtn").addEventListener('click', changeMode);
-    generateSTMbtn();
+    //generateSTMbtn();
 }
 
 var umode = 'teacher';
@@ -348,6 +348,19 @@ function changeMode(){
 	}
 }
 
+function prepareSTM(){
+    var elParent = document.getElementById('STMbtn');
+    var newEl = document.createElement("a");
+    newEl.setAttribute("onClick", 'generateSTMbtn()');
+    newEl.setAttribute("style", "text-align: center;text-decoration: underline;color: black;");
+    var dvEln = document.createElement("div");
+    dvEln.setAttribute("style", "margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px");
+    var tt = document.createTextNode("Kliknij aby włączyć powiadoienia");
+    dvEln.appendChild(tt);
+    newEl.appendChild(dvEln);
+    elParent.appendChild(newEl);
+}
+
 /* #####################jakieś śmieci#################### */
 function sendObj (url,json_obj,callback){
     var http = new XMLHttpRequest();
@@ -370,6 +383,8 @@ function sendObj (url,json_obj,callback){
 					insert.innerHTML = '<div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg('+"'msgLOGIN'"+')">✖</div>';
 				var msgArea = document.getElementById('msgArea');
 				msgArea.appendChild(insert);
+            } else {
+                prepareSTM();
             }
             //console.log('resText',res);
             callback(res.params);
