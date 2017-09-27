@@ -356,6 +356,11 @@ function tokenGenerate(userId,callback){
     }
     
 }
+function checkLogin(userId, callback){
+    setImmediate(function(){
+        callback((userId!='0000'))
+    });
+}
 exports.getSettings = getSettings;
 exports.getChanges = getChanges;
 exports.classList = classList;
@@ -368,3 +373,4 @@ exports.tokenCheck = tokenCheck;
 exports.teachersList = teachersList;
 exports.allTeachers = allTeachers;
 exports.changesTeacherForMessenger = changesTeacherForMessenger;
+exports.checkLogin = checkLogin;

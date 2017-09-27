@@ -317,6 +317,14 @@ function onLoadFunc(){
 		}
 	});
     document.getElementById("tBtn").addEventListener('click', changeMode);
+    sendObj('postCall', {'mode': 'checkLogin'}, function(obj){
+        var loginState = obj.err;
+        if(!(loginState)){
+            generateSTMbtn();
+        } else {
+            prepareSTM();
+        }
+    })
     //generateSTMbtn();
 }
 
@@ -383,8 +391,6 @@ function sendObj (url,json_obj,callback){
 					insert.innerHTML = '<div id="msgBoxData"><a class="msgLink" href="/login">' + resMsg + '</a></div><div class="closeButton" onclick="closeMsg('+"'msgLOGIN'"+')">✖</div>';
 				var msgArea = document.getElementById('msgArea');
 				msgArea.appendChild(insert);
-            } else {
-                prepareSTM();
             }
             //console.log('resText',res);
             callback(res.params);
