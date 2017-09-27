@@ -28,6 +28,7 @@ config.webhookToken='WebhookVerificationToken'; //used to verify url of your web
 config.pageToken='Exxxx...xxxxxxxxxxxxxxxF'; //Page access token - see below
 config.adm1='1xxxxxxxxxxxxxx1'; //1st adminitrator messenger id (new message and new user notifications)
 config.adm2='1xxxxxxxxxxxxxx8'; //2nd adminitrator messenger id (new message notifications)
+config.pageId = '5xxxxxxxxxxx5'; //Page id as which bot responds (can be found on https://findmyfbid.com/)
 module.exports = config; //allow other modules to access your config
 ```
 
