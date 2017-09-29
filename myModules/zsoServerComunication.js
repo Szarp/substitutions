@@ -175,35 +175,36 @@ function downloadData(date,callback){
 				console.log(dt);
 				downloadData(date, callback);
 			})
-		}
-		var cookie=params['cookie'];
-		var form = {
-			gpid:params['gpid'],
-			gsh:params['gsh'],
-			action:"switch",
-			date:date,
-			_LJSL:"2,1"
-		};
-		var formData = querystring.stringify(form);
-		var contentLength = formData.length;
-		request({
-			headers: {
-				'Content-Length': contentLength,
-				'Content-Type': 'application/x-www-form-urlencoded',
-				'Cookie' : cookie
-			},
-			uri: url1,
-			body: formData,
-			method: 'POST'
-		}, function (err, res, body) {
-			setImmediate(function() {
-				if(err){
-					callback(true, body);
-				} else {
-					callback(body.length<100,body);
-				}
+		} else { 
+			var cookie=params['cookie'];
+			var form = {
+				gpid:params['gpid'],
+				gsh:params['gsh'],
+				action:"switch",
+				date:date,
+				_LJSL:"2,1"
+			};
+			var formData = querystring.stringify(form);
+			var contentLength = formData.length;
+			request({
+				headers: {
+					'Content-Length': contentLength,
+					'Content-Type': 'application/x-www-form-urlencoded',
+					'Cookie' : cookie
+				},
+				uri: url1,
+				body: formData,
+				method: 'POST'
+			}, function (err, res, body) {
+				setImmediate(function() {
+					if(err){
+						callback(true, body);
+					} else {
+						callback(body.length<100,body);
+					}
+				});
 			});
-		});
+		}
 	});
 }
 
