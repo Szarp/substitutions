@@ -295,7 +295,7 @@ function messCodes(callback){
             "image_size": 1000,
         "data": {
     "ref":"billboard-ad"
-  }\
+  }
         }
     var querystring = form.querystring;
     var url=link.messCodes();
