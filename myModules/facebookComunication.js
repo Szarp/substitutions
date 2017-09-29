@@ -7,6 +7,7 @@ var link = require('./fbLinks.js');
 Make requests to facebook server
 
 */
+
 function messengerUserInfo(id,callback){
     
     request(link.messengerApi(id), function (e, r, body){
@@ -259,6 +260,64 @@ function createNotification(id,message,redirect,callback){
         }
     );
 }
+
+function whiteList(domain,callback){
+    var form = {
+            "setting_type" : "domain_whitelisting",
+            "whitelisted_domains" : [domain],
+            "domain_action_type": "add"
+        }
+    var querystring = form.querystring;
+    var url=link.whiteListing();
+    request({
+        url:url,
+        headers: {
+          //'Content-Length': 0,
+          'Content-Type':'application/json'
+        },
+        //uri: url,
+        json: true,
+        body:form,
+        method: 'POST'
+      },function (e, r, body) {
+            if(e){console.log('req problem: '+e);}
+            setImmediate(function() {
+                callback(body);
+            });
+            //console.log(body);  
+        }
+    );
+}
+function messCodes(callback){
+
+    var form = {
+            "type": "standard",
+            "image_size": 1000,
+        "data": {
+    "ref":"billboard-ad"
+  }\
+        }
+    var querystring = form.querystring;
+    var url=link.messCodes();
+    request({
+        url:url,
+        headers: {
+          //'Content-Length': 0,
+          'Content-Type':'application/json'
+        },
+        //uri: url,
+        json: true,
+        body:form,
+        method: 'POST'
+      },function (e, r, body) {
+            if(e){console.log('req problem: '+e);}
+            setImmediate(function() {
+                callback(body);
+            });
+            //console.log(body);  
+        }
+    );
+}
 function getInfoAboutToken(accessToken,callback){
     request(link.tokenInfo(accessToken), function (e, r, body){
         if(e){console.log('req problem: '+e);}
@@ -281,6 +340,8 @@ exports.createPersonToken=createPersonToken;
 exports.createPersonToken=createPersonToken;
 exports.messengerUserInfo=messengerUserInfo;
 exports.messengerSavePerson=messengerSavePerson;
+exports.whiteList=whiteList;
+exports.messCodes=messCodes;
 //exports.savePersonalSettings=savePersonalSettings
 //exports.readPersonalSettings=readPersonalSettings
 //exports.links=links;

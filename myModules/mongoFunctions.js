@@ -1,11 +1,18 @@
 var MongoClient = require('mongodb').MongoClient,
+    config = require('./config'),
     assert = require('assert');
 /*
 	Module to comunicate with mongo
 */
+var url = ""
+setUrl(config.db);
 
+function setUrl(db){
+    url = "mongodb://localhost:27017/"+db;
+    return;
+}
 function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
-	var url = 'mongodb://localhost:27017/test2';
+	//var url = 'mongodb://localhost:27017/test2';
 	MongoClient.connect(url, function(err, db) {
 		assert.equal(null,err);
 		var collection=db.collection(collectionName);
@@ -29,7 +36,7 @@ function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
 function saveToCollection(params,callback){
 	var collectionName = params[0];
 	var data = params[1];
-	var url = 'mongodb://localhost:27017/test2';
+	//var url = 'mongodb://localhost:27017/test2';
 	MongoClient.connect(url, function(err, db) {
 		assert.equal(null,err);
 		var collection=db.collection(collectionName);
@@ -45,7 +52,7 @@ function saveToCollection(params,callback){
 
 function modifyById(id,collectionName,paramsToModify,callback){
 	var data = paramsToModify;
-	var url = 'mongodb://localhost:27017/test2';
+	//var url = 'mongodb://localhost:27017/test2';
 	MongoClient.connect(url, function(err, db) {
 		assert.equal(null,err);
 		var collection=db.collection(collectionName);
@@ -68,7 +75,7 @@ function modifyById(id,collectionName,paramsToModify,callback){
 }
 
 function findById(id,collectionName,callback){
-	var url = 'mongodb://localhost:27017/test2';
+	//var url = 'mongodb://localhost:27017/test2';
 	MongoClient.connect(url, function(err, db) {
 		assert.equal(null,err);
 		var collection=db.collection(collectionName);
@@ -85,3 +92,4 @@ exports.findById=findById;
 exports.modifyById=modifyById;
 exports.save=saveToCollection;
 exports.findByParam=findByParam;
+//exports.url = url;
