@@ -1,4 +1,4 @@
-# O aplikcji
+# O aplikacji
 
 Aplikacja Zastępstwa dla Szkół (anulowano.pl) została stworzona, aby pomagać uczniom sprawdzać zastępstwa. Stworzyliśmy ją jako alternatywę dla dotychczasowej strony szkoły, która była nieintuicyjna i trudna w obsłudze, oraz dla kartki z zastępstwami wiszącej przed sekrtariatem.
 
