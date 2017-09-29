@@ -4,12 +4,11 @@ var MongoClient = require('mongodb').MongoClient,
 /*
 	Module to comunicate with mongo
 */
-var url = ""
-setUrl(config.db);
+var url = setUrl(config.db);
 
 function setUrl(db){
     url = "mongodb://localhost:27017/"+db;
-    return;
+    return url;
 }
 function findByParam(paramAndValue,paramsToDisplay,collectionName,callback){
 	//var url = 'mongodb://localhost:27017/test2';
