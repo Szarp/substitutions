@@ -4,7 +4,7 @@ Aplikacja Zastępstwa dla Szkół (anulowano.pl) została stworzona, aby pomaga�
 
 ## Dzałanie
 
-Posiadamy [bota](m.me/ZastepstwaDlaSzkol) na Messengerze i [stronę internetową](https://anulowano.pl). Poniżej wyjaśniamy jak działają.
+Posiadamy [bota](https://m.me/ZastepstwaDlaSzkol) na Messengerze i [stronę internetową](https://anulowano.pl). Poniżej wyjaśniamy jak działają.
 
 ### Bot
 

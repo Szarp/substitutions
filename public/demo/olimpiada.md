@@ -1,6 +1,6 @@
 # Olimpiada
 
-Nasz projekt uczestniczy w olimpiadzie [Zwolnieni z Teorii](https://zwolnienizteori.pl/).
+Nasz projekt uczestniczy w olimpiadzie [Zwolnieni z Teorii](https://zwolnienizteorii.pl/).
 
 ![Logo Zwolnieni z Teorii](img/zztLogo.png)
 
