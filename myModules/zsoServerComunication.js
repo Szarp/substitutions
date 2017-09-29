@@ -170,6 +170,12 @@ function downloadData(date,callback){
 	var url1='http://zso11.edupage.org/gcall';
 	mongo.findById('params','pageParams',function(err1,params){
 		console.log('params',params);
+		if(params == null){
+			getCookie(function(dt){
+				console.log(dt);
+				downloadData(date, callback);
+			})
+		}
 		var cookie=params['cookie'];
 		var form = {
 			gpid:params['gpid'],
