@@ -7,12 +7,7 @@ var link = require('./fbLinks.js');
 Make requests to facebook server
 
 */
-//whiteList("https://anulowano.pl/demo/helpPage.htm",function(x){
-//    console.log(x);
-//})
-//messCodes(function(x){
-//    console.log(x);
-//})
+
 function messengerUserInfo(id,callback){
     
     request(link.messengerApi(id), function (e, r, body){
@@ -294,12 +289,7 @@ function whiteList(domain,callback){
     );
 }
 function messCodes(callback){
-    /*
-"Content-Type: application/json" -d '{
-  "type": "standard",
-  "image_size": 1000
-}' "https://graph.facebook.com/v2.6/me/messenger_codes?access_token=<ACCESS_TOKEN>" 
-*/
+
     var form = {
             "type": "standard",
             "image_size": 1000,

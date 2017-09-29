@@ -718,71 +718,8 @@ function callSendAPI(messageData) {
       console.error(response);
       console.error(error);
     }
-  });  
+  });
 }
-/*
-webhook { object: 'page',
-  entry: 
-   [ { id: '285771075161320',
-       time: 1506088130115,
-       messaging: [Array] } ] }
-mes { sender: { id: '1383716548353914' },
-  recipient: { id: '285771075161320' },
-  timestamp: 1506088129718,
-  message: 
-   { mid: 'mid.$cAAFZG6pxbEtk2x5ctleqdkUPGF6Q',
-     seq: 471247,
-     text: 'hj' } }
-Person 1383716548353914 was before
-saving done
-{ type: 'postback', title: 'Przykład', payload: 'example' }
-{"type":"postback","title":"Przykład","payload":"example"}
-[ { type: 'postback', title: 'Przykład', payload: 'example' } ]
-{ text: 'Dostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony\nJeśli nie widzisz przycisku "Przykład" pod tą wiadomością zaktualizuj aplikację Messenger lub odwiedź bota przez przeglądarkę',
-  buttons: [ { type: 'postback', title: 'Przykład', payload: 'example' } ] }
-Successfully sent generic message with id mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s to recipient 1383716548353914
-cookie created successfully
-webhook { object: 'page',
-  entry: 
-   [ { id: '285771075161320',
-       time: 1506088132111,
-       messaging: [Array] } ] }
-Webhook received unknown event:  { sender: { id: '1383716548353914' },
-  recipient: { id: '285771075161320' },
-  timestamp: 1506088132108,
-  delivery: 
-   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
-     watermark: 1506088131713,
-     seq: 0 } }
-cookie created successfully
-webhook { object: 'page',
-  entry: 
-   [ { id: '285771075161320',
-       time: 1506088132472,
-       messaging: [Array] } ] }
-Webhook received unknown event:  { sender: { id: '1383716548353914' },
-  recipient: { id: '285771075161320' },
-  timestamp: 1506088132469,
-  delivery: 
-   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
-     watermark: 1506088131713,
-     seq: 0 } }
-cookie created successfully
-webhook { object: 'page',
-  entry: 
-   [ { id: '285771075161320',
-       time: 1506088132312,
-       messaging: [Array] } ] }
-Webhook received unknown event:  { sender: { id: '1383716548353914' },
-  recipient: { id: '285771075161320' },
-  timestamp: 1506088132309,
-  delivery: 
-   { mids: [ 'mid.$cAAFZG6pxbEtk2x5kgVeqdkateI2s' ],
-     watermark: 1506088131713,
-     seq: 0 } }
-
-
-*/
 
 exports.receivedPostback=receivedPostback;
 exports.receivedMessage=receivedMessage;
