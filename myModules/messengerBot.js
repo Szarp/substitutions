@@ -20,7 +20,7 @@ function helpPageMessage(id){
                 "template_type": "list",
                 "elements": [
                 {
-                    "title": "Zastępstwa dla szkol",
+                    "title": "Zastępstwa dla szkół",
                     "image_url": "http://www.zso11.zabrze.pl/wp-content/uploads/2017/03/galeria-1-1024x687.jpg",
                     "subtitle": "O aplikacji",
                     "buttons": [
@@ -36,7 +36,7 @@ function helpPageMessage(id){
                 },
                 {
                     "title": "Funkcje szkolne",
-                    "subtitle": "Dowiadywanie się o zastępstwach: dziś, jutro; komunikacja z adminem; powiadomienia automatyczne",
+                    "subtitle": "Dowiadywanie się o zastępstwach; komunikacja z adminem; powiadomienia autom.",
                     "buttons": [
                         {
                             "title": "Czytaj więcej",
