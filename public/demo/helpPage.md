@@ -10,7 +10,7 @@ Posiadamy [bota](https://m.me/ZastepstwaDlaSzkol) na Messengerze i [stronę inte
 
 Z bota korzystamy za pomocą komend, które są opisane [tutaj](changes.htm).
 </br>
-Bot może również wysyłać automatyczne powiadomienia jeśli zostaną odpowiednio ustawione ([opisaliśmy to na Facebook'u](https://facebook.com/ZastepstwaDlaSzkol)).
+Bot może również wysyłać automatyczne powiadomienia jeśli zostaną odpowiednio ustawione ([opisaliśmy to na Facebook'u](https://www.facebook.com/ZastepstwaDlaSzkol/videos/703586116512115/) i [tutaj](changes.htm#powiadomienia-automatyczne)).
 
 ### Strona
 

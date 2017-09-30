@@ -1,0 +1,57 @@
+{
+	"greeting":[
+		{
+			"locale":"default",
+			"text":"Hello {{user_first_name}}! This bot can send substitutions for your class."
+		},
+		{
+			"locale":"en_US",
+			"text":"Hello {{user_first_name}}! This bot can send substitutions for your class."
+		},
+		{
+			"locale":"en_GB",
+			"text":"Hello {{user_first_name}}! This bot can send substitutions for your class."
+		},
+		{
+			"locale":"pl_PL",
+			"text":"Witaj {{user_first_name}}! Ten bot może wysyłać zastępstwa dla twojej klasy."
+		}
+	],
+	"persistent_menu":[
+		{
+			"locale":"default",
+			"composer_input_disabled": false,
+			"call_to_actions":[
+				{
+					"title":"Help",
+					"type":"postback",
+					"payload":"help"
+				},
+				{
+					"title":"Webpage",
+					"type":"web_url",
+					"url":"https://anulowano.pl"
+				}
+			]
+		},
+		{
+			"locale":"pl_PL",
+			"composer_input_disabled": false,
+			"call_to_actions":[
+				{
+					"title":"Pomoc",
+					"type":"postback",
+					"payload":"help"
+				},
+				{
+					"title":"Strona",
+					"type":"web_url",
+					"url":"https://anulowano.pl"
+				}
+			]
+		},
+	],
+	"get_started":{
+		"payload":"get_started_btn"
+	}
+}

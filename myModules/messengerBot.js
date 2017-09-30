@@ -22,7 +22,7 @@ function helpPageMessage(id){
                 {
                     "title": "Zastępstwa dla szkol",
                     "image_url": "http://www.zso11.zabrze.pl/wp-content/uploads/2017/03/galeria-1-1024x687.jpg",
-                    "subtitle": "Help page",
+                    "subtitle": "O aplikacji",
                     "buttons": [
                         {
                             "title": "Odwiedź stronę",
@@ -36,7 +36,7 @@ function helpPageMessage(id){
                 },
                 {
                     "title": "Funkcje szkolne",
-                    "subtitle": "Dowiadywanie się o zastępstwach: dziś jutro; komunikacja z adminem",
+                    "subtitle": "Dowiadywanie się o zastępstwach: dziś, jutro; komunikacja z adminem; powiadomienia automatyczne",
                     "buttons": [
                         {
                             "title": "Czytaj więcej",
@@ -575,6 +575,18 @@ function sendList(senderID, message){
 					callSendAPI(messageTS);
 				});
 			}
+		});
+	}else if (message=='help'){
+		callSendAPI(helpPageMessage(senderID));
+	}else if (message=='get_started_btn'){
+		createButtons(['postback', 'help', 'Więcej'], function(buttons){
+			var content={
+				text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+				buttons: buttons
+			}
+			createMessage('generic', senderID, content, function(messageTS){
+				callSendAPI(messageTS);
+			});
 		});
 	}else{
 		if(message[0]=='1'){
