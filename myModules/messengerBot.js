@@ -747,9 +747,15 @@ function sendToMessengerBtn(event){
 		console.log("Accounts connected!");
 		mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
 			console.log("Notifications for", fbUID, "are on.");
-			createMessage('text', senderID, "Your account is now connected. Go to " + config.url + " and select class in settings in order to receive notifications.", function(messageTS){
-				callSendAPI(messageTS);
-			})
+			createButtons([['postback', 'help', 'Więcej']], function(buttons){
+				var content={
+					text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w usawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+					buttons: buttons
+				}
+				createMessage('generic', senderID, content, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			});
 		})
 	});
 	}

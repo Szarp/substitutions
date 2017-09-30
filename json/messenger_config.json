@@ -28,7 +28,7 @@
 					"payload":"help"
 				},
 				{
-					"title":"Webpage",
+					"title":"Website",
 					"type":"web_url",
 					"url":"https://anulowano.pl"
 				}
@@ -44,12 +44,12 @@
 					"payload":"help"
 				},
 				{
-					"title":"Strona",
+					"title":"Strona internetowa",
 					"type":"web_url",
 					"url":"https://anulowano.pl"
 				}
 			]
-		},
+		}
 	],
 	"get_started":{
 		"payload":"get_started_btn"
