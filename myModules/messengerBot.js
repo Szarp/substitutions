@@ -579,7 +579,7 @@ function sendList(senderID, message){
 	}else if (message=='help'){
 		callSendAPI(helpPageMessage(senderID));
 	}else if (message=='get_started_btn'){
-		createButtons(['postback', 'help', 'Więcej'], function(buttons){
+		createButtons([['postback', 'help', 'Więcej']], function(buttons){
 			var content={
 				text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
 				buttons: buttons
