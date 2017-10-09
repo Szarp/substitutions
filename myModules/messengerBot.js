@@ -5,71 +5,14 @@ var facebook = require('./facebookComunication.js');
 var callFunc = require('./postCallFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
 var mongo = require('./mongoFunctions.js');
+var mess = require('./messTemplates.js');
 //mongo.url("ZSO11");
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
 
 //branch
-function helpPageMessage(id){
-    return{
-        "recipient":{"id":id},
-        "message": {
-            "attachment": {"type": "template",
-                "payload": {
-                "template_type": "list",
-                "elements": [
-                {
-                    "title": "Zastępstwa dla szkół",
-                    "image_url": "http://www.zso11.zabrze.pl/wp-content/uploads/2017/03/galeria-1-1024x687.jpg",
-                    "subtitle": "O aplikacji",
-                    "buttons": [
-                        {
-                            "title": "Odwiedź stronę",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/helpPage.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/helpPage.htm"                        
-                        }
-                    ]
-                },
-                {
-                    "title": "Funkcje szkolne",
-                    "subtitle": "Dowiadywanie się o zastępstwach; komunikacja z adminem; powiadomienia autom.",
-                    "buttons": [
-                        {
-                            "title": "Czytaj więcej",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/changes.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/changes.htm"                        
-                        }
-                    ]              
-                },
-                {
-                    "title": "Olipiada",
-                    "image_url":"https://anulowano.pl/demo/zwt.png",
-                    "subtitle": "Projekt jest rozwijany na potrzeby olimiady projektow społecznych",
-                    "buttons": [
-                        {
-                            "title": "Więcej Info",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/olimpiada.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/olimpiada.htm"                        
-                        }
-                    ]                   
-                }
-            ]
-        }
-    }
-}   
-    
-}
- }
+
 
 function createMessage(type, id, content, callback){
 	var message = {
@@ -221,7 +164,7 @@ function sendSubstitutions(senderID, message){
 				}
 				createMessage('generic', senderID, content, function(messageTS){
 					//callSendAPI(messageTS);
-                    callSendAPI(helpPageMessage(senderID));
+                    callSendAPI(mess.helpPage(senderID));
 				});
 			});
 			break;
@@ -577,7 +520,7 @@ function sendList(senderID, message){
 			}
 		});
 	}else if (message=='help'){
-		callSendAPI(helpPageMessage(senderID));
+		callSendAPI(mess.helpPage(senderID));
 	}else if (message=='get_started_btn'){
 		createButtons([['postback', 'help', 'Więcej']], function(buttons){
 			var content={
