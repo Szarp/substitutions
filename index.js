@@ -71,9 +71,13 @@ app.get('/', function (req, res){
 });
 
 app.get('/index', function (req, res) {
-	res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.messenger.com/");
-	res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.facebook.com/");
     res.sendFile( __dirname + '/public/substitutionPage.htm');
+});
+
+app.get('/demo/:id', function (req, res) {
+    res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.messenger.com/");
+    res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.facebook.com/");
+    res.sendFile(__dirname + '/demo/' + req.params.id);
 });
 
 app.post('/login', function (req, res) {
