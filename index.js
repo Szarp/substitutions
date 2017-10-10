@@ -14,6 +14,7 @@ var express = require('express'),
 	link = require(__dirname+'/myModules/fbLinks.js'),
 	config = require(__dirname+'/myModules/config'),
 	messenger = require(__dirname+'/myModules/messengerBot.js'),
+	webhook = require(__dirname+'/myModules/webhookEvents.js'),
 	myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
 
 var app = express();
@@ -100,6 +101,7 @@ app.get('/webhook', function(req, res) {
 
 app.post('/webhook', function (req, res) {
 var data = req.body;
+    //console.log('hey');
 // Make sure this is a page subscription
 if (data.object === 'page') {
 	// Iterate over each entry - there may be multiple if batched
@@ -107,15 +109,26 @@ if (data.object === 'page') {
 		var pageID = entry.id;
 		var timeOfEvent = entry.time;
 		// Iterate over each messaging event
+        //console.log('entry',entry)
 		entry.messaging.forEach(function(event) {
+            //console.log("any event",event);
 			if (event.message) {
-				messenger.receivedMessage(event);
+                if(event.message["is_echo"]==true){
+                    webhook.echo(event);
+                    //console.log("any event",event);
+                }
+                else
+				webhook.message(event);
 			} else if (event.postback) {
 				messenger.receivedPostback(event);
+			}else if (event.delivery) {
+                webhook.delivered(event);
+                //console.log('delivery');
+				//messenger.receivedPostback(event);
 			} else if (event.optin) {
 				messenger.sTMB(event);
 			} else {
-				console.log("Webhook received unknown event: ", event);
+				//console.log("Webhook received unknown event: ", event);
 			}
 		});
 	});
@@ -211,7 +224,7 @@ setTimeout(function(){
 	cookie.deleteOld();
 },1000*60*60*24*30); //remove cookies (session) after 30 days
 
-https.createServer(opts, app).listen(8088);
+https.createServer(opts, app).listen(9001);
 console.log('Started');
 
 function mongoTest(){
