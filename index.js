@@ -42,19 +42,22 @@ app.use(helmet()); //Set http headers to protect from eg. clickjacking
 
 //setting cookie on first login
 app.use(function (req, res, next) {
-  // check if client sent cookie
+    var disabled=['/webhook','/dataflow','/login'];
+    if (disabled.indexOf(req.path) != -1) 
+        return next();
+    //check if client sent cookie
     var cookie = req.cookies.cookieName;
     if (cookie === undefined){
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2,randomNumber.length);
-        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: true });
+        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*120, httpOnly: false });
         console.log('cookie created successfully');
-    }
+    } 
     else{
-    // yes, cookie was already present
+    // yes, cookie was already present 
         console.log('cookie exists', cookie);
-    }
+    } 
     next(); // <-- important!
 });
 
