@@ -64,5 +64,34 @@ function helpPageMessage(id){
         }   
     }
 }
+function unreadMessage(id){
+    return{
+        "recipient":{"id":id},
+        "message": {
+            "attachment": {"type": "template",
+                "payload": {
+                "template_type": "generic",
+                "elements": [
+                {
+                    "title": "Nowa wiadomość",
+                    "subtitle": "Nowa wiadomość od aministracji",
+                    "buttons": [
+                        {
+                            "title": "Odwiedź stronę",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/helpPage.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "full",
+                            "fallback_url": "https://anulowano.pl/demo/helpPage.htm"                        
+                        }
+                    ]
+                }
+                ]
+                }
+            }
+        }   
+    }
+}
 exports.helpPage=helpPageMessage;
+exports.unreadMessage=unreadMessage;
     
