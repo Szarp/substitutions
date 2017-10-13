@@ -177,7 +177,7 @@ function sendSubstitutions(senderID, message){
 		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
-                createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+                createButtons([['postback', message, 'Wyślij na czacie']], function(buttons){
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
@@ -325,6 +325,9 @@ function substitutionNotification(day, date, callback){
 	} else if(day == 'TDAT'){
 		day = days[(now.getDay() + 2)%7];
 	}
+    
+    
+    
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
         var oldSub=newAndOld[1];
@@ -445,20 +448,23 @@ function messengerTypeChange(oneSub, uId, callback){
 		callback(msg, uId);
 	});
 }
- function notificationList(callback){
+  function notificationList(callback){
      var name='person';
         //[collection,{data}]
         //var collectionName = collection;
         //var data = paramsToModify;
-     
-        var url = 'mongodb://localhost:27017/test2';
+        //var url = 'mongodb://localhost:27017/test2';
         mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
-            console.log(a);
+            //console.log(a);
             var list=[];
             var arr={};
             for(var i=0;i<a.length;i++){
                 arr['id']=a[i].personal['id'];
                 arr['class']=a[i].personal.settings['setClass'];
+                arr['teacher']='---'
+                if(a[i].personal.settings['setTeacher']){
+                    arr['teacher']=a[i].personal.settings['setTeacher'];
+                }
                 list[i]=arr;
                 arr={};
             }
@@ -577,57 +583,7 @@ function sTL(teachers, msg, i, senderID){
 	}
 }
 
-function receivedPostback(event) {
-    console.log('event',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfPostback = event.timestamp;
 
-	// The 'payload' param is a developer-defined field which is set in a postback 
-	// button for Structured Messages. 
-	var payload = event.postback.payload;
-
-	console.log("Received postback for user %d and page %d with payload '%s' " + 
-	"at %d", senderID, recipientID, payload, timeOfPostback);
-
-	sendList(senderID, payload);
-}
-
-function receivedMessage(event) {
-    console.log('mes',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfMessage = event.timestamp;
-	var message = event.message;
-
-	//console.log("Received message for user %d and page %d at %d with message:", 
-	//senderID, recipientID, timeOfMessage);
-	//console.log(JSON.stringify(message));
-
-	var messageId = message.mid;
-
-	var messageText = message.text;
-	var messageAttachments = message.attachments;
-	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
-	facebook.messengerSavePerson(senderID, function(res){
-		console.log('saving done');
-		if (messageText) {
-			sendSubstitutions(senderID, messageText);
-		} else {
-			createMessage('text', senderID, help, function(messageTS){
-				callSendAPI(messageTS);
-			});
-		}
-		if(res==='saved'){
-			facebook.messengerUserInfo(senderID, function(userData){
-				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
-				createMessage('text', adm1, txt, function(messageTS){
-					callSendAPI(messageTS);
-				});
-			});
-		}
-	});
-}
 
 function callSendAPIwC(messageData, callback){
 	request({
@@ -704,8 +660,7 @@ function sendToMessengerBtn(event){
 	}
 }
 
-exports.receivedPostback=receivedPostback;
-exports.receivedMessage=receivedMessage;
+
 exports.notification=substitutionNotification;
 exports.createMessage=createMessage;
 exports.callSendAPI=callSendAPI;
