@@ -5,7 +5,10 @@
 Mess templates
 
 */
-
+function quickReplayTest(id){
+    
+    
+}
 function helpPageMessage(id){
     return{
         "recipient":{"id":id},
@@ -68,6 +71,7 @@ function unreadMessage(id){
     return{
         "recipient":{"id":id},
         "message": {
+            "metadata": "<DEVELOPER_DEFINED_METADATA_STRING>",
             "attachment": {"type": "template",
                 "payload": {
                 "template_type": "generic",
@@ -94,4 +98,5 @@ function unreadMessage(id){
 }
 exports.helpPage=helpPageMessage;
 exports.unreadMessage=unreadMessage;
+exports.quickReplayTest= quickReplayTest;
     

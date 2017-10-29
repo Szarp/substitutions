@@ -3,7 +3,7 @@ var config = require('./config');
 var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
 var mongo =require('./mongoFunctions.js');
-
+var callFunc = require('./postCallFunctions.js');
 /*
 webhookEvents
 */
@@ -29,6 +29,7 @@ function saveToUserBuff(id,mid,timestamp){
     })
 }
 function messageDistribution(mess){
+    
     switch(mess.type){
         case "read":
             console.log("Clearing messages...");
@@ -40,6 +41,8 @@ function messageDistribution(mess){
         case "postback":
             if(mess["echo"] != true){
                 //postback function
+                analizePostback(mess);
+                //console.log("post",JSON.parse(mess.payload));
                 console.log("That is clicked postback");
                 console.log('Saving to user\'s message');
             }
@@ -52,6 +55,14 @@ function messageDistribution(mess){
             }
             else{
                 console.log('check if attachments or text');
+                if(!mess["attachments"]){
+                    analizeText(mess)
+                    console.log("text",mess);
+                }
+                else{
+                    //analizeAttachments(mess);
+                    console.log("atta",mess);
+                }
                 console.log('Saving to users\'s message');
             }
         break;
@@ -61,13 +72,89 @@ function messageDistribution(mess){
     
     
 }
+
+function analizeText(mess){
+    var text = splitText.split(mess.text);
+    if(text.length == 2){
+        console.log("Maybe thats ask for changes");
+        splitText.ifChanges(text,function(changes){
+            //console.log('chnages','');
+            if(changes){
+                if(changes.length>0){
+                createButtons([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
+                        //com += ' Są zastępstwa dla klasy ' + text[1];
+                        var content={
+                            text:'Są zastępstwa dla klasy ' + text[1],
+                            buttons: buttons
+                        }
+                        createMessage('generic', mess.sender, content, function(messageTS){
+                            callSendAPI(messageTS);
+                        });
+                    });
+                }
+                else{
+                    createMessage('text', mess.sender,'Brak zastępstw dla klasy '+ text[1], function(messageTS){
+                    callSendAPI(messageTS);
+                    })
+                }
+                
+            }
+            //console.log('changes',x);
+        });
+    }
+}
+function analizePostback(mess) {
+    var payload = JSON.parse(mess.payload)
+    switch(payload.type){
+        case "example":
+		createMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
+			callSendAPI(messageTS);
+        });
+        break;
+        case "changes":
+            var day;
+            if(payload.class=="0")
+                day="today";
+            if(payload.class=="1")
+                day="tommorow";
+            callFunc.changesForMessenger(payload.class,day,function(allChanges){
+			if(allChanges.length != 0){
+				for(var i=0;i<allChanges.length;i++){
+					createMessage('text', mess.sender, allChanges[i], function(messageTS){
+						callSendAPI(messageTS);
+					});
+				}
+			}
+        });
+        break;
+        default:
+            
+        break;
+            
+            
+    }
+    /*
+    console.log('event',event);
+	var senderID = event.sender.id;
+	var recipientID = event.recipient.id;
+	var timeOfPostback = event.timestamp;
+
+	// The 'payload' param is a developer-defined field which is set in a postback 
+	// button for Structured Messages. 
+	var payload = event.postback.payload;
+
+	console.log("Received postback for user %d and page %d with payload '%s' " + 
+	"at %d", senderID, recipientID, payload, timeOfPostback);
+
+	sendList(senderID, payload);*/
+}
 function messageLogistic(params,event){
     var mess={}
     mess["timestamp"]=event.timestamp;
     mess["sender"]=event.sender.id;
     mess["page"]=event.recipient.id;
     mess["type"]="";
-    console.log('begin');
+    //console.log('begin');
     //switch(true){
         if(params.attachments == true){
             mess["attachments"]=event.message.attachments;
@@ -100,8 +187,10 @@ function messageLogistic(params,event){
     //}
     messageDistribution(mess);
     //console.log(mess);
-    console.log('end;');
+    //console.log('end;');
 }
+
+
 
 
 function reduceElements(type,event){
@@ -285,21 +374,7 @@ function message(event) {
 	});*/
 }
 
-function postback(event) {
-    console.log('event',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfPostback = event.timestamp;
 
-	// The 'payload' param is a developer-defined field which is set in a postback 
-	// button for Structured Messages. 
-	var payload = event.postback.payload;
-
-	console.log("Received postback for user %d and page %d with payload '%s' " + 
-	"at %d", senderID, recipientID, payload, timeOfPostback);
-
-	sendList(senderID, payload);
-}
 function createMessage(type, id, content, callback){
 	var message = {
 		recipient: {
@@ -337,8 +412,7 @@ function callSendAPI(messageData) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
-      console.log("Successfully sent generic message with id %s to recipient %s", 
-        messageId, recipientId);
+//      console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId);
     } else {
       console.error("Unable to send message.");
       console.error(response.body);
@@ -346,9 +420,80 @@ function callSendAPI(messageData) {
     }
   });
 }
+function examplesIncomingMessages(){
+    var self=this;
+    
+    self.plainText={
+      "sender":{
+        "id":"0000"
+      },
+      "recipient":{
+        "id":"123"
+      },
+      "timestamp":1458692752478,
+      "message":{
+        "mid":"mid.1457764197618:41d102a3e1ae206a38",
+        "text":"hello, world!",
+      }
+    }
+    self.postback={
+      "sender":{
+        "id":"0000"
+      },
+      "recipient":{
+        "id":"123"
+      },
+      "timestamp":1458692752478,
+      "postback":{
+        "title": "My name is",  
+        "payload": "text",
+      }
+    }
+    self.textAttachments={
+      "sender":{
+        "id":"0000"
+      },
+      "recipient":{
+        "id":"123"
+      },
+      "timestamp":1458692752478,
+      "message":{
+        "mid":"mid.1458696618141:b4ef9d19ec21086067",
+        "attachments":[
+          {
+            "type":"image",
+            "payload":{
+              "url":"<IMAGE_URL>"
+            }
+          }
+        ]
+      }
+    }
+    self.textAndAttachments={
+      "sender":{
+        "id":"0000"
+      },
+      "recipient":{
+        "id":"1234"
+      },
+      "timestamp":1458692752478,
+      "message":{
+        "mid":"mid.1458696618141:b4ef9d19ec21086067",
+        "text":"<URL_SENT_BY_THE_USER>",
+        "attachments":[
+          {
+            "type":"fallback",
+            "payload":null,
+            "title":"<TITLE_OF_THE_URL_ATTACHMENT>",
+            "URL":"<URL_OF_THE_ATTACHMENT>",
+          }
+        ]
+      }
+    }
+}
 exports.delivered=delivered;
 exports.echo=echo;
-exports.postback=postback;
+//exports.postback=postback;
 exports.message=message;
 exports.attachments=attachments;
 exports.messageLogistic=messageLogistic;
