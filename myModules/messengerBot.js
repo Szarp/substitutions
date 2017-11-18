@@ -647,6 +647,17 @@ function receivedPostback(event) {
 	console.log("Received postback for user %d and page %d with payload '%s' " + 
 	"at %d", senderID, recipientID, payload, timeOfPostback);
 
+	facebook.messengerSavePerson(senderID, function(res){
+		if(res==='saved'){
+			facebook.messengerUserInfo(senderID, function(userData){
+				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
+				createMessage('text', adm1, txt, function(messageTS){
+					callSendAPI(messageTS);
+				});
+			});
+		}
+	});
+
 	sendList(senderID, payload);
 }
 
