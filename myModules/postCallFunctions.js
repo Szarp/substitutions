@@ -5,6 +5,7 @@ var setTime = require('./setTime.js'),
 
 var time = new setTime();
 var mongoPerson= new mongo_v2.person('ZSO11');
+var mongoSub= new mongo_v2.substituions('ZSO11');
 var pageSettings = {
     fields:{
         cancelled:'typ',
@@ -79,10 +80,38 @@ function getSettings_old(userId,callback){
                 //console.log('response Settings',res);
     })        
 }
-function getChanges_new(body,callback){
-    
-}
+
+/*getChanges({param:"today"},function(res){ //getchanges test
+    console.log("getChanges test: ",res);
+})*/
 function getChanges(body,callback){ //resposne app's format changes
+    if(body['param']=='today'){
+        time.todayIs();
+    } else if(body['param']=='TDAT'){
+		time.theDayAfterTomorrowIs();
+	} else {
+        time.tommorowIs();
+    }
+    //console.log('requested date: ',time.displayTime());
+    mongoSub.find({_id:time.displayTime()},{},function(err,elems){
+        var obj = elems[0];
+        if(err){console.log('err in sending substitutions')}
+        var objToSend={};
+        if(obj){
+            objToSend['substitution']=obj['substitution'];
+            if(obj['date'] == undefined){obj['date']='31-12-2016'}
+            objToSend['date']=obj['date'];
+        } 
+        else {
+            objToSend['substitution']='';
+			objToSend['date']='ERROR';
+        }
+        setImmediate(function(){
+            callback(objToSend);
+        });
+    });
+}
+function getChanges_old(body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
     } else if(body['param']=='TDAT'){
@@ -127,10 +156,24 @@ function allTeachers(callback){
 		}
 	});
 }
-function teachersList_new(body,callback){
-    
+function teachersList(body,callback){
+	if(body['param']=='today'){
+		time.todayIs();
+	} else {
+		time.tommorowIs();
+	}
+	mongoSub.find({_id:time.displayTime()},{},function(err, obj){
+		if(err){
+			console.log('Error getting substitutions');
+		} else {
+			var res = obj[0].teachersList;
+			setImmediate(function(){
+				callback(res);
+			});
+		}
+	});
 }
-function teachersList(body, callback){
+function teachersList_old(body, callback){
 	if(body['param']=='today'){
 		time.todayIs();
 	} else {
@@ -147,9 +190,31 @@ function teachersList(body, callback){
 		}
 	});
 }
-function classList_new(body,callback){
-}
+classList({param:"today"},function(res){//classList test
+    console.log("classlist test:",res);
+})
 function classList(body,callback){ //response classList from day
+                //console.log('response Changes')
+    if(body['param']=='today'){
+        time.todayIs();
+    }
+    else{
+        time.tommorowIs();
+    }
+    //console.log('requested date: ',time.displayTime());
+    mongoSub.find({_id:time.displayTime()},{},function(err,obj){
+        //console.log(err,obj);
+        if(err){console.log('err in sending substitutions')}
+        //console.log("etst: ",obj);
+        if(obj[0])
+            res = obj[0]['userList'];
+        else{res=[]}
+        setImmediate(function() {
+            callback(res);
+        });
+    });
+}
+function classList_old(body,callback){ //response classList from day
                 //console.log('response Changes')
     if(body['param']=='today'){
         time.todayIs();
@@ -427,30 +492,39 @@ function tokenCheck(userId,body,callback){
     else {
         setImmediate(function() {
             callback('You must be loged in.');
-        });
-        
-    }
-    
+        });   
+    }   
 }
 function tokenGenerate(userId,callback){
     if(userId != "0000"){
         secretToken.appRequest(userId, function(tok){
             setImmediate(function() {
                 callback(tok);
-            });
-            
+            });  
         })
-        
     }
     else {
         setImmediate(function() {
             callback('You must be loged in.');
         });
-        
     }
-    
 }
 function checkLogin(userId, callback){
+    if(userId=='0000'){
+        setImmediate(function(){
+            callback({isLogged: false, connected: false});
+        });
+    } else {
+        mongoPerson.find({_id:userId},{}, function(err, obj){
+            if(!err){
+                setImmediate(function(){
+                    callback({isLogged: true, connected: obj.system.connected});
+                });
+            }
+        })
+    }
+}
+function checkLogin_old(userId, callback){
     if(userId=='0000'){
         setImmediate(function(){
             callback({isLogged: false, connected: false});

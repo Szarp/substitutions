@@ -7,14 +7,15 @@ var mongo = require('./mongoFunctions.js'),
 	querystring = require('querystring'),
 	messenger = require('./messengerBot.js'),
 	setTime = require('./setTime.js'),
-	callFunc = require('./postCallFunctions.js');
+	callFunc = require('./postCallFunctions.js'),
+    mongo_v2 = require('./mongoConnection.js');
 
 /*
 	module to comunicate with ZSO11 server
 */
 
 var time = new setTime();
-
+var sub = new mongo_v2.substituions('ZSO11');
 var getSomeSubstitution = function(date,callback){
 	time.tommorowIs();
 	var tomorrow = time.displayTime();
@@ -247,8 +248,10 @@ function checkIfAnySubstitutions(callback){
 		});
 	})
 }
-
 function saveSubstitutions(date,data,callback){
+    sub.save(date,data,function(){});
+}
+function saveSubstitutions_old(date,data,callback){
 	var dataToSave={};
 		dataToSave['substitution']=data.substitution;
 		dataToSave['userList']=data.userList;

@@ -43,6 +43,48 @@ function messengerCollection(DB){
     mongo.call(this,DB,'messengerPerson');
 }
 */
+var x = new substitutionsCollection('ZSO11');
+//console.log("x",x);
+/*
+x.largeFind(function(item){
+    if(item._id=='2017-10-15')
+        console.log(item);
+});
+*/
+x.find({_id:'2017-10-19'},{},function(e,r){
+    //console.log("r",r);
+})
+
+
+    
+   // db.close();
+
+//x.collectionList(function(xy){console.log("col: ",xy);});
+function substitutionsCollection(DB){
+    var self=this;
+    mongo.call(this,DB,'substitutions');
+    this.substitutionsStructure={
+        _id: "",
+        substitution:[], //need change
+        userList: {},
+        date: "",
+        teachersList: []
+    }
+    this.save=function(date,data,callback){
+        var dataToSave={};
+		dataToSave['substitution']=data.substitution;
+		dataToSave['userList']=data.userList;
+		dataToSave['date']=date;
+		dataToSave['teachersList'] = data.teachersList;
+        self.update(date,dataToSave,function(){
+            setImmediate(function() {
+                callback(); //callback not necessary
+            });
+            //ok;
+        })
+    }
+    //this.coll
+}
 function personCollection(DB){
     var self=this;
     mongo.call(this,DB,'person');
@@ -62,7 +104,7 @@ function personCollection(DB){
             fromWhen: 0,
             messages:[]
         }
-    }   
+    }
     //console.log('schem',self.personStructure);
     this.collectionCheck=function(){
         //var schem =new collectionsSchema();
@@ -77,19 +119,6 @@ function personCollection(DB){
                 
             })
         })
-        /*
-        self.plainConnection(function(db){
-            var collection = db.collection(self.collName);
-            collection.find({},{}).forEach(function(f){
-                console.log("hey",f);
-                //if(f !== undefined){
-                //if(!self.checkTypeof(f,self.personStructure)[0]){
-                    var x= self.updateStructure(f,self.personStructure);
-                    console.log("some problem",x);
-                //}
-            })
-            db.close();
-        })*/
     }
     this.addPerson=function(_id,callback){
         var time = new Date().getTime();
@@ -247,14 +276,11 @@ function mongo(DB,collectionName){
         self.plainConnection(function(db){
             var collection = db.collection(self.collName);
             collection.find(parToFind,{fields:parToDisplay}).toArray(function(e,r){
-                //console.log(e,r)
-            setImmediate(function(){
+                setImmediate(function(){
                     callback(e,r);
                 })    
-
             });
             db.close();
-
         });
     }
     this.plainConnection=function(func){
@@ -266,6 +292,44 @@ function mongo(DB,collectionName){
 
         })
 
+    }
+    this.collectionList=function(callback){
+        self.plainConnection(function(db){
+            db.listCollections().toArray(function(err, collInfos) {
+                setImmediate(function(){
+                    callback(collInfos);
+                })
+                db.close();
+            });
+        })   
+    }
+    this.countDocs=function(callback){
+        self.plainConnection(function(db){
+            var collection = db.collection(self.collName);
+            collection.find().count(function(err, count) {
+                setImmediate(function(){
+                    callback(count);
+                });
+                db.close();
+            })
+        })
+    }
+    this.largeFind=function(func){
+        self.plainConnection(function(db){
+            var collection = db.collection(self.collName);
+            var cursor = collection.find();
+            cursor.each(function(err, item) {
+                if(item != null){
+                    func(item);
+                // If the item is null then the cursor is exhausted/empty and closed
+                }
+                else{
+                    cursor.toArray(function(err, items) {
+                        db.close();
+                    });
+                };
+            });
+        });    
     }
 }
 function structureFunctions(){
@@ -402,3 +466,4 @@ function dataGenerator(){
 }
 exports.mongo=mongo;
 exports.person=personCollection;
+exports.substituions= substitutionsCollection;
