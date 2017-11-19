@@ -1,8 +1,10 @@
 var setTime = require('./setTime.js'),
 	mongo = require('./mongoFunctions.js'),
-	secretToken = require('./secretTokenGenerator.js');
+	secretToken = require('./secretTokenGenerator.js'),
+    mongo_v2= require ('./mongoConnection.js');
 
 var time = new setTime();
+var mongoPerson= new mongo_v2.person('ZSO11');
 var pageSettings = {
     fields:{
         cancelled:'typ',
@@ -30,11 +32,37 @@ var pageSettings = {
     formValues:['all','no']
     
 }
+/*mongoPerson.find({_id:"0005"},{},function(e,r){
+    console.log("005: ",r);
+})*/
 
+mongoPerson.find({},{_id:true},function(e,elems){
+    elems.forEach(function(el){
+        //console.log("last elem: ",el._id);//,JSON.stringify(el.personal));
+        //getSettings(el._id,function(e){});
+        //picture(el._id,function(e){});
+        //console.log("el",el);
+    })
+})
+//mongoPerson.collectionCheck();
 function getSettings(userId,callback){
+    mongoPerson.readSettings(userId,function(e,r){
+        //console.log("r",r);
+        var table=[];
+        table[0]=r.settings.setClass;
+        table[1]=r.settings.notification;
+        table[2]=r.settings.setTeacher;
+        pageSettings['formValues']=table;
+        res = pageSettings; 
+        setImmediate(function() {
+            callback(res);
+        });
+    })
+}
+function getSettings_old(userId,callback){
     mongo.findById(userId,'person',function(err,doc){
         if (err){console.log('prolem with settings: ',userId)};
-        console.log('Settings file: ',doc);
+        //console.log('Settings file: ',doc);
         var params = (doc.personal['settings']);
         if(params == ''){params={setClass:'all',notification:'no'}}
         var table=[];
@@ -51,7 +79,9 @@ function getSettings(userId,callback){
                 //console.log('response Settings',res);
     })        
 }
-
+function getChanges_new(body,callback){
+    
+}
 function getChanges(body,callback){ //resposne app's format changes
     if(body['param']=='today'){
         time.todayIs();
@@ -79,6 +109,12 @@ function getChanges(body,callback){ //resposne app's format changes
         });
     });
 }
+
+function allTeachers_new(callback){
+    
+    
+}
+
 function allTeachers(callback){
 	mongo.findById('all', 'teachers', function(err, obj){
 		if(err){
@@ -90,6 +126,9 @@ function allTeachers(callback){
 			});
 		}
 	});
+}
+function teachersList_new(body,callback){
+    
 }
 function teachersList(body, callback){
 	if(body['param']=='today'){
@@ -107,6 +146,8 @@ function teachersList(body, callback){
 			});
 		}
 	});
+}
+function classList_new(body,callback){
 }
 function classList(body,callback){ //response classList from day
                 //console.log('response Changes')
@@ -135,8 +176,37 @@ function message(userId,body,callback){ //saves message from app
         });
     }); 
 }
-//res: ok
+/* saveSettings test
+saveSettings('7k8zUbHw4YhXG',{setClass:"1b",notification:"yes",teacher:""},function(r){
+    mongoPerson.find({_id:'7k8zUbHw4YhXG'},{"personal.settings":true},function(e,res){
+        console.log("saveSettings test: ",res[0].personal);
+    })
+})*/
+
 function saveSettings(userId,body,callback){ //saves settings from app
+    //userId String
+    //body Array 
+    if(userId!="0000"){
+        console.log('saving chnges to: '+userId);
+        var form={};
+        form['setClass'] = body.setClass;
+        form['notification'] = body.notification;
+		form['setTeacher'] = body.teacher;
+         mongoPerson.update(userId,{"personal":{settings:form}},function(){
+            res = 'ok';
+            setImmediate(function() {
+                callback(res);
+            });
+         })
+        }
+    else{
+        res = 'ok';
+        setImmediate(function() {
+                callback(res);
+        });
+    }
+}
+function saveSettings_old(userId,body,callback){ //saves settings from app
     //userId String
     //body Array 
     if(userId!="0000"){
@@ -160,7 +230,31 @@ function saveSettings(userId,body,callback){ //saves settings from app
     }
 }
 //res: picture link
+/*
+picture('7k8zUbHw4YhXG',function(res){ //picture test
+    console.log("picture test: ",res);
+})*/
 function picture(userId,callback){ //res id's picture
+    //userId String
+    if(userId != "0000"){
+         mongoPerson.readPersonalData(userId,function(err,obj){
+        //console.log(err,obj);
+        if(err){console.log('err in sending picture')}
+             //console.log('some fond object:',obj.personal.picture); //found? weź się naucz anglijskiego
+        res = obj.picture;
+        setImmediate(function() {
+            callback(res);
+        });
+    });
+    }
+    else{
+        res = '/img/unknown.gif';
+        setImmediate(function() {
+                callback(res);
+        });
+    }
+}
+function picture_old(userId,callback){ //res id's picture
     //userId String
     if(userId != "0000"){
          mongo.findById(userId,'person',function(err,obj){
