@@ -1,4 +1,6 @@
-# Instrukcja
+# Anulowano.pl instrukcja obsługi
+
+###### Szkoła: ZSO nr 11 w Zabrzu
 
 - [Wprowadzanie danych](#wprowadzanie-danych)
   - [Pobieranie z *.edupage.org](#pobieranie-z-edupageorg)
@@ -9,7 +11,7 @@
     - [Wybór klasy/nauczyciela](#wybór-klasynauczyciela)
   - [Logowanie](#logowanie)
   - [Ustawienia](#ustawienia)
-  - [Łączenie kont](#łączenie-kont)
+  - [Łączenie kont](#Łączenie-kont)
   - [Szybki dostęp](#szybki-dostęp)
 - [Bot](#bot)
   - [Zastępstwa](#zastępstwa)
