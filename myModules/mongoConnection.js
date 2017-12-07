@@ -76,12 +76,36 @@ function substitutionsCollection(DB){
 		dataToSave['userList']=data.userList;
 		dataToSave['date']=date;
 		dataToSave['teachersList'] = data.teachersList;
-        self.update(date,dataToSave,function(){
-            setImmediate(function() {
-                callback(); //callback not necessary
-            });
-            //ok;
+        //console.log("data",dataToSave);
+        self.find({_id:date},{_id:true},function(e,r){
+            //console.log("find",e,r);
+            if(!e){
+                if(r.length>0){
+                   self.update(date,dataToSave,function(){
+                       console.log("updated elem: "+date);
+                        setImmediate(function() {
+                        callback(); //callback not necessary
+                        }); 
+                   })
+                    
+                }
+                else{
+                    dataToSave["_id"]=date;
+                    self.insert(dataToSave,function(e,r){
+                        console.log("insert elem: "+date, r);
+                        setImmediate(function() {
+                            callback(); //callback not necessary
+                        });
+                    })
+                    
+                }
+                
+            }
+            
         })
+        
+            //ok;
+        
     }
     //this.coll
 }
@@ -242,11 +266,12 @@ function mongo(DB,collectionName){
         });    
     }
     this.update=function(_id,elemsToUpdate,callback){
+        //console.log("update",_id,elemsToUpdate);
         self.find({_id:_id},{},function(e,obj){
             if(obj.length>0){
                 obj=self.updateValue(obj[0],elemsToUpdate);
                 //obj=self.updateValue(obj,elemsToUpdate);
-                console.log('obj',obj);
+                //console.log('obj',obj);
                 self.plainConnection(function(db){
                     var collection = db.collection(self.collName);
                     collection.update({_id:_id},{$set:obj},{upsert:true, w: 1}, function(err, result) {
@@ -366,7 +391,7 @@ function structureFunctions(){
                 }
             }
             else{
-                console.log(typeof(obj[i])==typeof(schema[i]));   
+                //console.log(typeof(obj[i])==typeof(schema[i]));   
             }
         }
         return obj;

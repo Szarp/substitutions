@@ -166,7 +166,8 @@ function teachersList(body,callback){
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
-			var res = obj[0].teachersList;
+			//var res = obj[0].teachersList;
+            console.log ("res",res);
 			setImmediate(function(){
 				callback(res);
 			});
