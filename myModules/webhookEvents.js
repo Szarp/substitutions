@@ -4,6 +4,8 @@ var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
 var mongo =require('./mongoFunctions.js');
 var callFunc = require('./postCallFunctions.js');
+var template = require('./messTemplates.js');
+var secretToken = require('./secretTokenGenerator.js');
 /*
 webhookEvents
 */
@@ -72,10 +74,40 @@ function messageDistribution(mess){
     
     
 }
-
+function token(text,mess){
+    	day='';
+    var senderID=mess.sender;
+    var tkn = text[1];
+		//var tkn = oMessage.substring(2);
+		if(!tkn){
+            secretToken.messRequest(senderID, function(token){
+				var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
+					createMessage('text', senderID, txt, function(messageTS){
+						callSendAPI(messageTS);
+					});
+				});
+			} else {
+				tkn = parseInt(tkn);
+				console.log("Token received: " + tkn);
+				secretToken.messCheck(senderID, tkn, function(res){
+					if(res){
+						createMessage('text', senderID, 'Konto zostało połączone. (y)', function(messageTS){
+							callSendAPI(messageTS);
+						});
+					} else {
+						createMessage('text', senderID, 'Wystąpił błąd. Spróbuj jeszcze raz.', function(messageTS){
+							callSendAPI(messageTS);
+						});
+					}
+				});
+			}    
+}
 function analizeText(mess){
     var text = splitText.split(mess.text);
-    if(text.length == 2){
+    if(text[0]=="4"){
+            token(text,mess);        
+        }
+    else if(text.length == 2){
         console.log("Maybe thats ask for changes");
         splitText.ifChanges(text,function(changes){
             //console.log('chnages','');
@@ -101,6 +133,14 @@ function analizeText(mess){
             }
             //console.log('changes',x);
         });
+    }
+    else{
+        if(text[0]=="pomoc"||text[0]=="help"){
+            callSendAPI(template.helpPage(mess.sender));
+        }
+        else{
+            console.log("Pop info about bad message to Admins");
+        }
     }
 }
 function analizePostback(mess) {
