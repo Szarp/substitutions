@@ -6,6 +6,7 @@ var mongo =require('./mongoFunctions.js');
 var callFunc = require('./postCallFunctions.js');
 var template = require('./messTemplates.js');
 var secretToken = require('./secretTokenGenerator.js');
+var mongo_v2 = require('./mongoConnection.js');
 /*
 webhookEvents
 */
@@ -14,11 +15,12 @@ webhookEvents
 //attachments: true false
 //postcall true fasle
 //delivery true false
+var serverDB = new mongo_v2.server(config.db);
+var userDB = new mongo_v2.user(config.db);
 function saveToUserBuff(id,mid,timestamp){
     var obj= {
         system:{
             messages:[true]
-        
         }
         }
     mongo.findByParam({"personal.id":id},{_id:true},function(list){
@@ -26,8 +28,6 @@ function saveToUserBuff(id,mid,timestamp){
     })
     mongo.modifyById(id,'person',obj,function(){
         console.log('ok');
-        
-        
     })
 }
 function messageDistribution(mess){
@@ -46,14 +46,27 @@ function messageDistribution(mess){
                 analizePostback(mess);
                 //console.log("post",JSON.parse(mess.payload));
                 console.log("That is clicked postback");
-                console.log('Saving to user\'s message');
+                serverDB.save(mess,function(e,r){
+                     if(!e){
+                        console.log('Saving  users\'s message',r["result"]);    
+                    }
+                    else{
+                        console.log("Error in saving users\'s message",e);
+                    }
+                });
             }
         break;
         default:
             if(mess["echo"]==true){
                 //console.log('Saving to user message');
-                console.log('Saving to server\'s message');
-                
+                serverDB.save(mess,function(e,r){
+                    if(!e){
+                        console.log('Saving  server\'s message',r["result"]);    
+                    }
+                    else{
+                        console.log("Error in saving server\'s message",e);
+                    }
+                });
             }
             else{
                 console.log('check if attachments or text');
@@ -65,7 +78,16 @@ function messageDistribution(mess){
                     //analizeAttachments(mess);
                     console.log("atta",mess);
                 }
-                console.log('Saving to users\'s message');
+                userDB.save(mess,function(e,r){
+                    if(!e){
+                        console.log('Saving users\'s message',r["result"]);    
+                    }
+                    else{
+                        console.log("Error in saving user\'s message",e);
+                    }
+                    
+                })
+                //console.log('Saving to users\'s message');
             }
         break;
             
@@ -278,7 +300,7 @@ function delivered(event){
     //var mid = event.delivery.mids.mid;
     var id = event.sender.id;
     var time = event.watermark;
-    console.log('All '+id+'\'s messages habe been senn before '+time);
+    console.log('All '+id+'\'s messages have been senn before '+time);
     //console.log('delivery',reduceElements("delivery",event));
 }
 function echo(event){
@@ -310,12 +332,12 @@ function createButtons(tab, callback){
 		} else if(btn[0]=='postback'){
 			singleBTN['payload']=btn[1];
 		}
-		console.log(singleBTN);
-		console.log(JSON.stringify(singleBTN));
+		//console.log(singleBTN);
+		//console.log(JSON.stringify(singleBTN));
 		buttons.push(singleBTN);
 	}
 	setImmediate(function(){
-		console.log(buttons);
+		//console.log(buttons);
 		callback(buttons);
 	});
 }
@@ -326,7 +348,7 @@ function createMessage(type, id, content, callback){
 		  id: id
 		}
 	};
-	console.log(content);
+	//console.log(content);
 	if(type == 'text'){
 		message['message']={text: content};
 	}else{
@@ -421,7 +443,7 @@ function createMessage(type, id, content, callback){
 		  id: id
 		}
 	};
-	console.log(content);
+	//console.log(content);
 	if(type == 'text'){
 		message['message']={text: content};
 	}else{

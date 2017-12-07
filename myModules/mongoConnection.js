@@ -4,62 +4,38 @@ var MongoClient = require('mongodb').MongoClient,
 /*
 mongo functions v2
 */
-//var mon = new mongo('ZSO11','person');
-
-//mon.find({},{},function(e,x){
-//    console.log(x);
-//})
-
-//var x = new messengerCollection('ZSO11');
-/*
-x.update('0000',{personal:{wtf:"hejjhsdjhs",oncemore:"hey"}},function(e,r){
-    //console.log('update',e,r);
-    x.find({_id:'0000'},{},function(e,r){
-    console.log('find',r);
-})
-    
-})
-*/
-//x.addPerson("0005",function(e,r){console.log("add person",e,r);});
-//x.update("0003",{"personal":{picture:"a"}},function(e,r){});
-//mox.find({},{},function(e,r){console.log('find3',r);})
-//x.stats(function(e,r){console.log('stats',e,r);});
-//x.notificationList(function(e,r){console.log('list',e,r);});
-/*
-x.addPeronalData("0000",
-                 {name:'Bartek Mazur',picture:'https://google.com'},function(e,r){
-    x.find({_id:"0000"},{},function(ee,rr){
-        console.log('found personal data',ee,rr);
-    })
-    //console.log('personal data',e,r);
-    
-})
-*/
-//x.readPersonalData("0000",function(e,r){console.log("perosnal data",e,r);})
-//x.update("0000",x.personStructure,function(){});
-/*
-function messengerCollection(DB){
+function userMessages(DB){
     var self=this;
-    mongo.call(this,DB,'messengerPerson');
+    mongo.call(this,DB,"userMessages");
+    this.save=function(mess,callback){
+        //console.log("hey");
+        var obj={messages:{}};
+            obj.messages[mess["timestamp"]] = mess;
+        //self.insert({_id:"userMessages",messages:{}},function(){});
+            self.update("userMessages",obj,function(e,r){
+                setImmediate(function(){
+                    callback(e,r);
+                });
+                //db.close();
+            })    
+    };    
 }
-*/
-var x = new substitutionsCollection('ZSO11');
-//console.log("x",x);
-/*
-x.largeFind(function(item){
-    if(item._id=='2017-10-15')
-        console.log(item);
-});
-*/
-x.find({_id:'2017-10-19'},{},function(e,r){
-    //console.log("r",r);
-})
-
-
-    
-   // db.close();
-
-//x.collectionList(function(xy){console.log("col: ",xy);});
+function serverMessages(DB){
+    var self=this;
+    mongo.call(this,DB,"serverMessages");
+    this.save=function(mess,callback){
+        //console.log("hey");
+        var obj={messages:{}};
+            obj.messages[mess["timestamp"]] = mess;
+        //self.insert({_id:"userMessages",messages:{}},function(){});
+            self.update("serverMessages",obj,function(e,r){
+                setImmediate(function(){
+                    callback(e,r);
+                });
+                //db.close();
+            })    
+    };    
+}
 function substitutionsCollection(DB){
     var self=this;
     mongo.call(this,DB,'substitutions');
@@ -492,3 +468,5 @@ function dataGenerator(){
 exports.mongo=mongo;
 exports.person=personCollection;
 exports.substituions= substitutionsCollection;
+exports.user= userMessages;
+exports.server= serverMessages;
