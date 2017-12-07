@@ -25,7 +25,7 @@
 
 ### Pobieranie z *.edupage.org
 
-Serwer jest skonfigurowany tak, by co 10 minut automatycznie pobierać i zapisywać dane dotyczące zastępstw ze stron korzystystających z **[ascEduPage](https://edupage.org)**.
+Serwer jest skonfigurowany tak, by co 10 minut automatycznie pobierać i zapisywać dane dotyczące zastępstw ze stron korzystających z **[ascEduPage](https://edupage.org)**.
 
 ### Inne sposoby wprowadzania danych
 
@@ -37,7 +37,7 @@ Strona umożliwia między innymi sprawdzenie zastępstw oraz ustawienie podstawo
 
 ### Sprawdzanie zastępstw
 
-Zastępstwa wyświetlają się od razu po wejściu na [stronę](https://anulowano.pl). Jeśli w ustawieniach została wybrana klasa lub nauczyciel, wyświetlane są jedynie zastępstwa dla wybranej klasy/nauczyciea.
+Zastępstwa wyświetlają się od razu po wejściu na [stronę](https://anulowano.pl). Jeśli w ustawieniach została wybrana klasa lub nauczyciel, wyświetlane są jedynie zastępstwa dla wybranej klasy/nauczyciela.
 
 #### Wybór dnia
 
@@ -46,7 +46,7 @@ Można wyświetlić zastępstwa na dziś lub dzień kolejny naciskając odpowied
 
 #### Wybór klasy/nauczyciela
 
-Aby wybrać klasę lub nauczyciela należy kliknąć odpowiednią/odpowiedniego klasę/nauczciela lub zalogować się i [ustawić w ustawieniach](#ustawienia).
+Aby wybrać klasę lub nauczyciela należy kliknąć odpowiednią/odpowiedniego klasę/nauczyciela lub zalogować się i [ustawić w ustawieniach](#ustawienia).
 
 ***Uwaga:** Wyświetlane są jedynie klasy/nauczyciele mający danego dnia zastępstwa.*
 
@@ -63,11 +63,11 @@ Aby otworzyć ustawienia należy kliknąć `Ustawienia` lub w przypadku urządze
 W ustawieniach są dwie zakładki: `Uczeń` i `Nauczyciel`.</br>
 W obu zakładkach można wybrać klasę i czy powiadomienia mają być włączone (więcej w: [powiadomienia automatyczne](#powiadomienia-automatyczne)). Zakładka `Nauczyciel` pozwala jednak na wybranie nauczyciela i "wyłączenie" klasy.
 
-***Uwaga:** Aby ustawienia zostały zapisanie po ich wprowadzniu należy kliknąć `Save settings`.*
+***Uwaga:** Aby ustawienia zostały zapisanie po ich wprowadzeniu należy kliknąć `Save settings`.*
 
 ### Łączenie kont
 
-Zobacz: [Powiadomiena automatyczne](#powiadomienia-automatyczne)
+Zobacz: [Powiadomienia automatyczne](#powiadomienia-automatyczne)
 
 ### Szybki dostęp
 
@@ -83,7 +83,7 @@ Bota można odpytać o zastępstwa na dziś lub jutro.
 
 #### Dzisiaj
 
-Aby spytać o zastępstwa na dzień dzisiejszy należy wysłać komendę `0 klasa`, gdzie słowo `klasa` zatępujemy żądaną klasą.
+Aby spytać o zastępstwa na dzień dzisiejszy należy wysłać komendę `0 klasa`, gdzie słowo `klasa` zastępujemy żądaną klasą.
 
 Przykład:
 
@@ -104,7 +104,7 @@ Kliknięcie `Sprawdź na stronie` otworzy stronę z zastępstwami.
 
 #### Jutro
 
-Aby spytać o zastępstwa na kolejny dzień należy wysłać komendę `1 klasa`, gdzie słowo `klasa` zatępujemy klasą, o którą pytamy. Reszta jak dla "[Dzisiaj](#dzisiaj)".
+Aby spytać o zastępstwa na kolejny dzień należy wysłać komendę `1 klasa`, gdzie słowo `klasa` zastępujemy klasą, o którą pytamy. Reszta jak dla "[Dzisiaj](#dzisiaj)".
 
 #### Nauczyciele
 
@@ -112,7 +112,7 @@ Istnieje również możliwość sprawdzenia zastępstw dla nauczyciela. W tym wy
 
 Lista nauczycieli dostępna jest po naciśnięciu guzika `Nauczyciele`, który wyświetli się po spytaniu o nieistniejącą klasę lub nauczyciela.
 
-***Uwaga:** Niektórzy nauczyciele są wpisani inaczej niż według nazwiska. W takm wypadku warto skorzystać z listy nauczycieli.*
+***Uwaga:** Niektórzy nauczyciele są wpisani inaczej niż według nazwiska. W takim wypadku warto skorzystać z listy nauczycieli.*
 
 ### Pomoc
 
@@ -129,7 +129,7 @@ Odpowiedź automatyczna:
 
 > Skontaktujemy się aby odpowiedzieć na pytanie.
 
-Później administrator skontktuje się aby udzielić pomocy.
+Później administrator skontaktuje się aby udzielić pomocy.
 
 ### Powiadomienia automatyczne
 
