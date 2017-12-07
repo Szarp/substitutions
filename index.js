@@ -113,12 +113,49 @@ if (data.object === 'page') {
 		var timeOfEvent = entry.time;
 		// Iterate over each messaging event
         //console.log('entry',entry)
+        var messParams={
+            message:false,
+            postback:false,
+            payload:false,
+            attachments:false,
+            text:false,
+            delivery:false,
+            echo:false,
+            read:false
+        };
 		entry.messaging.forEach(function(event) {
+            if(event.message){
+                messParams["message"]=true;
+                //webhook.message(event);
+                if(event.message["attachments"])
+                    messParams["attachments"]=true;
+                if(event.message["is_echo"])
+                messParams["echo"]=true;
+                if(event.message["text"])
+                    messParams["text"]=true;
+            }
+            if(event.postback){
+                messParams["message"]=true;
+                if(event.postback["payload"])
+                    messParams["payload"]=true;
+            }
+            if(event.read)
+                messParams["read"]=true;
+            if(event.delivery)
+                    messParams["delivery"]=true;
+            
+            webhook.messageLogistic(messParams,event);
+            //console.log("any event",messParams);
             //console.log("any event",event);
+            /*
 			if (event.message) {
-                if(event.message["is_echo"]==true){
+                if(event.message["is_echo"]==true){ //response from bot (sent messages)
                     webhook.echo(event);
                     //console.log("any event",event);
+                }
+                else if(event.message["attachments"] !== undefined){
+                    console.log('go to attachment')
+                    webhook.attachments(event);
                 }
                 else
 				webhook.message(event);
@@ -132,7 +169,7 @@ if (data.object === 'page') {
 				messenger.sTMB(event);
 			} else {
 				//console.log("Webhook received unknown event: ", event);
-			}
+			}*/
 		});
 	});
 	//send 200 within 20s to inform Facebook that message was received successfully
@@ -217,7 +254,7 @@ setTimeout(function () {
         myFunc.subs(time.displayTime(),function(b){
             time.theDayAfterTomorrowIs();
             myFunc.subs(time.displayTime(),function(x){
-                console.log('downloaded changes');
+                //console.log('downloaded changes');
             });
         });
     });
