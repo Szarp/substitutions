@@ -166,7 +166,7 @@ function teachersList(body,callback){
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
-			//var res = obj[0].teachersList;
+			//zvar res = obj[0].teachersList;
             console.log ("res",res);
 			setImmediate(function(){
 				callback(res);
@@ -519,7 +519,8 @@ function checkLogin(userId, callback){
         mongoPerson.find({_id:userId},{}, function(err, obj){
             if(!err){
                 setImmediate(function(){
-                    callback({isLogged: true, connected: obj.system.connected});
+                    console.log("obj",obj);
+                    callback({isLogged: true, connected: obj[0].system.connected});
                 });
             }
         })

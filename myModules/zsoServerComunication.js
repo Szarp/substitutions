@@ -9,13 +9,14 @@ var mongo = require('./mongoFunctions.js'),
 	setTime = require('./setTime.js'),
 	callFunc = require('./postCallFunctions.js'),
     mongo_v2 = require('./mongoConnection.js');
+var config = require('./config');
 
 /*
 	module to comunicate with ZSO11 server
 */
 
 var time = new setTime();
-var sub = new mongo_v2.substituions('ZSO11');
+var sub = new mongo_v2.substituions(config.db);
 var getSomeSubstitution = function(date,callback){
 	time.tommorowIs();
 	var tomorrow = time.displayTime();
