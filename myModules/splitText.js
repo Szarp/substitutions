@@ -120,9 +120,9 @@ function ifChanges(text,callback){
                 day="tommorow"
             break;
         }
-        callFunc.changesForMessenger(text[1],day,function(allChanges){
+        callFunc.changesForMessenger(text[1],day,function(allChanges,weekDay){
             setImmediate(function(){
-                callback(allChanges);
+                callback(allChanges,weekDay);
             });            
         });    
     }

@@ -4,9 +4,17 @@ var MongoClient = require('mongodb').MongoClient,
 /*
 mongo functions v2
 */
+
 function userMessages(DB){
     var self=this;
     mongo.call(this,DB,"userMessages");
+        this.schema={ 
+            timestamp: 0,
+            sender: '1383716548353914',
+            page: '285771075161320',
+            type: 'text',
+            text: '' 
+    }
     this.save=function(mess,callback){
         //console.log("hey");
         var obj={messages:{}};
@@ -18,7 +26,7 @@ function userMessages(DB){
                 });
                 //db.close();
             })    
-    };    
+    };
 }
 function serverMessages(DB){
     var self=this;
@@ -68,7 +76,7 @@ function substitutionsCollection(DB){
                 else{
                     dataToSave["_id"]=date;
                     self.insert(dataToSave,function(e,r){
-                        console.log("insert elem: "+date, r);
+                        console.log("insert elem: "+date, r.result);
                         setImmediate(function() {
                             callback(); //callback not necessary
                         });
@@ -298,7 +306,7 @@ function mongo(DB,collectionName){
         self.plainConnection(function(db){
             db.listCollections().toArray(function(err, collInfos) {
                 setImmediate(function(){
-                    callback(collInfos);
+                    callback(err,collInfos);
                 })
                 db.close();
             });
@@ -309,7 +317,7 @@ function mongo(DB,collectionName){
             var collection = db.collection(self.collName);
             collection.find().count(function(err, count) {
                 setImmediate(function(){
-                    callback(count);
+                    callback(err,count);
                 });
                 db.close();
             })
@@ -418,7 +426,7 @@ function structureFunctions(){
                 obj[i]=self.randomStructure(self.schema[i]);
             }
             else{
-                obj[i]=self.dataFillByType(typeof(self.schema[i]));
+                obj[i]=self.dataFillByType(self.schema[i],typeof(self.schema[i]));
             }
         }
         return obj;
@@ -432,10 +440,10 @@ function dataGenerator(){
         return self.randomText(len)
     }
     this.numType=function(){
-        var len = new Date().getTime()%10+1;
+        var len = new Date().getTime()%15+1;
         return Math.floor(Math.random() * Math.pow(10,len));
     }
-    this.dataFillByType=function(type){
+    this.dataFillByType=function(el,type){
         switch(type){
             case "boolean":
             return self.boolType();
@@ -444,7 +452,10 @@ function dataGenerator(){
                 return self.numType();
             break;
             case "string":
+                if(el.length==0)
                 return self.textType();
+                else
+                    return el;
             break;
             default:return "err";break;
         }

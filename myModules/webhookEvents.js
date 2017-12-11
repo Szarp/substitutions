@@ -131,14 +131,14 @@ function analizeText(mess){
         }
     else if(text.length == 2){
         console.log("Maybe thats ask for changes");
-        splitText.ifChanges(text,function(changes){
+        splitText.ifChanges(text,function(changes,weekDay){
             //console.log('chnages','');
             if(changes){
                 if(changes.length>0){
                 createButtons([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
                         //com += ' Są zastępstwa dla klasy ' + text[1];
                         var content={
-                            text:'Są zastępstwa dla klasy ' + text[1],
+                            text:'Zastępstwa na '+weekDay+' dla klasy ' + text[1],
                             buttons: buttons
                         }
                         createMessage('generic', mess.sender, content, function(messageTS){
@@ -147,7 +147,7 @@ function analizeText(mess){
                     });
                 }
                 else{
-                    createMessage('text', mess.sender,'Brak zastępstw dla klasy '+ text[1], function(messageTS){
+                    createMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
                     callSendAPI(messageTS);
                     })
                 }

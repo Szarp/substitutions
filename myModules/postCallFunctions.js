@@ -31,12 +31,10 @@ var pageSettings = {
     },
     events:['homePage','substitutionList','settingsMenu','about1'],
     formValues:['all','no']
-    
 }
 /*mongoPerson.find({_id:"0005"},{},function(e,r){
     console.log("005: ",r);
 })*/
-
 mongoPerson.find({},{_id:true},function(e,elems){
     elems.forEach(function(el){
         //console.log("last elem: ",el._id);//,JSON.stringify(el.personal));
@@ -92,6 +90,7 @@ function getChanges(body,callback){ //resposne app's format changes
 	} else {
         time.tommorowIs();
     }
+    var day = time.displayWeekDay();
     //console.log('requested date: ',time.displayTime());
     mongoSub.find({_id:time.displayTime()},{},function(err,elems){
         var obj = elems[0];
@@ -107,7 +106,7 @@ function getChanges(body,callback){ //resposne app's format changes
 			objToSend['date']='ERROR';
         }
         setImmediate(function(){
-            callback(objToSend);
+            callback(objToSend,day);
         });
     });
 }
@@ -414,8 +413,7 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
     //reqClass String [class]
     //day String [today;tommorow]
-    getChanges({param:day},function(obj){
-        //console.log(obj)
+    getChanges({param:day},function(obj,weekDay){
         var tableOfMesseges=[];
 		var msg = "";
         //console.log(obj);
@@ -470,7 +468,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
             }
         }
         setImmediate(function() {
-            callback(tableOfMesseges);
+            callback(tableOfMesseges,weekDay);
         });
     });
 }
