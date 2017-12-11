@@ -41,6 +41,15 @@ function setTime(){
         self.Today = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
         self.updateTime();
     }
+    this.nextSchoolDay = function(){
+        var day = new Date().getDay;
+        var howManyDays = 1;
+        if(day == 5) //Friday
+            howManyDays = 3;
+        else if (day == 6) //Saturday
+            howManyDays = 2;
+        self.Today = new Date(new Date().getTime() + howManyDays*24 * 60 * 60 * 1000);
+        self.updateTime();
     }
     /*
     this.setTime=function(year,month,day){
