@@ -7,7 +7,7 @@ mongo functions v2
 
 function userMessages(DB){
     var self=this;
-    mongo.call(this,DB,"userMessages");
+    Mongo.call(this,DB,"userMessages");
     Messages.call(this);
         this.schema={ 
             timestamp: 0,
@@ -19,7 +19,7 @@ function userMessages(DB){
 }
 function serverMessages(DB){
     var self=this;
-    mongo.call(this,DB,"serverMessages");
+    Mongo.call(this,DB,"serverMessages");
     Messages.call(this);
         this.schema={ 
             timestamp: 0,
@@ -68,7 +68,7 @@ function Messages(){
 }
 function substitutionsCollection(DB){
     var self=this;
-    mongo.call(this,DB,'substitutions');
+    Mongo.call(this,DB,'substitutions');
     this.substitutionsStructure={
         _id: "",
         substitution:[], //need change
@@ -117,7 +117,7 @@ function substitutionsCollection(DB){
 }
 function personCollection(DB){
     var self=this;
-    mongo.call(this,DB,'person');
+    Mongo.call(this,DB,'person');
     this.personStructure={ _id: "",
         personal:{
             id: "",
@@ -230,7 +230,7 @@ function personCollection(DB){
     }
     
 }
-function mongo(DB,collectionName){
+function Mongo(DB,collectionName){
     structureFunctions.call(this);
     var self=this;
     this.DB=DB;
@@ -498,7 +498,7 @@ function dataGenerator(){
         return text;
     }
 }
-exports.mongo=mongo;
+exports.mongo=Mongo;
 exports.person=personCollection;
 exports.substituions= substitutionsCollection;
 exports.user= userMessages;
