@@ -8,41 +8,63 @@ mongo functions v2
 function userMessages(DB){
     var self=this;
     mongo.call(this,DB,"userMessages");
+    Messages.call(this);
         this.schema={ 
             timestamp: 0,
-            sender: '1383716548353914',
-            page: '285771075161320',
-            type: 'text',
+            sender: '',
+            page: '',
+            type: '',
             text: '' 
     }
+}
+function serverMessages(DB){
+    var self=this;
+    mongo.call(this,DB,"serverMessages");
+    Messages.call(this);
+        this.schema={ 
+            timestamp: 0,
+            sender: '',
+            page: '',
+            type: '',
+            text: '' 
+    }
+    
+}
+function Messages(){
+    var self=this;
     this.save=function(mess,callback){
         //console.log("hey");
         var obj={messages:{}};
             obj.messages[mess["timestamp"]] = mess;
         //self.insert({_id:"userMessages",messages:{}},function(){});
-            self.update("userMessages",obj,function(e,r){
+            self.update(self.collName,obj,function(e,r){
                 setImmediate(function(){
                     callback(e,r);
                 });
                 //db.close();
             })    
     };
-}
-function serverMessages(DB){
-    var self=this;
-    mongo.call(this,DB,"serverMessages");
-    this.save=function(mess,callback){
-        //console.log("hey");
-        var obj={messages:{}};
-            obj.messages[mess["timestamp"]] = mess;
-        //self.insert({_id:"userMessages",messages:{}},function(){});
-            self.update("serverMessages",obj,function(e,r){
-                setImmediate(function(){
-                    callback(e,r);
+    this.init=function(){
+        self.find({_id:self.collName},{_id:true,messages:true},function(e,r){
+            
+            if(r.length>0){
+                if(!r[0].messages)
+                self.update(self.collName,{messages:{}},function(er,re){
+                    //console.log("are",re);
                 });
-                //db.close();
-            })    
-    };    
+                else{
+                    //console.log("everything ok");
+                }
+            }
+            else{
+                self.insert({_id:self.collName,messages:{}},function(er,re){
+                    console.log("Initialize",re);
+                })
+            }
+            //console.log("init",r);
+        })
+    }
+    
 }
 function substitutionsCollection(DB){
     var self=this;
