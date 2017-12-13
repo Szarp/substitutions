@@ -165,6 +165,24 @@ function analizeText(mess){
         }
     }
 }
+function lastMess(hour,callback){
+    console.log("hi");
+    userDB.find({_id:"userMessages"},{},function(e,r){
+        var mess=[]
+        var obj = r[0].messages;
+        var t = new Date().getTime()-hour * 60 * 60 * 1000;
+        for(k in obj){
+            //console.log(Number(k)-t);
+            if(t<Number(k)){
+                mess[mess.length]=obj[k];
+            }
+        }
+        setImmediate(function() {
+            callback(mess);
+        });
+    });
+    
+}
 function analizePostback(mess) {
     var payload = JSON.parse(mess.payload)
     switch(payload.type){
