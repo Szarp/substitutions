@@ -193,9 +193,9 @@ function analizePostback(mess) {
         break;
         case "changes":
             var day;
-            if(payload.class=="0")
+            if(payload.day=="0")
                 day="today";
-            if(payload.class=="1")
+            if(payload.day=="1")
                 day="tommorow";
             callFunc.changesForMessenger(payload.class,day,function(allChanges){
 			if(allChanges.length != 0){
