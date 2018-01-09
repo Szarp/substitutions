@@ -129,9 +129,13 @@ var getData = function(date,callback){
 		if(err){
 			getCookie(function(){
 				downloadData(date,function(err1,newBody){
-					setImmediate(function() {
-						callback(newBody);
-					});
+					if(!err1){
+						setImmediate(function() {
+							callback(newBody);
+						});
+					} else {
+						console.log("Error getting data! New data won't be saved. Tryin again in 10min.");
+					}
 				})
 			});
 		}
@@ -197,7 +201,8 @@ function downloadData(date,callback){
 				method: 'POST'
 			}, function (err, res, body) {
 				setImmediate(function() {
-					if(err){
+					if(err || res.statusCode != 200){
+						console.log('Error:', err, '\nStatus code:', res.statusCode);
 						callback(true, body);
 					} else {
 						callback(body.length<100,body);
