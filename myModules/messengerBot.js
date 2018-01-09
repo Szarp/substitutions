@@ -142,7 +142,7 @@ function sendSubstitutions(senderID, message){
 			break;
 		case '2':
 			day='';
-			if(message.length>2){
+			if(message.length>5){ // '2 1gb' and other similiar should be ignored
 				createMessage('text', senderID, 'Skontaktujemy się aby odpowiedzieć na pytanie.', function(messageTS){
 					callSendAPI(messageTS);
 				});
@@ -166,7 +166,7 @@ function sendSubstitutions(senderID, message){
 					});
 				});
 			} else {
-				createMessage('text', senderID, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(", function(messageTS){
+				createMessage('text', senderID, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(\nJeśli chciałeś spytać o zastępstwa, użyj 0 lub 1. Instrukcja dostępna jest w \"Funkcje szkolne\" w pomocy.", function(messageTS){
 					callSendAPI(messageTS);
 				});
 			}
