@@ -202,7 +202,8 @@ function downloadData(date,callback){
 			}, function (err, res, body) {
 				setImmediate(function() {
 					if(err || res.statusCode != 200){
-						console.log('Error:', err, '\nStatus code:', res.statusCode);
+						console.log('Error:', err)
+						if(res && res.statusCode) console.log('Status code:', res.statusCode);
 						callback(true, body);
 					} else {
 						callback(body.length<100,body);

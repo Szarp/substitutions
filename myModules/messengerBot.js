@@ -760,7 +760,7 @@ function sendToMessengerBtn(event){
 			console.log("Notifications for", fbUID, "are on.");
 			createButtons([['postback', 'help', 'Więcej']], function(buttons){
 				var content={
-					text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w usawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+					text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
 					buttons: buttons
 				}
 				createMessage('generic', senderID, content, function(messageTS){
