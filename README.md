@@ -57,3 +57,9 @@ $ npm start
 ## License
 
 See the [LICENSE](LICENSE.md) (MIT).
+
+## Facebook docs
+
+Facebook login [datasheet](https://developers.facebook.com/docs/facebook-login/web).
+
+Messenger [bot](https://developers.facebook.com/docs/messenger-platform).
