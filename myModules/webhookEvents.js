@@ -7,6 +7,9 @@ var callFunc = require('./postCallFunctions.js');
 var template = require('./messTemplates.js');
 var secretToken = require('./secretTokenGenerator.js');
 var mongo_v2 = require('./mongoConnection.js');
+//const Console = console.Console;
+
+//console.time("a");
 /*
 webhookEvents
 */
@@ -17,6 +20,58 @@ webhookEvents
 //delivery true false
 var serverDB = new mongo_v2.server(config.db);
 var userDB = new mongo_v2.user(config.db);
+var subDB = new mongo_v2.substituions(config.db);
+//serverDB.init();
+//subDB.collectionList(function(e,r){console.log(r)});
+//subDB.remove("2017-12-14",function(e,r){console.log(r.result)});
+//insertRandomMessages(10000);
+
+//userDB.init();
+//userDB.remove("userMessages",function(e,r){console.log(e,r.result)});
+//userDB.find({_id:"userMessages"},{},function(e,r){console.log(e,r)});
+//console.time("a");
+
+function randomMess(){
+    var mess = userDB.schema;
+    mess["timestamp"]=new Date().getTime();
+    mess["text"]=userDB.textType();
+    return mess
+    
+}
+//console.log(randomMess());
+//console.log(userDB.randomStructure());
+
+//userDB.stats(function(e,r){console.log(r)});
+//userDB.save(userDB.randomStructure(),function(e,r){
+    //   console.log(e,r.result);
+  //   });
+function insertRandomMessages(i){
+    if(i>0){
+    var mess = randomMess()
+     userDB.save(mess,function(e,r){
+         //console.log(e,r.result);
+         //if()
+        i--;
+         insertRandomMessages(i);
+     });
+    }
+}
+//console.log(userDB.randomStructure());
+//a();
+function a(){
+    userDB.find({_id:"userMessages"},{},function(e,r){
+        //console.log(e,r)
+        var count=0;
+        var mess = r[0].messages;
+        for(k in mess){
+            if(mess[k].type=="text")
+                count++;
+                //console.log(mess[k]);
+
+        }
+        console.log("mess count: ",count);
+    });
+}
 function saveToUserBuff(id,mid,timestamp){
     var obj= {
         system:{
@@ -34,7 +89,7 @@ function messageDistribution(mess){
     
     switch(mess.type){
         case "read":
-            console.log("Clearing messages...");
+            //console.log("Clearing messages...");
             //clear user buff
         break;
         case "delivery":
@@ -45,7 +100,7 @@ function messageDistribution(mess){
                 //postback function
                 analizePostback(mess);
                 //console.log("post",JSON.parse(mess.payload));
-                console.log("That is clicked postback");
+                //console.log("That is clicked postback");
                 serverDB.save(mess,function(e,r){
                      if(!e){
                         console.log('Saving  users\'s message',r["result"]);    
@@ -69,14 +124,14 @@ function messageDistribution(mess){
                 });
             }
             else{
-                console.log('check if attachments or text');
+                //console.log('check if attachments or text');
                 if(!mess["attachments"]){
                     analizeText(mess)
-                    console.log("text",mess);
+                    //console.log("text",mess);
                 }
                 else{
                     //analizeAttachments(mess);
-                    console.log("atta",mess);
+                    //console.log("atta",mess);
                 }
                 userDB.save(mess,function(e,r){
                     if(!e){
@@ -130,9 +185,9 @@ function analizeText(mess){
             token(text,mess);        
         }
     else if(text.length == 2){
-        console.log("Maybe thats ask for changes");
+        //console.log("Maybe thats ask for changes");
         splitText.ifChanges(text,function(changes,weekDay){
-            //console.log('chnages','');
+            console.log('chnages',changes);
             if(changes){
                 if(changes.length>0){
                 createButtons([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
@@ -165,6 +220,7 @@ function analizeText(mess){
         }
     }
 }
+lastMess(240,function(mess){console.log(mess.length)});
 function lastMess(hour,callback){
     console.log("hi");
     userDB.find({_id:"userMessages"},{},function(e,r){
@@ -183,8 +239,11 @@ function lastMess(hour,callback){
     });
     
 }
+
 function analizePostback(mess) {
-    var payload = JSON.parse(mess.payload)
+    //console.log("hire");
+    var payload = JSON.parse(mess.payload);
+    //console.log("hire",payload);
     switch(payload.type){
         case "example":
 		createMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
@@ -198,6 +257,7 @@ function analizePostback(mess) {
             if(payload.day=="1")
                 day="tommorow";
             callFunc.changesForMessenger(payload.class,day,function(allChanges){
+                console.log("hey",allChanges);
 			if(allChanges.length != 0){
 				for(var i=0;i<allChanges.length;i++){
 					createMessage('text', mess.sender, allChanges[i], function(messageTS){
@@ -237,10 +297,12 @@ function messageLogistic(params,event){
     //console.log('begin');
     //switch(true){
         if(params.attachments == true){
+            mess["type"]="attachments";
             mess["attachments"]=event.message.attachments;
             //console.log('    got attachments')
         }
         if(params.text == true){
+            mess["type"]="text";
             mess["text"] = event.message.text;
             //console.log('    text type')
         }
@@ -495,8 +557,8 @@ function callSendAPI(messageData) {
 //      console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId);
     } else {
       console.error("Unable to send message.");
-      console.error(response.body);
-      console.error(error);
+      console.error("mes",response.body);
+      console.error("res",error.body);
     }
   });
 }

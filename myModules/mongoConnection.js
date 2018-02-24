@@ -4,7 +4,50 @@ var MongoClient = require('mongodb').MongoClient,
 /*
 mongo functions v2
 */
+var x = new Mongo('admin',"")
+var y = new Mongo('ZSO11',"")
+/*
+y.collectionList(function(e,r){
+    console.log(e,r)
+})
+*/
 
+y.plainConnection(function(db){
+    //db.collection("substitutions").find();
+    db.authenticate("admin","admin",function(e,r){
+        //db.removeUser("ZSO11");
+//        db.addUser('ZSO11', '', {
+//        roles: [{role:"readWrite",db:"ZSO11"}]
+//            },function(e,r){console.log(e,r)
+//        });
+        console.log(e,r);
+    })  
+})
+//x.plainConnection(function(db){
+//    
+//    db.authenticate("ZSO11","ZSO11",function(e,r){
+//            console.log(e,r)
+//        //db.removeUser("ZSO11");
+//            /*db.addUser('admin', 'admin', {
+//        roles: [
+//            "userAdminAnyDatabase",
+//            "dbAdminAnyDatabase",
+//            "clusterAdmin",
+//            "readWriteAnyDatabase"
+//        ]   
+//    },function(e,r){console.log(e,r)});
+//        });*/
+//
+//    });
+//})
+/*
+y.collectionList(function(e,r){
+    console.log(e,r);
+});
+y.plainConnection(function(db){
+    var z = db.collection("substitutions");
+    z.find().toString();
+})*/
 function userMessages(DB){
     var self=this;
     Mongo.call(this,DB,"userMessages");
