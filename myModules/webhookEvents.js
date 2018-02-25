@@ -220,7 +220,7 @@ function analizeText(mess){
         }
     }
 }
-lastMess(240,function(mess){console.log(mess.length)});
+//lastMess(240,function(mess){console.log(mess.length)});
 function lastMess(hour,callback){
     console.log("hi");
     userDB.find({_id:"userMessages"},{},function(e,r){

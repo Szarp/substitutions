@@ -4,8 +4,8 @@ var setTime = require('./setTime.js'),
     mongo_v2= require ('./mongoConnection.js');
 
 var time = new setTime();
-var mongoPerson= new mongo_v2.person('ZSO11');
-var mongoSub= new mongo_v2.substituions('ZSO11');
+var mongoPerson= new mongo_v2.person(config.db);
+var mongoSub= new mongo_v2.substituions(config.db);
 var pageSettings = {
     fields:{
         cancelled:'typ',
@@ -190,7 +190,6 @@ function teachersList_old(body, callback){
 		}
 	});
 }
-classList({param:"today"},function(res){//classList test
     console.log("classlist test:",res);
 })
 function classList(body,callback){ //response classList from day
@@ -202,12 +201,12 @@ function classList(body,callback){ //response classList from day
         time.tommorowIs();
     }
     //console.log('requested date: ',time.displayTime());
-    mongoSub.find({_id:time.displayTime()},{},function(err,obj){
+    mongoSub.find({_id:time.reverseTime()},{},function(err,obj){
         //console.log(err,obj);
         if(err){console.log('err in sending substitutions')}
         //console.log("etst: ",obj);
         if(obj[0])
-            res = obj[0]['userList'];
+            res = obj[0]['classList'];
         else{res=[]}
         setImmediate(function() {
             callback(res);
@@ -410,66 +409,54 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
 }
 
 //res: Table of messages to send
+//changesForMessenger("II BM","tommorow",function(a,b){console.log(a,b)});
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
+    reqClass=reqClass.toUpperCase();
     //reqClass String [class]
     //day String [today;tommorow]
-    getChanges({param:day},function(obj,weekDay){
-        var tableOfMesseges=[];
-		var msg = "";
-        //console.log(obj);
-        if(obj['substitution'] != 'no substitutions'){
-            var subs = obj['substitution'];
-            for(var i = 0; i < subs.length; i++){
-                var oneSub = subs[i];
-                var classIDs = oneSub.classes;
-                if(classIDs){
-                    for(var n = 0; n < classIDs.length; n++){
-                        if(classIDs[n] == reqClass && oneSub.cancelled[0] || classIDs[n] == reqClass && oneSub.substitution_types){
-                            var changes = oneSub['changes'];
-                            if(oneSub.cancelled[0]){
-                                msg+='anulowanie';
-                            }else {
-                                msg+='Typ: ' + oneSub.substitution_types;
-                            }
-                            msg+='\nLekcja: ' + oneSub.periods;
-                            msg+='\nNauczyciel: ' + oneSub.teachers;
-                            if(changes){
-                                if(changes.teachers){
-                                    msg+=' => ' + changes.teachers;
-                                }
-                            }
-                            msg+='\nPrzedmiot: ' + oneSub.subjects;
-                            if(changes){
-                                if(changes.subjects){
-                                    msg+= ' => ' + changes.subjects;
-                                }
-                            }
-                            msg+='\nSala: ' + oneSub.classrooms;
-                            if(changes){
-                                if(changes.classrooms){
-                                    msg+=' => ' + changes.classrooms;
-                                }
-                            }
-                            if(oneSub.groupnames){
-                                if(oneSub.groupnames != ""){
-                                    msg+='\nGrupa: ' + oneSub.groupnames;
-                                }
-                            }
-                            if(oneSub.note){
-                                if(oneSub.note != ""){
-                                    msg+='\nKomentarz: '  + oneSub.note;
-                                }
-                            }
-                            tableOfMesseges[tableOfMesseges.length]=msg;
-                            msg='';
-                        }
+    //getChanges({param:day},function(obj,weekDay){
+    if(day=='today'){
+        time.todayIs();
+    } else if(day=='TDAT'){
+		time.theDayAfterTomorrowIs();
+	} else {
+        time.tommorowIs();
+    }
+    var day = time.displayWeekDay();
+    
+    //console.log('requested date: ',time.displayTime());
+    //mongoSub.find({_id:time.displayTime()}
+    //console.log(time.reverseTime());
+    mongoSub.find({_id:time.reverseTime()},{},function(e,obj){//console.log(e,obj)
+        if(obj[0]!==undefined){
+            obj=obj[0];
+            var tableOfMesseges=[];
+            var msg = "";
+            //console.log(obj);
+            if(obj['substitution'] != 'no substitutions'){
+                var subs = obj['substitution'];
+                //console.log(subs)
+                for(var i = 0; i < subs.length; i++){
+                    var oneSub = subs[i];
+                    var classID = oneSub.className;
+
+                    if(reqClass == classID){
+                        msg+=oneSub.teacher+"\n";
+                        msg+=oneSub.text;
+                        tableOfMesseges[tableOfMesseges.length]=msg;
+                        msg='';
                     }
                 }
             }
+            setImmediate(function() {
+                callback(tableOfMesseges,day);
+            });
         }
-        setImmediate(function() {
-            callback(tableOfMesseges,weekDay);
-        });
+        else{
+            setImmediate(function() {
+                callback([],day);
+            });
+        }
     });
 }
 function tokenCheck(userId,body,callback){

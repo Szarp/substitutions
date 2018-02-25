@@ -11,6 +11,9 @@ function setTime(){
     this.displayTime=function(){
         return self.year+'-'+self.month+'-'+self.day;
     }
+    this.reverseTime=function(){
+        return self.day+'-'+self.month+'-'+self.year;
+    }
     this.displayWeekDay = function(){
         //var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         var days = ['Nd','Pon','Wt','Śr','Czw','Pt','Sob'];

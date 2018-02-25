@@ -97,7 +97,8 @@ function splitBySpace(string){
     return string.split(' ');
 }
 function commandValidation(text){
-    var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
+    //var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
+    var allClasses = ["I R","II R","III R","IV R","I T","II T","III T","IV T","I TG","II PD","III P","IV P","I AP","IV AG"]
     var day="";
 
     if(allClasses.indexOf(text[1]) > -1){
