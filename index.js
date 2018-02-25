@@ -15,7 +15,7 @@ var express = require('express'),
 	config = require(__dirname+'/myModules/config'),
 	messenger = require(__dirname+'/myModules/messengerBot.js'),
 	webhook = require(__dirname+'/myModules/webhookEvents.js'),
-	myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
+	myFunc = require(__dirname+'/myModules/zckoiz_zas.js');
 
 var app = express();
 var cookie = new session.sessionCreator();
@@ -235,29 +235,11 @@ app.get('/STMbtn', function(req, res){ //respond to GET request on /STMbtn
 })
 
 setInterval(function(){
-    time.tommorowIs();
-    myFunc.subs(time.displayTime(),function(y){
-        time.todayIs();
-        myFunc.subs(time.displayTime(),function(b){
-            time.theDayAfterTomorrowIs();
-            myFunc.subs(time.displayTime(),function(x){
-                console.log('downloaded changes');
-            });
-        });
-    });
+    myFunc.subs(function(){console.log('downloaded changes');});
 }, 1000*60*10); //now running once per 10 minutes
 
 setTimeout(function () {
-	time.tommorowIs();
-    myFunc.subs(time.displayTime(),function(y){
-        time.todayIs();
-        myFunc.subs(time.displayTime(),function(b){
-            time.theDayAfterTomorrowIs();
-            myFunc.subs(time.displayTime(),function(x){
-                //console.log('downloaded changes');
-            });
-        });
-    });
+    myFunc.subs(function(){console.log('downloaded changes');});
 }, 1000); //download substitutions 1 second after start
 
 setTimeout(function(){
