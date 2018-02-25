@@ -109,6 +109,46 @@ function Messages(){
     }
     
 }
+function zckoizSubstitutions(DB){
+    var self=this;
+    Mongo.call(this,DB,'substitutions');
+    this.substitutionsStructure={
+        _id: "",
+        substitution:[], //need change
+        userList: [],
+        date: []
+    }
+    this.save=function(data,callback){
+        var dataToSave={};
+		//dataToSave['substitution']=data.substitution;
+		//dataToSave['userList']=data.userList;
+		//dataToSave['date']=date;
+		//dataToSave['teachersList'] = data.teachersList;
+        //console.log("data",dataToSave);
+        self.find({_id:data._id},{_id:true},function(e,r){
+            //console.log("find",e,r);
+            if(!e){
+                if(r.length>0){
+                   self.update(data._id,data,function(){
+                       console.log("updated elem: "+data._id);
+                        setImmediate(function() {
+                        callback(); //callback not necessary
+                        }); 
+                   })
+                }
+                else{
+                    //dataToSave["_id"]=date;
+                    self.insert(data,function(e,r){
+                        console.log("insert elem: "+data._id, r.result);
+                        setImmediate(function() {
+                            callback(); //callback not necessary
+                        });
+                    })
+                }
+            }
+        })
+    }
+}
 function substitutionsCollection(DB){
     var self=this;
     Mongo.call(this,DB,'substitutions');
@@ -545,4 +585,4 @@ exports.mongo=Mongo;
 exports.person=personCollection;
 exports.substituions= substitutionsCollection;
 exports.user= userMessages;
-exports.server= serverMessages;
+exports.server= serverMessages;exports.zckoizSubstitutions= zckoizSubstitutions;
