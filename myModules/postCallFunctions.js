@@ -2,6 +2,7 @@ var setTime = require('./setTime.js'),
 	mongo = require('./mongoFunctions.js'),
 	secretToken = require('./secretTokenGenerator.js'),
     mongo_v2= require ('./mongoConnection.js');
+var config = require('./config');
 
 var time = new setTime();
 var mongoPerson= new mongo_v2.person(config.db);
@@ -190,8 +191,11 @@ function teachersList_old(body, callback){
 		}
 	});
 }
+/*
+classList({param:"tommorow"},function(res){//classList test
     console.log("classlist test:",res);
 })
+*/
 function classList(body,callback){ //response classList from day
                 //console.log('response Changes')
     if(body['param']=='today'){
@@ -338,7 +342,6 @@ function picture_old(userId,callback){ //res id's picture
         });
     }
 }
-
 function changesTeacherForMessenger(reqTeacher, day, callback){
 	getChanges({param:day},function(obj){
 		var tableOfMesseges=[];
@@ -409,7 +412,7 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
 }
 
 //res: Table of messages to send
-//changesForMessenger("II BM","tommorow",function(a,b){console.log(a,b)});
+changesForMessenger("IR","tommorow",function(a,b){console.log(a,b)});
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
     reqClass=reqClass.toUpperCase();
     //reqClass String [class]
@@ -423,10 +426,6 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
         time.tommorowIs();
     }
     var day = time.displayWeekDay();
-    
-    //console.log('requested date: ',time.displayTime());
-    //mongoSub.find({_id:time.displayTime()}
-    //console.log(time.reverseTime());
     mongoSub.find({_id:time.reverseTime()},{},function(e,obj){//console.log(e,obj)
         if(obj[0]!==undefined){
             obj=obj[0];
