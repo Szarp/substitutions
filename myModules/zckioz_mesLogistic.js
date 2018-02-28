@@ -1,44 +1,19 @@
 //global
 var request=require('request');
-//var splitText = require('./splitText.js');
 var config = require('./configs/zckoiz');
 var mess = require('./messTemplates.js');
-//var mongo =require('./mongoFunctions.js');
 var mon = require('./mongoConnection.js');
-var callFunc = require('./postCallFunctions.js');
 //messenger
 var template = require('./messTemplates.js');
 var messFunc = require('./messFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
-//var fs = require ('fs');
-//var mon = require('./mongoConnection.js');
-//var config = require('./config2');
+var setTime = require('./setTime.js');
+var time = new setTime();
 
-
-//zckioz config
-//const Console = console.Console;
-
-//console.time("a");
-/*
-webhookEvents
-*/
-//message text true false 
-//is_echo: true false
-//attachments: true false
-//postcall true fasle
-//delivery true false
 var serverDB = new mon.server(config.db);
 var userDB = new mon.user(config.db);
 var subDB = new mon.substituions(config.db);
 var messenger = new messFunc.send(config.pageToken);
-//serverDB.init();
-//subDB.collectionList(function(e,r){console.log(r)});
-//subDB.remove("2017-12-14",function(e,r){console.log(r.result)});
-//insertRandomMessages(10000);
-
-//userDB.init();
-//userDB.remove("userMessages",function(e,r){console.log(e,r.result)});
-//subDB.find({},{},function(e,r){console.log(e,r)});
 function isThisMe(pageId){
     return (pageId==config.pageId);
 }
@@ -95,51 +70,16 @@ function messageDistribution(mess){
                     else{
                         console.log("Error in saving user\'s message",e);
                     }
-                    
                 })
                 //console.log('Saving to users\'s message');
             }
         break;
-            
             //do something else    
     }
-    
-    
-}
-function token(text,mess){
-    	day='';
-    var senderID=mess.sender;
-    var tkn = text[1];
-		//var tkn = oMessage.substring(2);
-		if(!tkn){
-            secretToken.messRequest(senderID, function(token){
-				var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu właego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
-					messFunc.preapreMessage('text', senderID, txt, function(messageTS){
-						messenger.send(messageTS);
-					});
-				});
-			} else {
-				tkn = parseInt(tkn);
-				console.log("Token received: " + tkn);
-				secretToken.messCheck(senderID, tkn, function(res){
-					if(res){
-						messFunc.preapreMessage('text', senderID, 'Konto zostało połączone. (y)', function(messageTS){
-							messenger.send(messageTS);
-						});
-					} else {
-						messFunc.preapreMessage('text', senderID, 'Wystąpił błąd. Spróbuj jeszcze raz.', function(messageTS){
-							send(messageTS);
-						});
-					}
-				});
-			}    
 }
 function analizeText(mess){
     var text = mess.text.split(' ');
-    if(text[0]=="4"){
-            token(text,mess);        
-        }
-    else if(text.length == 2){
+    if(text.length == 2){
         //console.log("Maybe thats ask for changes");
         ifChanges(text,function(changes,weekDay){
             console.log('chnages',changes);
@@ -175,9 +115,7 @@ function analizeText(mess){
     }
 }
 function analizePostback(mess) {
-    //console.log("hire");
     var payload = JSON.parse(mess.payload);
-    //console.log("hire",payload);
     switch(payload.type){
         case "example":
 		messFunc.preapreMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
@@ -190,7 +128,7 @@ function analizePostback(mess) {
                 day="today";
             if(payload.day=="1")
                 day="tommorow";
-            callFunc.changesForMessenger(payload.class,day,function(allChanges){
+            changesForMessenger(payload.class,day,function(allChanges){
                 console.log("hey",allChanges);
 			if(allChanges.length != 0){
 				for(var i=0;i<allChanges.length;i++){
@@ -204,20 +142,6 @@ function analizePostback(mess) {
         default:
         break;
     }
-    /*
-    console.log('event',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfPostback = event.timestamp;
-
-	// The 'payload' param is a developer-defined field which is set in a postback 
-	// button for Structured Messages. 
-	var payload = event.postback.payload;
-
-	console.log("Received postback for user %d and page %d with payload '%s' " + 
-	"at %d", senderID, recipientID, payload, timeOfPostback);
-
-	sendList(senderID, payload);*/
 }
 function messageLogistic(params,event){
     var mess={}
@@ -282,7 +206,7 @@ function ifChanges(text,callback){
                 day="tommorow"
             break;
         }
-        callFunc.changesForMessenger(text[1],day,function(allChanges,weekDay){
+        changesForMessenger(text[1],day,function(allChanges,weekDay){
             setImmediate(function(){
                 callback(allChanges,weekDay);
             });            
@@ -308,23 +232,6 @@ function delivered(event){
     var time = event.watermark;
     console.log('All '+id+'\'s messages have been senn before '+time);
     //console.log('delivery',reduceElements("delivery",event));
-}
-function echo(event){
-    //console.log('echo',event)
-    var mes = reduceElements("message",event);
-    //console.log('echo',reduceElements("message",event));
-    //do what you want
-    /*
-    { sender: { id: '285771075161320' },
-  recipient: { id: '1383716548353914' },
-  timestamp: 1507658404809,
-  message: 
-   { is_echo: true,
-     app_id: 190695904771523,
-     mid: 'mid.$cAAFZG6pxbEtlOLbbyVfB3GR6JHPM',
-     seq: 492132,
-     attachments: [ [Object] ] } }
-    */
 }
 /* -----------------------------------------------------*/
 /* -----------------------------------------------------*/
@@ -503,13 +410,12 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
         }
     });
 }
-
 exports.subs = getChanges;
 exports.messengerChanges=changesForMessenger;
-exports.delivered=delivered;
-exports.echo=echo;
+//exports.delivered=delivered;
+//exports.echo=echo;
 //exports.postback=postback;
 //exports.message=message;
-exports.attachments=attachments;
+//exports.attachments=attachments;
 exports.messageLogistic=messageLogistic;
 exports.checkId=isThisMe;
