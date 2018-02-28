@@ -1,53 +1,6 @@
 var MongoClient = require('mongodb').MongoClient,
     config = require('./config'),
     assert = require('assert');
-/*
-mongo functions v2
-*/
-var x = new Mongo('admin',"")
-var y = new Mongo('ZSO11',"")
-/*
-y.collectionList(function(e,r){
-    console.log(e,r)
-})
-*/
-
-y.plainConnection(function(db){
-    //db.collection("substitutions").find();
-    db.authenticate("admin","admin",function(e,r){
-        //db.removeUser("ZSO11");
-//        db.addUser('ZSO11', '', {
-//        roles: [{role:"readWrite",db:"ZSO11"}]
-//            },function(e,r){console.log(e,r)
-//        });
-        console.log(e,r);
-    })  
-})
-//x.plainConnection(function(db){
-//    
-//    db.authenticate("ZSO11","ZSO11",function(e,r){
-//            console.log(e,r)
-//        //db.removeUser("ZSO11");
-//            /*db.addUser('admin', 'admin', {
-//        roles: [
-//            "userAdminAnyDatabase",
-//            "dbAdminAnyDatabase",
-//            "clusterAdmin",
-//            "readWriteAnyDatabase"
-//        ]   
-//    },function(e,r){console.log(e,r)});
-//        });*/
-//
-//    });
-//})
-/*
-y.collectionList(function(e,r){
-    console.log(e,r);
-});
-y.plainConnection(function(db){
-    var z = db.collection("substitutions");
-    z.find().toString();
-})*/
 function userMessages(DB){
     var self=this;
     Mongo.call(this,DB,"userMessages");
@@ -71,7 +24,6 @@ function serverMessages(DB){
             type: '',
             text: '' 
     }
-    
 }
 function Messages(){
     var self=this;
@@ -84,16 +36,13 @@ function Messages(){
                 setImmediate(function(){
                     callback(e,r);
                 });
-                //db.close();
             })    
     };
     this.init=function(){
         self.find({_id:self.collName},{_id:true,messages:true},function(e,r){
-            
             if(r.length>0){
                 if(!r[0].messages)
-                self.update(self.collName,{messages:{}},function(er,re){
-                    //console.log("are",re);
+                    self.update(self.collName,{messages:{}},function(er,re){
                 });
                 else{
                     //console.log("everything ok");
@@ -120,19 +69,13 @@ function zckoizSubstitutions(DB){
     }
     this.save=function(data,callback){
         var dataToSave={};
-		//dataToSave['substitution']=data.substitution;
-		//dataToSave['userList']=data.userList;
-		//dataToSave['date']=date;
-		//dataToSave['teachersList'] = data.teachersList;
-        //console.log("data",dataToSave);
         self.find({_id:data._id},{_id:true},function(e,r){
-            //console.log("find",e,r);
             if(!e){
                 if(r.length>0){
                    self.update(data._id,data,function(){
                        console.log("updated elem: "+data._id);
                         setImmediate(function() {
-                        callback(); //callback not necessary
+                            callback();
                         }); 
                    })
                 }
@@ -141,7 +84,7 @@ function zckoizSubstitutions(DB){
                     self.insert(data,function(e,r){
                         console.log("insert elem: "+data._id, r.result);
                         setImmediate(function() {
-                            callback(); //callback not necessary
+                            callback();
                         });
                     })
                 }
@@ -167,7 +110,6 @@ function substitutionsCollection(DB){
 		dataToSave['teachersList'] = data.teachersList;
         //console.log("data",dataToSave);
         self.find({_id:date},{_id:true},function(e,r){
-            //console.log("find",e,r);
             if(!e){
                 if(r.length>0){
                    self.update(date,dataToSave,function(){
@@ -192,11 +134,7 @@ function substitutionsCollection(DB){
             }
             
         })
-        
-            //ok;
-        
     }
-    //this.coll
 }
 function personCollection(DB){
     var self=this;
@@ -218,13 +156,10 @@ function personCollection(DB){
             messages:[]
         }
     }
-    //console.log('schem',self.personStructure);
     this.collectionCheck=function(){
-        //var schem =new collectionsSchema();
         self.find({},{},function(e,elems){
             var x;
             elems.forEach(function(el){
-                //console.log();
                 x = self.updateStructure(el,self.personStructure);
                 self.update(el._id,x,function(e,r){
                     console.log("collection check: ",r.result);    
@@ -245,7 +180,6 @@ function personCollection(DB){
                     setImmediate(function(){
                         callback(e,x.insertedCount);
                     });
-                //console.log('col',x);
                 });      
             }
             else{
@@ -309,9 +243,7 @@ function personCollection(DB){
             }); 
                 
         })
-        
     }
-    
 }
 function Mongo(DB,collectionName){
     structureFunctions.call(this);
@@ -585,4 +517,5 @@ exports.mongo=Mongo;
 exports.person=personCollection;
 exports.substituions= substitutionsCollection;
 exports.user= userMessages;
-exports.server= serverMessages;exports.zckoizSubstitutions= zckoizSubstitutions;
+exports.server= serverMessages;
+exports.zckoizSubstitutions= zckoizSubstitutions;
