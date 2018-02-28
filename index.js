@@ -3,24 +3,18 @@ var express = require('express'),
 	https =require('spdy'),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
-	request= require('request'),
-	MongoClient = require('mongodb').MongoClient,
 	compression = require('compression'),
 	helmet = require('helmet'),
-	mongo=require(__dirname+'/myModules/mongoFunctions.js'),
-	setTime = require(__dirname+'/myModules/setTime.js'),
 	mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
 	session = require(__dirname + '/myModules/userSession.js'),
 	link = require(__dirname+'/myModules/fbLinks.js'),
 	config = require(__dirname+'/myModules/config'),
-	messenger = require(__dirname+'/myModules/messengerBot.js'),
-	webhook = require(__dirname+'/myModules/webhookEvents.js'),
-	myFunc = require(__dirname+'/myModules/zckoiz_zas.js');
+	webhook = require(__dirname+'/myModules/moduleSwitch.js'),
+	download = require(__dirname+'/myModules/downloadChanges.js');
 
 var app = express();
 var cookie = new session.sessionCreator();
 var sessionList = {};
-
 //set up certificates for HTTPS
 var opts = {
 	// Specify the key file for the server
@@ -30,16 +24,13 @@ var opts = {
 	// Specify the Certificate Authority certificate
 	ca: fs.readFileSync('cert/cacert.pem'),
 };
-
 //set up express app
-var time = new setTime();
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
 app.use(compression()); //use gzip compression
 app.use(helmet()); //Set http headers to protect from eg. clickjacking
-
 //setting cookie on first login
 app.use(function (req, res, next) {
     var disabled=['/webhook','/dataflow','/login'];
@@ -60,8 +51,6 @@ app.use(function (req, res, next) {
     } 
     next(); // <-- important!
 });
-
-
 app.get('/login', function (req, res) {
     console.log('Asking for login');
     var login=link.loginAttempt('');
@@ -69,21 +58,17 @@ app.get('/login', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
-
 app.get('/', function (req, res){
     res.sendFile( __dirname + '/public/substitutionPage.htm');
 });
-
 app.get('/index', function (req, res) {
     res.sendFile( __dirname + '/public/substitutionPage.htm');
 });
-
 app.get('/demo/:id', function (req, res) {
     res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.messenger.com/");
     res.setHeader("X-Frame-Options", "ALLOW-FROM https://www.facebook.com/");
     res.sendFile(__dirname + '/demo/' + req.params.id);
 });
-
 app.post('/login', function (req, res) {
    console.log('Asking for login');
     var login=link.loginAttempt('');
@@ -91,7 +76,6 @@ app.post('/login', function (req, res) {
     console.log(login);
     res.redirect(login);
 });
-
 app.get('/webhook', function(req, res) {
 	if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === config.webhookToken) {
 		console.log("Validating webhook");
@@ -101,18 +85,13 @@ app.get('/webhook', function(req, res) {
 		res.sendStatus(403);
 	}
 });
-
 app.post('/webhook', function (req, res) {
 var data = req.body;
-    //console.log('hey');
-// Make sure this is a page subscription
 if (data.object === 'page') {
 	// Iterate over each entry - there may be multiple if batched
 	data.entry.forEach(function(entry) {
 		var pageID = entry.id;
 		var timeOfEvent = entry.time;
-		// Iterate over each messaging event
-        //console.log('entry',entry)
         var messParams={
             message:false,
             postback:false,
@@ -145,38 +124,12 @@ if (data.object === 'page') {
                     messParams["delivery"]=true;
             
             webhook.messageLogistic(messParams,event);
-            //console.log("any event",messParams);
-            //console.log("any event",event);
-            /*
-			if (event.message) {
-                if(event.message["is_echo"]==true){ //response from bot (sent messages)
-                    webhook.echo(event);
-                    //console.log("any event",event);
-                }
-                else if(event.message["attachments"] !== undefined){
-                    console.log('go to attachment')
-                    webhook.attachments(event);
-                }
-                else
-				webhook.message(event);
-			} else if (event.postback) {
-				messenger.receivedPostback(event);
-			}else if (event.delivery) {
-                webhook.delivered(event);
-                //console.log('delivery');
-				//messenger.receivedPostback(event);
-			} else if (event.optin) {
-				messenger.sTMB(event);
-			} else {
-				//console.log("Webhook received unknown event: ", event);
-			}*/
 		});
 	});
 	//send 200 within 20s to inform Facebook that message was received successfully
 	res.sendStatus(200);
 	}
 });
-
 app.post('/postCall',function(req,res){
     var reqCookie=req.cookies.cookieName;
     var userId=cookie.findIfSessionExist(reqCookie);
@@ -192,7 +145,6 @@ app.post('/postCall',function(req,res){
 		}
 	})
 })
-
 app.get('/redirect', function(req, res){
 	var reqCookie=req.cookies.cookieName;
 	console.log('redirect');
@@ -214,13 +166,10 @@ app.get('/redirect', function(req, res){
 		});
 	}
 });
-
 app.get('/deredirect', function(req, res){
 	console.log('deredirect');
 	console.log('deredirect',req.body);
 });
-
-
 //Dynamically generate iframe with Send To Messenger button
 app.get('/STMbtn', function(req, res){ //respond to GET request on /STMbtn
 	var reqCookie = req.cookies.cookieName;  //get session cookie (named "cookieName")
@@ -232,14 +181,14 @@ app.get('/STMbtn', function(req, res){ //respond to GET request on /STMbtn
 		var ifrTS = `<!DOCTYPE html><html><body><script>window.fbAsyncInit = function() {FB.init({appId: "` + config.clientId + `",xfbml: true,version: "v2.6"});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)){ return; }js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/sdk.js";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script><div class="fb-send-to-messenger" color="blue" size="xlarge" messenger_app_id="` + config.clientId + `" data-ref="` + userId + `" page_id="` + config.pageId + `"></div></body></html>`;
 		res.send(ifrTS);
 	}
-})
-
+});
+//Timers
 setInterval(function(){
-    myFunc.subs(function(){console.log('downloaded changes');});
+    download.all();
 }, 1000*60*10); //now running once per 10 minutes
 
 setTimeout(function () {
-    myFunc.subs(function(){console.log('downloaded changes');});
+    download.all();
 }, 1000); //download substitutions 1 second after start
 
 setTimeout(function(){
@@ -247,11 +196,4 @@ setTimeout(function(){
 },1000*60*60*24*30); //remove cookies (session) after 30 days
 
 https.createServer(opts, app).listen(9001);
-console.log('Started');
-
-function mongoTest(){
-	MongoClient.connect('mongodb://localhost:27017/test2', function(err, db) {
-		var collection = db.collection('substitutions');
-		collection.find({}).forEach(function(f){console.log("hi",f)});
-	});
-}
+console.log('Started port 9001');
