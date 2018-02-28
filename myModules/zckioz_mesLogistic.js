@@ -1,7 +1,7 @@
 //global
 var request=require('request');
-var config = require('./config2');
 //var splitText = require('./splitText.js');
+var config = require('./configs/zckoiz');
 var mess = require('./messTemplates.js');
 //var mongo =require('./mongoFunctions.js');
 var mon = require('./mongoConnection.js');

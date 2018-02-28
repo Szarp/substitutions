@@ -1,7 +1,7 @@
 //zso11_mesLogistic.js
 //global
 var request=require('request');
-var config = require('./config3');
+var config = require('./configs/zso11');
 //var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
 //var mongo =require('./mongoFunctions.js');
