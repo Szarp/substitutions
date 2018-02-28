@@ -35,7 +35,7 @@ function helpPageMessage(id){
                     ]
                 },
                 {
-                    "title": "Funkcje szkolne",
+                    "title": "Instrukcja",
                     "subtitle": "Dowiadywanie się o zastępstwach; komunikacja z adminem; powiadomienia autom.",
                     "buttons": [
                         {
@@ -408,7 +408,7 @@ function substitutionNotification(day, date, callback){
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if(oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher){
+										if((oneSub.substitution_types || oneSub.cancelled[0]) && (oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher)){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
@@ -432,7 +432,7 @@ function substitutionNotification(day, date, callback){
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if(oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher){
+										if((oneSub.substitution_types || oneSub.cancelled[0]) && (oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher)){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
