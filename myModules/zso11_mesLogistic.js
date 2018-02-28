@@ -139,6 +139,7 @@ function token(text,mess){
 			}    
 }
 function analizeText(mess){
+    mess=mess.toLowerCase();
     var text = mess.text.split(' ');
     if(text[0]=="4"){
             token(text,mess);        

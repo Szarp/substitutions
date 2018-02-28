@@ -78,6 +78,7 @@ function messageDistribution(mess){
     }
 }
 function analizeText(mess){
+    mess=mess.toLowerCase();
     var text = mess.text.split(' ');
     if(text.length == 2){
         //console.log("Maybe thats ask for changes");
