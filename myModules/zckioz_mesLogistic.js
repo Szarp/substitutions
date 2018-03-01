@@ -111,7 +111,7 @@ function analizeText(mess){
     else{
         if(text[0]=="pomoc"||text[0]=="help"){
             console.log("user id",mess.sender);
-            messenger.send(template.helpPage(mess.sender));
+            messenger.send(template.helpPage_zckoiz(mess.sender));
         }
         else{
             console.log("Pop info about bad message to Admins");
