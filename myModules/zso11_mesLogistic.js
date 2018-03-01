@@ -222,47 +222,6 @@ function analizePostback(mess) {
 
 	sendList(senderID, payload);*/
 }
-function messageLogistic(params,event){
-    var mess={}
-    mess["timestamp"]=event.timestamp;
-    mess["sender"]=event.sender.id;
-    mess["page"]=event.recipient.id;
-    mess["type"]="";
-    //console.log('begin');
-    //switch(true){
-        if(params.attachments == true){
-            mess["type"]="attachments";
-            mess["attachments"]=event.message.attachments;
-            //console.log('    got attachments')
-        }
-        if(params.text == true){
-            mess["type"]="text";
-            mess["text"] = event.message.text;
-            //console.log('    text type')
-        }
-        if(params.read == true){
-            mess["type"]="read";
-            mess["watermark"]=event.read.watermark;
-            //console.log('    user read message')
-        }
-        if(params.payload == true){
-            mess["type"]="postback";
-            mess["payload"]=event.postback.payload;
-            //console.log('    postback mess');
-        }
-        if(params.delivery == true){
-            mess["type"]="delivery";
-            mess["watermark"]=event.delivery.watermark;
-            //console.log('   deliverd message');
-        }
-        if(params.echo == true){
-            mess["echo"]=true;
-            //console.log('   message from server')
-        }
-        //break;
-    //}
-    messageDistribution(mess);
-}
 function commandValidation(text){
     var allClasses = config.classList;
     var day="";
@@ -434,5 +393,5 @@ exports.echo=echo;
 //exports.postback=postback;
 //exports.message=message;
 exports.attachments=attachments;
-exports.messageLogistic=messageLogistic;
+exports.messageDistribution=messageDistribution;
 exports.checkId=isThisMe;
