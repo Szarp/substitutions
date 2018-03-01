@@ -5,7 +5,7 @@ var setTime = require('./setTime.js'),
 
 var time = new setTime();
 var mongoPerson= new mongo_v2.person('ZSO11');
-var mongoSub= new mongo_v2.substituions('ZSO11');
+var mongoSub= new mongo_v2.substitutions('ZSO11');
 var pageSettings = {
     fields:{
         cancelled:'typ',

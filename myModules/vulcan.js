@@ -1,5 +1,5 @@
 const config = require("./config");
-const mongo = require("./mongoFunctions.js");
+const mongo = require("./mongoConnection.js");
 const iconv = require("iconv-lite");
 const fs = require("fs");
 const jsdom = require("jsdom"); // this module takes some time to load :(
@@ -23,8 +23,12 @@ const singleSub = { // changes field not added; should look like: `"changes": { 
 	"moje": [false] //leave it as it is (IDK what it is)
 };
 /** Classroom numbers not being numbers (Not Standard Classroom Number) */
-const nscNum = ["POŚ", "PJA", "PA2", "PK2", "PK1", "PK3", "PK4", "PK5", "PK6", "PK7"];
-const classNumbers = ["2GA", "2GB", "3GA", "3GB", "1La", "1Lb", "1Ls", "2La", "2Lb", "2Ls", "3La", "3Lb", "3Ls", "1Ta", "1Tb", "2Ta", "2Tb", "3Ta", "3Tb", "4Ta", "4Tb"]; //TODO: move to config (ncsNum too)
+/*const nscNum = ["POŚ", "PJA", "PA2", "PK2", "PK1", "PK3", "PK4", "PK5", "PK6", "PK7"];
+const classNumbers = ["2GA", "2GB", "3GA", "3GB", "1La", "1Lb", "1Ls", "2La", "2Lb", "2Ls", "3La", "3Lb", "3Ls", "1Ta", "1Tb", "2Ta", "2Tb", "3Ta", "3Tb", "4Ta", "4Tb"]; //TODO: move to config (nscNum too)*/
+const nscNum = config.classrooms;
+const classNumbers = config.classes;
+/** Object which can read/modify `substitutions` collection elements in DB specified as param (see declaration below)  */
+const subDB = new mongo.substitutions(config.db);
 /**
  * Remove file passed as parameter. Does not return/callback
  * @param {string} file File to be removed (path)
@@ -40,7 +44,7 @@ function del(file){
 }
 /**
  * Based on err parameter copy file to ../error/ or ../parsed/ and remove it
- * @param {string|Error|NodeJS.ErrnoException} err Error passed from subF.parseAndSave in function findFile
+ * @param {string|Error|NodeJS.ErrnoException} err Error passed from `subF.parseAndSave` in function `findFile()`
  * @param {string} file File (path to file) to be copied
 */
 function moveFile(err, file){
@@ -71,7 +75,7 @@ function moveFile(err, file){
 					console.warn("Parsed dir does not exist, creating...");
 					fs.mkdir(config.HTMLloc + "/../parsed/", (error) => {
 						if (!error){
-							moveFile(err, file);
+							moveFile(null, file);
 						} else {
 							console.error("Cannot create parsed directory!");
 						}
@@ -140,7 +144,7 @@ var Substitutions = function(file, fileName, callback){
 		});
 };
 /**
- * Extracts date from first row of table and saves it in this.subArr as _id and date parameters
+ * Extracts date from first row of table and saves it in `this.subArr` as `_id` and `date` parameters
 */
 Substitutions.prototype.getFileDate = function(){
 	var dateReg = /[\s\S]*(\d{1}|\d{2})\.(\d{2})\.(\d{4})[\s\S]*/; // match whole string and save day month and year groups d.mm.yyyy or dd.mm.yyyy
@@ -255,7 +259,8 @@ Substitutions.prototype.getSubstitutions = function(callback){
 								}
 								this.addClass(splClass[n]);
 							} else {
-								// If it isn't a class name/number it has to be a group
+								// If it isn't a class name/number it has to be a group. Add space if group names consists of more than one word.
+								if (cSub.groupnames[0].length > 0) cSub.groupnames[0] += " ";
 								cSub.groupnames[0] += splClass[n];
 							}
 						}
@@ -313,13 +318,9 @@ Substitutions.prototype.parseAndSave = function(callback){
 		if (!err){
 			this.getSubstitutions((err) => {
 				if (!err){
-					mongo.modifyById(this.subArr._id, "substitutions", this.subArr, function(){
-						setImmediate(function(error) {
-							if (error){
-								callback("Error while saving to db: " + error, this.fileName);
-							} else {
-								callback(null, this.fileName);
-							}
+					subDB.save(this.subArr._id, this.subArr, () => {
+						setImmediate(() => {
+							callback(null, this.fileName);
 						});
 					});
 				} else {
@@ -358,6 +359,7 @@ function loopFiles(files, a){
  * Reads files in directory specified in config and passes them to 'loop'
  * function, which tries to convert them.
  * Does not return anything, converted objects are saved in database.
+ * Should be executed regularly (eg. every 10-30 min)
 */
 function findFile(){
 	fs.readdir(config.HTMLloc, (err, files) => {
@@ -368,4 +370,59 @@ function findFile(){
 		}
 	});
 }
-module.exports = findFile;
+/**
+ * Check if there is an object in DB with data for day specified as `day` parameter.
+ * If reading DB fails it tries to recover 5 times (with a minute long timeout between recovery attempts).
+ * 
+ * Should be executed:
+ * 
+ * - at least once a day (every 12h is OK), with day parameter pointing at the day after the next day (the day after tomorrow)
+ * - when server starts, with day parameter pointing at current day, the next day, and the day after the next day
+ * 
+ * @param {string} day date in `yyyy-mm-dd` format
+ * @param {Function} callback callback to execute. INFO: it executes always after first attempt, regardless of any possible failures in `checkDay()`/`verify()`
+*/
+function checkDay(day, callback){
+	var didCB = false;
+	subDB.find({_id: day}, {"substitution": true}, (err, resp) => {
+		if (!err){
+			const noSubs = {
+				"_id": day,
+				"substitution": "no substitutions",
+				"userList": [],
+				"date": day,
+				"teachersList": []
+			};
+			if (resp.substitution == []){
+				subDB.save(day, noSubs, () => {
+					console.info("Created 'no substitutions' for day", day);
+					if (typeof callback === "function"){
+						setImmediate(() => {
+							callback();
+						});
+					} else {
+						console.error("Callback is not a function", callback);
+					}
+					didCB = true;
+				});
+			}
+		} else if (arguments.length == 3 && arguments[2] < 5){ //If failed less than 5 times (including this failure) try again in a minute
+			setTimeout(() => {
+				checkDay(day, null, arguments[2] + 1);
+			}, 60000);
+		} else if (arguments.length == 2){ //Failed for the 1st time, try again in a minute
+			setTimeout(() => {
+				checkDay(day, null, 1);
+			}, 60000);
+		} else {
+			console.error("Reading substitutions for day", day, "failed for the 5th time");
+		}
+		if (!didCB && typeof callback === "function"){
+			setImmediate(() => {
+				callback();
+			});
+		}
+	});
+}
+module.exports.scan = findFile;
+module.exports.verify = checkDay;

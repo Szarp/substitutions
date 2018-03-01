@@ -16,7 +16,7 @@ var config = require('./config');
 */
 
 var time = new setTime();
-var sub = new mongo_v2.substituions(config.db);
+var sub = new mongo_v2.substitutions(config.db);
 var getSomeSubstitution = function(date,callback){
 	time.tommorowIs();
 	var tomorrow = time.displayTime();

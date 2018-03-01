@@ -500,6 +500,6 @@ function dataGenerator(){
 }
 exports.mongo=Mongo;
 exports.person=personCollection;
-exports.substituions= substitutionsCollection;
+exports.substitutions= substitutionsCollection;
 exports.user= userMessages;
 exports.server= serverMessages;
