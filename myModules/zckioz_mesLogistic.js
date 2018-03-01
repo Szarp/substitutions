@@ -30,10 +30,14 @@ function messageDistribution(mess){
         case "postback":
             if(mess["echo"] != true){
                 //postback function
-                analizePostback(mess);
+                console.log("postback");
+                
                 serverDB.save(mess,function(e,r){
                      if(!e){
-                        console.log('Saving  users\'s message',r["result"]);    
+                        console.log('Saving  users\'s message',r["result"]);
+                         if(r["result"]["nModified"]!=0){
+                            analizePostback(mess); 
+                         }
                     }
                     else{
                         console.log("Error in saving users\'s message",e);
@@ -54,28 +58,27 @@ function messageDistribution(mess){
                 });
             }
             else{
-                //console.log('check if attachments or text');
-                if(!mess["attachments"]){
-                    analizeText(mess);
-                    //console.log("text",mess);
-                }
-                else{
-                    //analizeAttachments(mess);
-                    //console.log("atta",mess);
-                }
                 userDB.save(mess,function(e,r){
                     if(!e){
-                        console.log('Saving users\'s message',r["result"]);    
+                        if(!mess["attachments"]){
+                            if(r["result"]["nModified"]!=0){
+                                analizeText(mess);
+                            }
                     }
                     else{
-                        console.log("Error in saving user\'s message",e);
+                        //analizeAttachments(mess);
+                        //console.log("atta",mess);
                     }
+                            console.log('Saving users\'s message',r["result"]);    
+                        }
+                        else{
+                            console.log("Error in saving user\'s message",e);
+                        }
                 })
                 //console.log('Saving to users\'s message');
             }
         break;
-            //do something else    
-    }
+    }   
 }
 function analizeText(mess){
     mess.text=mess.text.toLowerCase();
