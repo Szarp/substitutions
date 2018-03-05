@@ -36,14 +36,6 @@ var pageSettings = {
 /*mongoPerson.find({_id:"0005"},{},function(e,r){
     console.log("005: ",r);
 })*/
-mongoPerson.find({},{_id:true},function(e,elems){
-    elems.forEach(function(el){
-        //console.log("last elem: ",el._id);//,JSON.stringify(el.personal));
-        //getSettings(el._id,function(e){});
-        //picture(el._id,function(e){});
-        //console.log("el",el);
-    })
-})
 //mongoPerson.collectionCheck();
 function getSettings(userId,callback){
     mongoPerson.readSettings(userId,function(e,r){
@@ -149,7 +141,11 @@ function allTeachers(callback){
 		if(err){
 			console.log('Error getting teachersList');
 		} else {
-			var res = obj.teachers;
+            var res;
+            if(obj)
+                obj["teachers"];
+            else
+                res="";
 			setImmediate(function(){
 				callback(res);
 			});
@@ -184,7 +180,7 @@ function teachersList_old(body, callback){
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
-			var res = obj.teachersList;
+			var res = obj["teachersList"];
 			setImmediate(function(){
 				callback(res);
 			});
