@@ -1,10 +1,6 @@
 var MongoClient = require('mongodb').MongoClient,
     config = require('./config'),
     assert = require('assert');
-/*
-mongo functions v2
-*/
-
 function userMessages(DB){
     var self=this;
     Mongo.call(this,DB,"userMessages");
@@ -28,7 +24,6 @@ function serverMessages(DB){
             type: '',
             text: '' 
     }
-    
 }
 function Messages(){
     var self=this;
@@ -41,16 +36,13 @@ function Messages(){
                 setImmediate(function(){
                     callback(e,r);
                 });
-                //db.close();
             })    
     };
     this.init=function(){
         self.find({_id:self.collName},{_id:true,messages:true},function(e,r){
-            
             if(r.length>0){
                 if(!r[0].messages)
-                self.update(self.collName,{messages:{}},function(er,re){
-                    //console.log("are",re);
+                    self.update(self.collName,{messages:{}},function(er,re){
                 });
                 else{
                     //console.log("everything ok");
@@ -65,6 +57,40 @@ function Messages(){
         })
     }
     
+}
+function zckoizSubstitutions(DB){
+    var self=this;
+    Mongo.call(this,DB,'substitutions');
+    this.substitutionsStructure={
+        _id: "",
+        substitution:[], //need change
+        userList: [],
+        date: []
+    }
+    this.save=function(data,callback){
+        var dataToSave={};
+        self.find({_id:data._id},{_id:true},function(e,r){
+            if(!e){
+                if(r.length>0){
+                   self.update(data._id,data,function(){
+                       console.log("updated elem: "+data._id);
+                        setImmediate(function() {
+                            callback();
+                        }); 
+                   })
+                }
+                else{
+                    //dataToSave["_id"]=date;
+                    self.insert(data,function(e,r){
+                        console.log("insert elem: "+data._id, r.result);
+                        setImmediate(function() {
+                            callback();
+                        });
+                    })
+                }
+            }
+        })
+    }
 }
 function substitutionsCollection(DB){
     var self=this;
@@ -84,7 +110,6 @@ function substitutionsCollection(DB){
 		dataToSave['teachersList'] = data.teachersList;
         //console.log("data",dataToSave);
         self.find({_id:date},{_id:true},function(e,r){
-            //console.log("find",e,r);
             if(!e){
                 if(r.length>0){
                    self.update(date,dataToSave,function(){
@@ -109,11 +134,7 @@ function substitutionsCollection(DB){
             }
             
         })
-        
-            //ok;
-        
     }
-    //this.coll
 }
 function personCollection(DB){
     var self=this;
@@ -135,13 +156,10 @@ function personCollection(DB){
             messages:[]
         }
     }
-    //console.log('schem',self.personStructure);
     this.collectionCheck=function(){
-        //var schem =new collectionsSchema();
         self.find({},{},function(e,elems){
             var x;
             elems.forEach(function(el){
-                //console.log();
                 x = self.updateStructure(el,self.personStructure);
                 self.update(el._id,x,function(e,r){
                     console.log("collection check: ",r.result);    
@@ -162,7 +180,6 @@ function personCollection(DB){
                     setImmediate(function(){
                         callback(e,x.insertedCount);
                     });
-                //console.log('col',x);
                 });      
             }
             else{
@@ -226,9 +243,7 @@ function personCollection(DB){
             }); 
                 
         })
-        
     }
-    
 }
 function Mongo(DB,collectionName){
     structureFunctions.call(this);
@@ -503,3 +518,4 @@ exports.person=personCollection;
 exports.substitutions= substitutionsCollection;
 exports.user= userMessages;
 exports.server= serverMessages;
+exports.zckoizSubstitutions= zckoizSubstitutions;

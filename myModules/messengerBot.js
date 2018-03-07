@@ -297,7 +297,7 @@ function differencesBetweenSubs(date, callback){
 					date: date
 				}
 				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
-					console.log("Saved to buffer");
+					//console.log("Saved to buffer");
 				});
 			});
 		});

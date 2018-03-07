@@ -1,5 +1,6 @@
 #===config for fb===
 myModules/config
+myModules/configs
 #===certs===
 cert
 certs
