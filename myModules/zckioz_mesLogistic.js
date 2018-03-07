@@ -12,7 +12,7 @@ var time = new setTime();
 
 var serverDB = new mon.server(config.db);
 var userDB = new mon.user(config.db);
-var subDB = new mon.substituions(config.db);
+var subDB = new mon.substitutions(config.db);
 var messenger = new messFunc.send(config.pageToken);
 function isThisMe(pageId){
     return (pageId==config.pageId);

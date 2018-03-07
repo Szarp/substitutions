@@ -6,7 +6,7 @@ var config = require('./config');
 
 var time = new setTime();
 var mongoPerson= new mongo_v2.person(config.db);
-var mongoSub= new mongo_v2.substituions(config.db);
+var mongoSub= new mongo_v2.substitutions(config.db);
 var pageSettings = {
     fields:{
         cancelled:'typ',
