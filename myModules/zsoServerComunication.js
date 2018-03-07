@@ -160,7 +160,7 @@ function getParams(callback){
 					'gsh':params[1],
 					'cookie':cookie
 				}
-				saveToCollection(['pageParams',data],function(){
+				mongo.save(['pageParams',data],function(){
 					console.log('data added: '+data);
 				})
 			});
