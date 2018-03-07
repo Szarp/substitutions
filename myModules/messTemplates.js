@@ -125,6 +125,56 @@ function helpPage_zckoiz(id){
         }   
     }
 }
+function news_zso11(id){
+    return{
+        "recipient":{"id":id},
+        "message": {
+            "attachment": {"type": "template",
+                "payload": {
+                "template_type": "generic",
+                "elements": [{
+      "title":"Aktualności",
+      "subtitle":"Dostęp do aktualności z poziomu messengera",
+        "image_url": "http://www.zckoiz.zabrze.pl/images/loga/baner_szkola.jpg",
+      "buttons":[{
+                            "title": "Pełne aktualności",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/helpPage.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "compact",
+                            "fallback_url": "https://anulowano.pl:9001/demo/test.htm"                        
+                        }]
+                },{
+      "title":"Aktualności",
+      "subtitle":"Dostęp do aktualności z poziomu messengera",
+        "image_url": "http://www.zckoiz.zabrze.pl/images/loga/baner_szkola.jpg",
+      "buttons":[{
+                            "title": "Pełne aktualności",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/helpPage.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "compact",
+                            "fallback_url": "https://anulowano.pl:9001/demo/test.htm"                        
+                        }]
+                },{
+      "title":"Aktualności",
+      "subtitle":"Dostęp do aktualności z poziomu messengera",
+        "image_url": "http://www.zckoiz.zabrze.pl/images/loga/baner_szkola.jpg",
+      "buttons":[{
+                            "title": "Pełne aktualności",
+                            "type": "web_url",
+                            "url": "https://anulowano.pl/demo/helpPage.htm",
+                            "messenger_extensions": true,
+                            "webview_height_ratio": "compact",
+                            "fallback_url": "https://anulowano.pl:9001/demo/test.htm"                        
+                        }]
+                }
+                            ]
+                }
+            }
+        }   
+    }
+}
 function unreadMessage(id){
     return{
         "recipient":{"id":id},
@@ -158,4 +208,5 @@ exports.helpPage=helpPageMessage;
 exports.helpPage_zckoiz=helpPage_zckoiz;
 exports.unreadMessage=unreadMessage;
 exports.quickReplayTest= quickReplayTest;
+exports.test= news_zso11;
     

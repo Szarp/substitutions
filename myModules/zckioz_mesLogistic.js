@@ -112,6 +112,12 @@ function analizeText(mess){
         if(text[0]=="pomoc"||text[0]=="help"){
             console.log("user id",mess.sender);
             messenger.send(template.helpPage_zckoiz(mess.sender));
+            //messenger.send(template.test(mess.sender));
+        }
+        else if(text[0]=="news"||text[0]=="aktualnosci"){
+            console.log("user id",mess.sender);
+            //messenger.send(template.helpPage_zckoiz(mess.sender));
+            messenger.send(template.test(mess.sender));
         }
         else{
             console.log("Pop info about bad message to Admins");
