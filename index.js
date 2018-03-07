@@ -38,7 +38,15 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
 app.use(compression()); //use gzip compression
-app.use(helmet()); //Set http headers to protect from eg. clickjacking
+//app.use(helmet()); //Set http headers to protect from eg. clickjacking
+app.use(helmet({
+	hsts: {
+		maxAge: 31536000,
+		// Must be enabled to be approved by Google for HSTS preload
+		includeSubDomains: true,
+		preload: true
+	}
+}));  
 
 //setting cookie on first login
 app.use(function (req, res, next) {
