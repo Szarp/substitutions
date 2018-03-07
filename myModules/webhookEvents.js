@@ -241,7 +241,7 @@ function messageLogistic(params,event){
             //console.log('    got attachments')
         }
         if(params.text == true){
-            mess["text"] = event.message.text;
+            mess["text"] = event.message.text.toLowercase();
             //console.log('    text type')
         }
         if(params.read == true){

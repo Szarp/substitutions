@@ -36,12 +36,12 @@ var pageSettings = {
     console.log("005: ",r);
 })*/
 mongoPerson.find({},{_id:true},function(e,elems){
-    elems.forEach(function(el){
+    /*elems.forEach(function(el){
         //console.log("last elem: ",el._id);//,JSON.stringify(el.personal));
         //getSettings(el._id,function(e){});
         //picture(el._id,function(e){});
         //console.log("el",el);
-    })
+    })*/
 })
 //mongoPerson.collectionCheck();
 function getSettings(userId,callback){
