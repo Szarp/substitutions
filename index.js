@@ -14,6 +14,7 @@ var express = require('express'),
 	link = require(__dirname+'/myModules/fbLinks.js'),
 	config = require(__dirname+'/myModules/config'),
 	messenger = require(__dirname+'/myModules/messengerBot.js'),
+	webhook = require(__dirname+'/myModules/webhookEvents.js'),
 	myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
 
 var app = express();
@@ -41,19 +42,22 @@ app.use(helmet()); //Set http headers to protect from eg. clickjacking
 
 //setting cookie on first login
 app.use(function (req, res, next) {
-  // check if client sent cookie
+    var disabled=['/webhook','/dataflow','/login'];
+    if (disabled.indexOf(req.path) != -1) 
+        return next();
+    //check if client sent cookie
     var cookie = req.cookies.cookieName;
     if (cookie === undefined){
         // no: set a new cookie
         var randomNumber=Math.random().toString();
         randomNumber=randomNumber.substring(2,randomNumber.length);
-        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: true });
+        res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: false });
         console.log('cookie created successfully');
-    }
+    } 
     else{
-    // yes, cookie was already present
+    // yes, cookie was already present 
         console.log('cookie exists', cookie);
-    }
+    } 
     next(); // <-- important!
 });
 
@@ -100,6 +104,7 @@ app.get('/webhook', function(req, res) {
 
 app.post('/webhook', function (req, res) {
 var data = req.body;
+    //console.log('hey');
 // Make sure this is a page subscription
 if (data.object === 'page') {
 	// Iterate over each entry - there may be multiple if batched
@@ -107,16 +112,64 @@ if (data.object === 'page') {
 		var pageID = entry.id;
 		var timeOfEvent = entry.time;
 		// Iterate over each messaging event
+        //console.log('entry',entry)
+        var messParams={
+            message:false,
+            postback:false,
+            payload:false,
+            attachments:false,
+            text:false,
+            delivery:false,
+            echo:false,
+            read:false
+        };
 		entry.messaging.forEach(function(event) {
+            if(event.message){
+                messParams["message"]=true;
+                //webhook.message(event);
+                if(event.message["attachments"])
+                    messParams["attachments"]=true;
+                if(event.message["is_echo"])
+                messParams["echo"]=true;
+                if(event.message["text"])
+                    messParams["text"]=true;
+            }
+            if(event.postback){
+                messParams["message"]=true;
+                if(event.postback["payload"])
+                    messParams["payload"]=true;
+            }
+            if(event.read)
+                messParams["read"]=true;
+            if(event.delivery)
+                    messParams["delivery"]=true;
+            
+            webhook.messageLogistic(messParams,event);
+            //console.log("any event",messParams);
+            //console.log("any event",event);
+            /*
 			if (event.message) {
-				messenger.receivedMessage(event);
+                if(event.message["is_echo"]==true){ //response from bot (sent messages)
+                    webhook.echo(event);
+                    //console.log("any event",event);
+                }
+                else if(event.message["attachments"] !== undefined){
+                    console.log('go to attachment')
+                    webhook.attachments(event);
+                }
+                else
+				webhook.message(event);
 			} else if (event.postback) {
 				messenger.receivedPostback(event);
+			}else if (event.delivery) {
+                webhook.delivered(event);
+                //console.log('delivery');
+				//messenger.receivedPostback(event);
 			} else if (event.optin) {
 				messenger.sTMB(event);
 			} else {
-				console.log("Webhook received unknown event: ", event);
-			}
+				//console.log("Webhook received unknown event: ", event);
+			}*/
 		});
 	});
 	//send 200 within 20s to inform Facebook that message was received successfully
@@ -201,7 +254,7 @@ setTimeout(function () {
         myFunc.subs(time.displayTime(),function(b){
             time.theDayAfterTomorrowIs();
             myFunc.subs(time.displayTime(),function(x){
-                console.log('downloaded changes');
+                //console.log('downloaded changes');
             });
         });
     });

@@ -7,14 +7,16 @@ var mongo = require('./mongoFunctions.js'),
 	querystring = require('querystring'),
 	messenger = require('./messengerBot.js'),
 	setTime = require('./setTime.js'),
-	callFunc = require('./postCallFunctions.js');
+	callFunc = require('./postCallFunctions.js'),
+    mongo_v2 = require('./mongoConnection.js');
+var config = require('./config');
 
 /*
 	module to comunicate with ZSO11 server
 */
 
 var time = new setTime();
-
+var sub = new mongo_v2.substitutions(config.db);
 var getSomeSubstitution = function(date,callback){
 	time.tommorowIs();
 	var tomorrow = time.displayTime();
@@ -42,17 +44,17 @@ var getSomeSubstitution = function(date,callback){
 					dataToSave['substitution']=convertedData;
 					dataToSave['userList']=res;
 					dataToSave['teachersList'] = teachers;
-					console.log('before saving'+ dataToSave['userList']);
+					//console.log('before saving'+ dataToSave['userList']);
 					saveSubstitutions(date,dataToSave,function(){
-						mongo.findById(date,'substitutions',function(err,x){
-							console.log('save substitution '+  x.userList,x.date,x.teachersList);
+						//mongo.findById(date,'substitutions',function(err,x){
+							//console.log('save substitution '+  x.userList,x.date,x.teachersList);
 							setImmediate(function() {
 								callback(convertedData);
 								messenger.notification(day, date, function(res){
-									console.log(res);
+									//console.log("mess",res);
 								});
 							});
-						})
+						//})
 					})
 					mongo.findById('all', 'teachers', function(erro, obj){
 						var beforeTe = obj.teachers;
@@ -173,7 +175,7 @@ function getParams(callback){
 function downloadData(date,callback){
 	var url1='http://zso11.edupage.org/gcall';
 	mongo.findById('params','pageParams',function(err1,params){
-		console.log('params',params);
+		//console.log('params',params);
 		if(params == null){
 			getCookie(function(dt){
 				console.log(dt);
@@ -253,8 +255,14 @@ function checkIfAnySubstitutions(callback){
 		});
 	})
 }
-
 function saveSubstitutions(date,data,callback){
+    sub.save(date,data,function(){
+      setImmediate(function() {
+			callback(); //callback not necessary
+		});
+    });
+}
+function saveSubstitutions_old(date,data,callback){
 	var dataToSave={};
 		dataToSave['substitution']=data.substitution;
 		dataToSave['userList']=data.userList;

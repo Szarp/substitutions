@@ -5,71 +5,11 @@ var facebook = require('./facebookComunication.js');
 var callFunc = require('./postCallFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
 var mongo = require('./mongoFunctions.js');
+var mess = require('./messTemplates.js');
 //mongo.url("ZSO11");
 var adm1 = config.adm1;
 var adm2 = config.adm2;
 var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
-
-//branch
-function helpPageMessage(id){
-    return{
-        "recipient":{"id":id},
-        "message": {
-            "attachment": {"type": "template",
-                "payload": {
-                "template_type": "list",
-                "elements": [
-                {
-                    "title": "Zastępstwa dla szkół",
-                    "image_url": "http://www.zso11.zabrze.pl/wp-content/uploads/2017/03/galeria-1-1024x687.jpg",
-                    "subtitle": "O aplikacji",
-                    "buttons": [
-                        {
-                            "title": "Odwiedź stronę",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/helpPage.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/helpPage.htm"                        
-                        }
-                    ]
-                },
-                {
-                    "title": "Instrukcja",
-                    "subtitle": "Dowiadywanie się o zastępstwach; komunikacja z adminem; powiadomienia autom.",
-                    "buttons": [
-                        {
-                            "title": "Czytaj więcej",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/changes.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/changes.htm"                        
-                        }
-                    ]              
-                },
-                {
-                    "title": "Olipiada",
-                    "image_url":"https://anulowano.pl/demo/zwt.png",
-                    "subtitle": "Projekt jest rozwijany na potrzeby olimiady projektow społecznych",
-                    "buttons": [
-                        {
-                            "title": "Więcej Info",
-                            "type": "web_url",
-                            "url": "https://anulowano.pl/demo/olimpiada.htm",
-                            "messenger_extensions": true,
-                            "webview_height_ratio": "full",
-                            "fallback_url": "https://anulowano.pl/demo/olimpiada.htm"                        
-                        }
-                    ]                   
-                }
-            ]
-        }
-    }
-}   
-    
-}
- }
 
 function createMessage(type, id, content, callback){
 	var message = {
@@ -191,7 +131,7 @@ function sendSubstitutions(senderID, message){
 			var tkn = oMessage.substring(2);
 			if(!tkn){
 				secretToken.messRequest(senderID, function(token){
-					var txt = 'Wygenerowany token wipsz na domek.emadar.eu po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
+					var txt = 'Wygenerowany token wipsz na ' + config.url + ' po zalogowaniu i kliknięciu własnego zdjęcia profilowego w polu "Sprawdź token"\nTwój token to: ' + token;
 					createMessage('text', senderID, txt, function(messageTS){
 						callSendAPI(messageTS);
 					});
@@ -214,16 +154,7 @@ function sendSubstitutions(senderID, message){
 			break;
 		default:
 			day='';
-			createButtons([['postback', 'example', 'Przykład']], function(buttons){
-				var content={
-					'text': help,
-					'buttons': buttons
-				}
-				createMessage('generic', senderID, content, function(messageTS){
-					//callSendAPI(messageTS);
-                    callSendAPI(helpPageMessage(senderID));
-				});
-			});
+            callSendAPI(mess.helpPage(senderID));
 			break;
 	};
 	if(day != ''){
@@ -234,7 +165,7 @@ function sendSubstitutions(senderID, message){
 		}
         callFunc.changesForMessenger(reqClass,day,function(allChanges){
             if(allChanges.length != 0){
-                createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+                createButtons([['postback', message, 'Wyślij na czacie']], function(buttons){
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
@@ -248,7 +179,7 @@ function sendSubstitutions(senderID, message){
             else{
 				callFunc.changesTeacherForMessenger(reqTeacher.toLowerCase(),day,function(allChanges){
 					if(allChanges.length != 0){
-						createButtons([['web_url', 'https://domek.emadar.eu', 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
+						createButtons([['web_url', config.url, 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
 							dayToMSG += ' są zastępstwa dla ' + reqTeacher;
 							var content={
 								text: dayToMSG,
@@ -382,6 +313,9 @@ function substitutionNotification(day, date, callback){
 	} else if(day == 'TDAT'){
 		day = days[(now.getDay() + 2)%7];
 	}
+    
+    
+    
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
         var oldSub=newAndOld[1];
@@ -502,20 +436,23 @@ function messengerTypeChange(oneSub, uId, callback){
 		callback(msg, uId);
 	});
 }
- function notificationList(callback){
+  function notificationList(callback){
      var name='person';
         //[collection,{data}]
         //var collectionName = collection;
         //var data = paramsToModify;
-     
-        var url = 'mongodb://localhost:27017/test2';
+        //var url = 'mongodb://localhost:27017/test2';
         mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
-            console.log(a);
+            //console.log(a);
             var list=[];
             var arr={};
             for(var i=0;i<a.length;i++){
                 arr['id']=a[i].personal['id'];
                 arr['class']=a[i].personal.settings['setClass'];
+                arr['teacher']='---'
+                if(a[i].personal.settings['setTeacher']){
+                    arr['teacher']=a[i].personal.settings['setTeacher'];
+                }
                 list[i]=arr;
                 arr={};
             }
@@ -545,7 +482,7 @@ function sendList(senderID, message){
 		createMessage('text', senderID, 'Chcę wygenerować token do łączenia kont do wpisania na stronie:\n4', function(messageTS){
 			callSendAPI(messageTS);
 		});
-		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na domek.emadar.eu]):\n4 11111', function(messageTS){
+		createMessage('text', senderID, 'Chcę połączyć konto korzystając z tokena "11111" wygenerowanego na stronie (zastąp 11111 twoim tokenem uzyskanym po kliknięciu "Generuj token" w zakładce "o mnie" [czyli po kliknięciu profilowego na ' + config.url + ']):\n4 11111', function(messageTS){
 			callSendAPI(messageTS);
 		});
 	}else if (message=='teachers'){
@@ -577,7 +514,7 @@ function sendList(senderID, message){
 			}
 		});
 	}else if (message=='help'){
-		callSendAPI(helpPageMessage(senderID));
+		callSendAPI(mess.helpPage(senderID));
 	}else if (message=='get_started_btn'){
 		createButtons([['postback', 'help', 'Więcej']], function(buttons){
 			var content={
@@ -632,69 +569,6 @@ function sTL(teachers, msg, i, senderID){
 	} else if(i < teachers.length){
 		sTL(teachers, msg, (i+1), senderID);
 	}
-}
-
-function receivedPostback(event) {
-    console.log('event',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfPostback = event.timestamp;
-
-	// The 'payload' param is a developer-defined field which is set in a postback 
-	// button for Structured Messages. 
-	var payload = event.postback.payload;
-
-	console.log("Received postback for user %d and page %d with payload '%s' " + 
-	"at %d", senderID, recipientID, payload, timeOfPostback);
-
-	facebook.messengerSavePerson(senderID, function(res){
-		if(res==='saved'){
-			facebook.messengerUserInfo(senderID, function(userData){
-				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
-				createMessage('text', adm1, txt, function(messageTS){
-					callSendAPI(messageTS);
-				});
-			});
-		}
-	});
-
-	sendList(senderID, payload);
-}
-
-function receivedMessage(event) {
-    console.log('mes',event);
-	var senderID = event.sender.id;
-	var recipientID = event.recipient.id;
-	var timeOfMessage = event.timestamp;
-	var message = event.message;
-
-	//console.log("Received message for user %d and page %d at %d with message:", 
-	//senderID, recipientID, timeOfMessage);
-	//console.log(JSON.stringify(message));
-
-	var messageId = message.mid;
-
-	var messageText = message.text;
-	var messageAttachments = message.attachments;
-	var help = 'NIE PRZYJMUJEMY ZAŁĄCZNIKÓW\nDostępne polecenia to:\n"0 klasa" - zastępstwa dla klasy na dzisiaj\n"1 klasa" - zastępstwa dla klasy na jutro\n"2 pytanie" - pomoc\n"4" - generuj token do łączenia kont\n"4 token" - połącz konto używając tokenu ze strony';
-	facebook.messengerSavePerson(senderID, function(res){
-		console.log('saving done');
-		if (messageText) {
-			sendSubstitutions(senderID, messageText);
-		} else {
-			createMessage('text', senderID, help, function(messageTS){
-				callSendAPI(messageTS);
-			});
-		}
-		if(res==='saved'){
-			facebook.messengerUserInfo(senderID, function(userData){
-				var txt = 'Nowa osoba: ' + userData['first_name'] + ' ' + userData['last_name'];
-				createMessage('text', adm1, txt, function(messageTS){
-					callSendAPI(messageTS);
-				});
-			});
-		}
-	});
 }
 
 function callSendAPIwC(messageData, callback){
@@ -772,8 +646,7 @@ function sendToMessengerBtn(event){
 	}
 }
 
-exports.receivedPostback=receivedPostback;
-exports.receivedMessage=receivedMessage;
+
 exports.notification=substitutionNotification;
 exports.createMessage=createMessage;
 exports.callSendAPI=callSendAPI;

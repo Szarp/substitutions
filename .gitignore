@@ -2,6 +2,7 @@
 myModules/config
 #===certs===
 cert
+certs
 *.pem
 #===other for nodejs generated using github template===
 # Logs
@@ -44,3 +45,7 @@ jspm_packages
 
 # VS Code settings directory
 .vscode
+
+# Linters settings
+.eslintrc.json
+.jshintrc

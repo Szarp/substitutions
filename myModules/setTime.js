@@ -1,35 +1,55 @@
+module.exports = setTime;
 
-module.exports = function setTime(){
-    //this.Today = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-    //this.day
-    //this.month
-    //this.year
+function setTime(){
+    var self=this;
+    this.Today;
+    this.day;
+    this.month;
+    this.year;
+    this.weekday;
+    this.month; 
     this.displayTime=function(){
-        return this.year+'-'+this.month+'-'+this.day;
+        return self.year+'-'+self.month+'-'+self.day;
+    }
+    this.displayWeekDay = function(){
+        //var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var days = ['Nd','Pon','Wt','Śr','Czw','Pt','Sob'];
+        return days[self.Today.getDay()];
+        
     }
     this.updateTime=function(){
-        this.year = this.Today.getFullYear();
-        this.month = this.Today.getMonth()+1;
-        this.day = this.Today.getDate();
-        if(this.month<10){this.month='0'+this.month;};
-        if(this.day<10){this.day='0'+this.day;};
+        self.year = self.Today.getFullYear();
+        self.month = self.Today.getMonth()+1;
+        self.day = self.Today.getDate();
+        if(self.month<10){self.month='0'+self.month;};
+        if(self.day<10){self.day='0'+self.day;};
     }
     this.todayIs=function(){
-        this.Today = new Date();
-        this.updateTime();
+        self.Today = new Date();
+        self.updateTime();
 
     }
     this.tommorowIs=function(){
-        this.Today = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-        this.updateTime();
+        self.Today = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        self.updateTime();
     }
     this.theDayAfterTomorrowIs=function(){
-        this.Today = new Date(new Date().getTime() + 2*24 * 60 * 60 * 1000);
-        this.updateTime();
+        self.Today = new Date(new Date().getTime() + 2*24 * 60 * 60 * 1000);
+        self.updateTime();
     }
     this.yeasterdayIs=function(){
-        this.Today = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
-        this.updateTime();
+        self.Today = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+        self.updateTime();
+    }
+    this.nextSchoolDay = function(){
+        var day = new Date().getDay;
+        var howManyDays = 1;
+        if(day == 5) //Friday
+            howManyDays = 3;
+        else if (day == 6) //Saturday
+            howManyDays = 2;
+        self.Today = new Date(new Date().getTime() + howManyDays*24 * 60 * 60 * 1000);
+        self.updateTime();
     }
     /*
     this.setTime=function(year,month,day){
