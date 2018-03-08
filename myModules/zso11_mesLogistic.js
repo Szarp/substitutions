@@ -179,11 +179,13 @@ function analizeText(mess){
     }
 }
 function analizePostback(mess) {
-    console.log("hire");
-	var payload = mess.payload;
-	if(payload == "help") payload = "{\"type\": \"help\"}";
-	payload = JSON.parse(mess.payload);
-    //console.log("hire",payload);
+	var payload = {};
+	if(mess.payload == "help"){
+        payload["type"]= "help";
+    }
+    else{
+        payload = JSON.parse(mess.payload);            
+    }
     switch(payload.type){
         case "example":
 		messFunc.preapreMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
