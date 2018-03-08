@@ -143,7 +143,7 @@ function allTeachers(callback){
 		} else {
             var res;
             if(obj)
-                obj["teachers"];
+                res=obj["teachers"];
             else
                 res="";
 			setImmediate(function(){
@@ -162,7 +162,7 @@ function teachersList(body,callback){
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
-			//zvar res = obj[0].teachersList;
+			var res = obj[0].teachersList;
             console.log ("res",res);
 			setImmediate(function(){
 				callback(res);
@@ -206,7 +206,7 @@ function classList(body,callback){ //response classList from day
         if(err){console.log('err in sending substitutions')}
         //console.log("etst: ",obj);
         if(obj[0])
-            res = obj[0]['classList'];
+            res = obj[0]['userList'];
         else{res=[]}
         setImmediate(function() {
             callback(res);
