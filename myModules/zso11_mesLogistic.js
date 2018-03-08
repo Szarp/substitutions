@@ -183,6 +183,10 @@ function analizePostback(mess) {
 	if(mess.payload == "help"){
         payload["type"]= "help";
     }
+    else if(mess.payload == "get_started_btn"){
+        payload["type"]= "begin";
+        
+    }
     else{
         payload = JSON.parse(mess.payload);            
     }
@@ -211,6 +215,17 @@ function analizePostback(mess) {
 				}
 			}
         });
+        break;
+        case "begin":
+            messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
+                var content={
+                    text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+                    buttons: buttons
+                }
+                messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
+                    messenger.send(messageTS);
+                });
+            });
         break;
         default:
         break;
