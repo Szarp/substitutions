@@ -303,6 +303,10 @@ function Mongo(DB,collectionName){
                         db.close();
                     });
                 });
+            } else { //We need to callback even in case of a failure
+                setImmediate(() => {
+                    callback(e ? e : "Self.find did not return anything, no modifications were made"); //If there's an error pass it to callback, else pass error message
+                });
             }
         });
     }

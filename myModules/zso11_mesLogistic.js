@@ -68,7 +68,8 @@ function messageDistribution(mess){
                          }
                     }
                     else{
-                        console.log("Error in saving users\'s message",e);
+						console.log("Error in saving users\'s message",e);
+						analizePostback(mess); //We still need to analyse the postback
                     }
                 });
             }
@@ -179,14 +180,19 @@ function analizeText(mess){
 }
 function analizePostback(mess) {
     console.log("hire");
-    var payload = JSON.parse(mess.payload);
+	var payload = mess.payload;
+	if(payload == "help") payload = "{\"type\": \"help\"}";
+	payload = JSON.parse(mess.payload);
     //console.log("hire",payload);
     switch(payload.type){
         case "example":
 		messFunc.preapreMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			messenger.send(messageTS);
         });
-        break;
+		break;
+		case "help":
+			messenger.send(template.helpPage(mess.sender));
+			break;
         case "changes":
             var day;
             if(payload.day=="0")

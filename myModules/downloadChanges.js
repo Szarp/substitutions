@@ -1,6 +1,6 @@
 //downloadChanges.js
 var zckoiz = require("./zckioz_mesLogistic.js");
-var zso11 = require("./zso11_mesLogistic.js");
+var zso11 = require("./zsoServerComunication.js");
 var setTime = require('./setTime.js');
 var time = new setTime();
 function downloadAll(){

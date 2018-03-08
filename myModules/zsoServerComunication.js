@@ -9,7 +9,7 @@ var mongo = require('./mongoFunctions.js'),
 	setTime = require('./setTime.js'),
 	callFunc = require('./postCallFunctions.js'),
     mongo_v2 = require('./mongoConnection.js');
-var config = require('./config');
+var config = require('./configs/zso11');
 
 /*
 	module to comunicate with ZSO11 server
