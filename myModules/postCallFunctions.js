@@ -201,7 +201,7 @@ function classList(body,callback){ //response classList from day
         time.tommorowIs();
     }
     //console.log('requested date: ',time.displayTime());
-    mongoSub.find({_id:time.reverseTime()},{},function(err,obj){
+    mongoSub.find({_id:time.displayTime()},{},function(err,obj){
         //console.log(err,obj);
         if(err){console.log('err in sending substitutions')}
         //console.log("etst: ",obj);
