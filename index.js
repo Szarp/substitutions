@@ -184,10 +184,30 @@ app.get('/STMbtn', function(req, res){ //respond to GET request on /STMbtn
 	var reqCookie = req.cookies.cookieName;  //get session cookie (named "cookieName")
 	var userId = cookie.findIfSessionExist(reqCookie); //get user id assigned to session cookie
 	if(userId == '0000'){ //send "please log in" message if user is not logged in
-		res.send(`<!DOCTYPE html><html><body><a href="login" target="_blank" rel="noopener" style="text-align: center;text-decoration: underline;color: black;"><div style="margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px;">Please log in to enable Messenger notifications</div></a></body></html>`);
+		res.send(`<a href="login" target="_blank" rel="noopener" style="text-align: center;text-decoration: underline;color: black;"><div style="margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px;">Please log in to enable Messenger notifications</div></a>`);
 	} else { //if user is logged in send "Send To Messenger" button with his id as param
 		console.log("Loading Send To Messenger button for user with id", userId);
-		var ifrTS = `<!DOCTYPE html><html><body><script>window.fbAsyncInit = function() {FB.init({appId: "` + config.clientId + `",xfbml: true,version: "v2.6"});};(function(d, s, id){var js, fjs = d.getElementsByTagName(s)[0];if (d.getElementById(id)){ return; }js = d.createElement(s); js.id = id;js.src = "//connect.facebook.net/en_US/sdk.js";fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script><div class="fb-send-to-messenger" color="blue" size="xlarge" messenger_app_id="` + config.clientId + `" data-ref="` + userId + `" page_id="` + config.pageId + `"></div></body></html>`;
+		var ifrTS = `<div class="fb-send-to-messenger" color="blue" size="xlarge" messenger_app_id="` + config.clientId + `" data-ref="` + userId + `" page_id="` + config.pageId + `"></div>
+		<script id="fbButtonScript">
+		function callFB(){
+			window.fbAsyncInit = function() {
+				FB.init({
+					appId            : '` + config.clientId + `',
+					autoLogAppEvents : true,
+					xfbml            : true,
+					version          : 'v2.12'
+				});
+			};
+			(function(d, s, id){
+				var js, fjs = d.getElementsByTagName(s)[0];
+				if (d.getElementById(id)) {return;}
+				js = d.createElement(s); js.id = id;
+				js.src = "https://connect.facebook.net/en_US/sdk.js";
+				fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));
+		}
+		callFB();
+		</script>`;
 		res.send(ifrTS);
 	}
 });

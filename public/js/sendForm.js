@@ -277,13 +277,27 @@ function sendMessage(){
 	}
 }
 function generateSTMbtn() {
-    var ifr = document.createElement("iframe");
-    ifr.setAttribute("src", "STMbtn");
-    ifr.setAttribute("style", "border: none; max-height: 85px; margin-bottom: -20px; margin-right: -8em")
-    var pare = document.getElementById("STMbtn");
-    pare.innerHTML = '';
-    pare.appendChild(ifr);
-    pare.setAttribute("style", "display: initial");
+    fetch("STMbtn",{
+        credentials: "same-origin"
+    })
+    .then(response => {
+        response.text()
+        .then(resp => {
+            console.log(resp);
+            document.getElementById("STMbtn").innerHTML = resp;
+            var scrTag = document.getElementById("fbButtonScript");
+            if(scrTag){
+                let scr = scrTag.textContent;
+                let target = scrTag.parentElement;
+                scrTag.remove();
+                let newScript = document.createElement("script");
+                let inlineScript = document.createTextNode(scr);
+                newScript.appendChild(inlineScript); 
+                target.appendChild(newScript);
+                document.getElementById("STMbtn").style = "width: 172px; margin-left: 7px;margin-right: -10px;";
+            }
+        });
+    });
 }
 function onLoadFunc(){
 	var url='postCall';
