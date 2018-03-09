@@ -4,7 +4,7 @@ var request=require('request');
 var config = require('./configs/zso11');
 //var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
-//var mongo =require('./mongoFunctions.js');
+var mongo =require('./mongoFunctions.js');
 var mon = require('./mongoConnection.js');
 var callFunc = require('./postCallFunctions.js');
 //messenger
@@ -179,16 +179,15 @@ function analizeText(mess){
     }
 }
 function analizePostback(mess) {
-	var payload = {};
-	if(mess.payload == "help"){
-        payload["type"]= "help";
-    }
-    else if(mess.payload == "get_started_btn"){
-        payload["type"]= "begin";
-        
-    }
-    else{
-        payload = JSON.parse(mess.payload);            
+    var payload = mess.payload;
+    try {
+        payload = JSON.parse(payload);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            payload = { type: payload };
+        } else {
+            console.error(e);
+        }
     }
     switch(payload.type){
         case "example":
@@ -216,7 +215,7 @@ function analizePostback(mess) {
 			}
         });
         break;
-        case "begin":
+        case "get_started_btn":
             messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
                 var content={
                     text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
@@ -227,7 +226,20 @@ function analizePostback(mess) {
                 });
             });
         break;
+        case "teachers":
+            mongo.findById('all', 'teachers', function(err, obj){
+                if(!err){
+                    sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, senderID);
+                } else {
+                    console.log("Error getting teachers list");
+                    messFunc.preapreMessage('text', senderID, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
+                        messenger.send(messageTS);
+                    });
+                }
+            });
+            break;
         default:
+            console.warn("Unknown payload received:", payload);
         break;
     }
     /*
@@ -244,6 +256,29 @@ function analizePostback(mess) {
 	"at %d", senderID, recipientID, payload, timeOfPostback);
 
 	sendList(senderID, payload);*/
+}
+/**
+ * Send list of all teachers
+ * @param {string[]} teachers list of all teachers that will be sent
+ * @param {string} msg message (beginning)
+ * @param {number} i number of teacher to add *(should be 0 if sTL is not executed by itself)*
+ * @param {number} senderID id of user, who asked for list
+*/
+function sTL(teachers, msg, i = 0, senderID){
+	console.log(msg, i, senderID);
+	msg += '\n' + teachers[i];
+	if(i != 0 && i%10 == 0 || i == (teachers.length-1)){
+		messFunc.preapreMessage('text', senderID, msg, function(messageTS){
+			messenger.sendWC(messageTS, function(err){
+				if(!err){
+					msg = '';
+					sTL(teachers, msg, (i+1), senderID);
+				}
+			});
+		});
+	} else if(i < teachers.length){
+		sTL(teachers, msg, (i+1), senderID);
+	}
 }
 function commandValidation(text){
     var allClasses = config.classList;
