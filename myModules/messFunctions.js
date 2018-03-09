@@ -71,7 +71,10 @@ function callSendAPI(token) {
 	}
 	/**
 	 * Send `messageData` and execute callback
-	 * @param {Object} messageData object created by `createMessage()`
+	 * @param {Object} messageData - object created by `createMessage()`
+	 * @param {Object} messageData.recipient - receipient object
+	 * @param {number|string} messageData.recipient.id id of recipient
+	 * @param {string} messageData.text text of message (if it's a text message)
 	 * @param {Function} callback callback to execute, one parameter passed - error (`true/null`)
 	 */
 	this.sendWC = function (messageData, callback){

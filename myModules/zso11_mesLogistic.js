@@ -74,6 +74,9 @@ function messageDistribution(mess){
                 });
             }
         break;
+        case "optin":
+            sendToMessengerBtn(mess);
+            break;
         default:
             if(mess["echo"]==true){
                 //console.log('Saving to user message');
@@ -110,7 +113,6 @@ function messageDistribution(mess){
     }
 }
 function token(text,mess){
-    	day='';
     var senderID=mess.sender;
     var tkn = text[1];
 		//var tkn = oMessage.substring(2);
@@ -131,11 +133,54 @@ function token(text,mess){
 						});
 					} else {
 						messFunc.preapreMessage('text', senderID, 'Wystąpił błąd. Spróbuj jeszcze raz.', function(messageTS){
-							send(messageTS);
+							messenger.send(messageTS);
 						});
 					}
 				});
 			}    
+}
+/**
+ * Object passed from moduleSwitch and messageDistribution
+ * @typedef {Object} Mess
+ * @property {number} sender id of user who sent the message
+ * @property {number} page page (receiver) id
+ * @property {number} timestamp message timestamp
+ * @property {string} type type of received event
+ * @property {string} [passThroughParam] param passed by Send to Messenger button
+ * @property {string} [text] text of message
+ * @property {string} [payload] payload of received postback
+*/
+/**
+ * Connects user's Messenger id with their Facebook id and enables auto notifications
+ * @param {Mess} mess object passed from moduleSwitch and messageDistribution
+ * 
+*/
+function sendToMessengerBtn(mess){
+	var senderID = mess.sender;
+	var recipientID = mess.page;
+    var timeOfAuth = mess.timestamp;
+	var passThroughParam = mess.passThroughParam;
+	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
+	if(!(passThroughParam)){
+		console.error("no passThroughParam received");
+	} else {
+        var fbUID = passThroughParam;
+        secretToken.connectAccounts(fbUID, senderID, function () {
+            console.log("Accounts connected!");
+            mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
+                console.log("Notifications for", fbUID, "are on.");
+                messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
+                    var content = {
+                        text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+                        buttons: buttons
+                    };
+                    messFunc.preapreMessage('generic', senderID, content, function(messageTS){
+                        messenger.send(messageTS);
+                    });
+                });
+            });
+        });
+	}
 }
 function analizeText(mess){
     mess.text=mess.text.toLowerCase();
@@ -154,7 +199,7 @@ function analizeText(mess){
                         var content={
                             text:'Zastępstwa na '+weekDay+' dla klasy ' + text[1],
                             buttons: buttons
-                        }
+                        };
                         messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
                             messenger.send(messageTS);
                         });
@@ -162,8 +207,8 @@ function analizeText(mess){
                 }
                 else{
                     messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
-                    messenger.send(messageTS);
-                    })
+                        messenger.send(messageTS);
+                    });
                 }
             }
         });
@@ -229,10 +274,10 @@ function analizePostback(mess) {
         case "teachers":
             mongo.findById('all', 'teachers', function(err, obj){
                 if(!err){
-                    sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, senderID);
+                    sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, mess.sender);
                 } else {
                     console.log("Error getting teachers list");
-                    messFunc.preapreMessage('text', senderID, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
+                    messFunc.preapreMessage('text', mess.sender, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
                         messenger.send(messageTS);
                     });
                 }
@@ -264,8 +309,7 @@ function analizePostback(mess) {
  * @param {number} i number of teacher to add *(should be 0 if sTL is not executed by itself)*
  * @param {number} senderID id of user, who asked for list
 */
-function sTL(teachers, msg, i = 0, senderID){
-	console.log(msg, i, senderID);
+function sTL(teachers, msg, i, senderID){
 	msg += '\n' + teachers[i];
 	if(i != 0 && i%10 == 0 || i == (teachers.length-1)){
 		messFunc.preapreMessage('text', senderID, msg, function(messageTS){
