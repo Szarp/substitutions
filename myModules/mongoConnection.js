@@ -72,7 +72,7 @@ function zckoizSubstitutions(DB){
         self.find({_id:data._id},{_id:true},function(e,r){
             if(!e){
                 if(r.length>0){
-                   self.update(data._id,data,function(){
+                   self.findAndModify(data._id,data,function(){
                        console.log("updated elem: "+data._id);
                         setImmediate(function() {
                             callback();
@@ -81,7 +81,7 @@ function zckoizSubstitutions(DB){
                 }
                 else{
                     //dataToSave["_id"]=date;
-                    self.insert(data,function(e,r){
+                    self.insert(data,function(er,re){
                         console.log("insert elem: "+data._id, r.result);
                         setImmediate(function() {
                             callback();
@@ -112,7 +112,7 @@ function substitutionsCollection(DB){
         self.find({_id:date},{_id:true},function(e,r){
             if(!e){
                 if(r.length>0){
-                   self.update(date,dataToSave,function(){
+                   self.findAndModify(date,dataToSave,function(){
                        console.log("updated elem: "+date);
                         setImmediate(function() {
                         callback(); //callback not necessary
@@ -310,6 +310,17 @@ function Mongo(DB,collectionName){
             }
         });
     }
+    this.findAndModify=function(_id,elemsToUpdate,callback){
+        self.plainConnection(function(db){
+            var collection = db.collection(self.collName);
+            collection.findAndModify({_id: _id},{$set: elemsToUpdate},{upsert:true},function(err, object) {
+				setImmediate(function(){
+                    callback(err,object);
+                });
+                db.close();
+			});
+        })
+    }
     this.insert=function(elems,callback){
         self.plainConnection(function(db){
             var collection = db.collection(self.collName);
@@ -324,6 +335,7 @@ function Mongo(DB,collectionName){
     }
     this.find=function(parToFind,parToDisplay,callback){
         self.plainConnection(function(db){
+            //console.log("find",db,self.collName)
             var collection = db.collection(self.collName);
             collection.find(parToFind,{fields:parToDisplay}).toArray(function(e,r){
                 setImmediate(function(){
@@ -335,6 +347,7 @@ function Mongo(DB,collectionName){
     }
     this.plainConnection=function(func){
         MongoClient.connect(self.url+self.DB, function(err, db) {
+            //console.log("plain",err,db);
             if(!err)
                 func(db);
             else 
