@@ -7,12 +7,15 @@ var mess = require('./messTemplates.js');
 var mongo =require('./mongoFunctions.js');
 var mon = require('./mongoConnection.js');
 var callFunc = require('./postCallFunctions.js');
+var facebook = require('./facebookComunication.js');
 //messenger
 var template = require('./messTemplates.js');
 var messFunc = require('./messFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
 var setTime = require('./setTime.js');
 var time = new setTime();
+var adm1 = config.adm1;
+var adm2 = config.adm2;
 //var myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
 //var fs = require ('fs');
 //var mon = require('./mongoConnection.js');
@@ -140,17 +143,6 @@ function token(text,mess){
 			}    
 }
 /**
- * Object passed from moduleSwitch and messageDistribution
- * @typedef {Object} Mess
- * @property {number} sender id of user who sent the message
- * @property {number} page page (receiver) id
- * @property {number} timestamp message timestamp
- * @property {string} type type of received event
- * @property {string} [passThroughParam] param passed by Send to Messenger button
- * @property {string} [text] text of message
- * @property {string} [payload] payload of received postback
-*/
-/**
  * Connects user's Messenger id with their Facebook id and enables auto notifications
  * @param {Mess} mess object passed from moduleSwitch and messageDistribution
  * 
@@ -182,30 +174,33 @@ function sendToMessengerBtn(mess){
         });
 	}
 }
+/**
+ * Analyse text of user's message and react to it
+ * @param {Mess} mess object received from messageDistribution
+ */
 function analizeText(mess){
     mess.text=mess.text.toLowerCase();
     var text = mess.text.split(' ');
     if(text[0]=="4"){
-            token(text,mess);        
-        }
+        token(text,mess);        
+    }
     else if(text.length == 2){
         //console.log("Maybe thats ask for changes");
         ifChanges(text,function(changes,weekDay){
             //console.log('chnages',changes);
             if(changes){
                 if(changes.length>0){
-                messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
-                        //com += ' Są zastępstwa dla klasy ' + text[1];
-                        var content={
-                            text:'Zastępstwa na '+weekDay+' dla klasy ' + text[1],
-                            buttons: buttons
-                        };
-                        messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
-                            messenger.send(messageTS);
+                    messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
+                            //com += ' Są zastępstwa dla klasy ' + text[1];
+                            var content={
+                                text:'Są zastępstwa na '+weekDay+' dla klasy ' + text[1],
+                                buttons: buttons
+                            };
+                            messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
+                                messenger.send(messageTS);
+                            });
                         });
-                    });
-                }
-                else{
+                } else {
                     messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
                         messenger.send(messageTS);
                     });
@@ -217,8 +212,15 @@ function analizeText(mess){
         if(text[0]=="pomoc"||text[0]=="help"){
             console.log("user id",mess.sender);
             messenger.send(template.helpPage(mess.sender));
-        }
-        else{
+        } else if (text[0] == "2"){
+            if(mess.text.length > 5) { //Users sometimes may type `2 className` and className is (in this case) not longer than 3 characters
+                notifyAdmin(mess);
+            } else {
+				messFunc.preapreMessage('text', mess.sender, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(\nJeśli chciałeś spytać o zastępstwa, użyj 0 lub 1. Instrukcja dostępna jest w \"Funkcje szkolne\" w pomocy.", function(messageTS){
+					messenger.send(messageTS);
+				});
+            }
+        } else{
             console.log("Pop info about bad message to Admins");
         }
     }
@@ -323,6 +325,36 @@ function sTL(teachers, msg, i, senderID){
 	} else if(i < teachers.length){
 		sTL(teachers, msg, (i+1), senderID);
 	}
+}
+/**
+ * Notify admin if user needs help
+ * @param {Mess} mess Object received from `messageDistribution()/analizeText()`
+ */
+function notifyAdmin(mess){
+    var oMessage = mess.text;
+    messFunc.preapreMessage("text", mess.sender, "Skontaktujemy się aby odpowiedzieć na pytanie.", function(messageTS){
+        messenger.send(messageTS);
+    });
+    messFunc.prepareBtn([["web_url", "https://www.facebook.com/ZastepstwaDlaSzkol/inbox/", "Odpowiedz"]], function(buttons){
+        facebook.messengerUserInfo(mess.sender, function(userData){
+            var uMessage;
+            if(oMessage[1] == " " || oMessage[1] == "." || oMessage[1] == "_"){
+                uMessage = oMessage.substring(2);
+            } else {
+                uMessage = oMessage.substring(1);
+            }
+            var content={
+                text: 'nowa wiadomość od ' + userData.first_name + ' ' + userData.last_name + ":\n" + uMessage,
+                buttons: buttons
+            };
+            messFunc.preapreMessage('generic', adm1, content, function(messageTS){
+                messenger.send(messageTS);
+            });
+            messFunc.preapreMessage('generic', adm2, content, function(messageTS){
+                messenger.send(messageTS);
+            });
+        });
+    });
 }
 function commandValidation(text){
     var allClasses = config.classList;
@@ -497,3 +529,14 @@ exports.echo=echo;
 exports.attachments=attachments;
 exports.messageDistribution=messageDistribution;
 exports.checkId=isThisMe;
+/**
+ * Object passed from moduleSwitch and messageDistribution
+ * @typedef {Object} Mess
+ * @property {number} sender id of user who sent the message
+ * @property {number} page page (receiver) id
+ * @property {number} timestamp message timestamp
+ * @property {string} type type of received event
+ * @property {string} [passThroughParam] param passed by Send to Messenger button
+ * @property {string} [text] text of message
+ * @property {string} [payload] payload of received postback
+*/

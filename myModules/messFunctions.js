@@ -68,7 +68,7 @@ function callSendAPI(token) {
               console.error("res",error);
             }
         });
-	}
+	};
 	/**
 	 * Send `messageData` and execute callback
 	 * @param {Object} messageData - object created by `createMessage()`
@@ -97,7 +97,7 @@ function callSendAPI(token) {
 				});
 			}
 		});
-	}
+	};
 }
 exports.send=callSendAPI;
 exports.preapreMessage=createMessage;
