@@ -199,6 +199,16 @@ function analizeText(mess){
             commandValidation(text, isCommand => {
                 if(isCommand){
                     checkSubstitutions(text, mess);
+                } else if (mess.text[0] == "0" || mess.text[0] == "1"){
+                    messFunc.prepareBtn([['postback', '{type: "teachers"}', "Lista nauczycieli"]], (buttons) => {
+                        var content = {
+                            text: "Podana klasa lub nauczyciel nie istnieje. Lista klas:\n" + config.classList.join(", "),
+                            buttons: buttons
+                        };
+                        messFunc.preapreMessage('generic', mess.sender, content, (messageTS) => {
+                            messenger.send(messageTS);
+                        });
+                    });
                 } else {
                     console.log("Pop info about bad message to Admins");
                 }
@@ -206,13 +216,18 @@ function analizeText(mess){
         }
     }
 }
+/**
+ * Check if there are substitutions for class/teacher and send relevat response
+ * @param {string[]} text `mess.text.split(" ")`
+ * @param {Mess} mess object received from `analizeText`
+ */
 function checkSubstitutions(text, mess) {
     ifChanges(text, function (changes, weekDay) {
         if (changes) {
             if (changes.length > 0) {
-                messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text[1] + '"}', 'Wyślij na czacie']], function (buttons) {
+                messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
                     var content = {
-                        text: 'Są zastępstwa na ' + weekDay + ' dla klasy ' + text[1],
+                        text: 'Są zastępstwa na ' + weekDay + ' dla ' + text.slice(1).join(" "),
                         buttons: buttons
                     };
                     messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
@@ -221,7 +236,7 @@ function checkSubstitutions(text, mess) {
                 });
             }
             else {
-                messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla klasy ' + text[1], function (messageTS) {
+                messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + text.slice(1).join(" "), function (messageTS) {
                     messenger.send(messageTS);
                 });
             }
@@ -509,7 +524,7 @@ function changesForMessenger(reqClass, day, callback){
         if(config.classList.includes(reqClass[1])){ //It's a class
             reqClass = reqClass[1];
         } else { //It's a teacher
-            reqClass = reqClass.slice(1).split(" ");
+            reqClass = reqClass.slice(1).join(" ");
         }
     }
     getChanges({param: day}, function(obj, weekDay){
@@ -522,10 +537,17 @@ function changesForMessenger(reqClass, day, callback){
             var subs = obj.substitution;
             for(var i = 0; i < subs.length; i++){
                 var oneSub = subs[i];
+                var {changes} = oneSub;
                 var classIDs = oneSub.classes;
+                var tList = oneSub.teachers;
+                if(changes && changes.teachers){
+                    tList = tList.concat(changes.teachers);
+                }
+                tList = tList.map(function(value) {
+                    return value.toLowerCase();
+                });
                 if(classIDs){
-                    if((classIDs.includes(reqClass) || oneSub.teachers.includes(reqClass) || (oneSub.changes && oneSub.changes.teachers && oneSub.changes.teachers.includes(reqClass))) && (oneSub.cancelled[0] || oneSub.substitution_types)){
-                        var {changes} = oneSub;
+                    if((classIDs.includes(reqClass) || tList.includes(reqClass)) && (oneSub.cancelled[0] || oneSub.substitution_types)){
                         if(oneSub.cancelled[0]){
                             msg+='anulowanie';
                         }else {
