@@ -367,15 +367,23 @@ function notifyAdmin(mess){
 }
 function commandValidation(text){
     var allClasses = config.classList;
-    var day="";
     if(allClasses.indexOf(text[1]) > -1){
         if(text[0] == "0" || text[0] == "1")
-        return true;
+            return true;
+    } else { //check if user asks for a teacher
+        mongo.findById('all', 'teachers', function(err, obj){
+            if(!err && obj && obj.teachers){
+                var tList = obj.teachers.map(function(value) {
+                    return value.toLowerCase();
+                });
+                var teacher = text.slice(1).join(" ");
+                if(tList.includes(teacher) && (text[0] == "0" || text[0] == "1")){
+                    return true;
+                }
+            }
+        });
     }
-    else 
-        return false;
-    
-    
+    return false;
 }
 function ifChanges(text,callback){
     if(commandValidation(text)){
@@ -388,16 +396,15 @@ function ifChanges(text,callback){
                 day="tommorow";
             break;
         }
-        changesForMessenger(text[1],day,function(allChanges,weekDay){
+        changesForMessenger(text,day,function(allChanges,weekDay){
             setImmediate(function(){
                 callback(allChanges,weekDay);
-            });            
-        });    
-    }
-    else{
-        setImmediate(function(){
-                callback();
             });
+        });
+    } else {
+        setImmediate(function(){
+            callback();
+        });
     }
 }
 
@@ -465,65 +472,74 @@ function getChanges(body,callback){ //resposne app's format changes
         });
     });
 }
-function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
-    //reqClass String [class]
-    //day String [today;tommorow]
-    getChanges({param:day},function(obj,weekDay){
-        var tableOfMesseges=[];
+/**
+ * Creates an array of messages **(plain text, not an object which can be send)** containing substitutions data. One element per substitution.
+ * @param {string[]} reqClass Array containing class on index 1 or teachers name (index 1 and all after (if there are more elements than 2))
+ * @param {string} day can be "TDAT", "today" or anything else (then it means today)
+ * @param {Function} callback callback to execute - 2 parameters passed: string[] - array of messages, string - day of week eg. "Pon", "Pt"
+ */
+function changesForMessenger(reqClass, day, callback){
+    if(config.classList.includes(reqClass[1])){ //It's a class
+        reqClass = reqClass[1];
+    } else { //It's a teacher
+        reqClass = reqClass.slice(1).split(" ");
+    }
+    getChanges({param: day}, function(obj, weekDay){
+        /** Array of messages with substitutions
+         * @type {string[]}
+         */
+        var tableOfMessages = [];
 		var msg = "";
-        //console.log(obj);
-        if(obj['substitution'] != 'no substitutions'){
-            var subs = obj['substitution'];
+        if(obj.substitution != 'no substitutions'){
+            var subs = obj.substitution;
             for(var i = 0; i < subs.length; i++){
                 var oneSub = subs[i];
                 var classIDs = oneSub.classes;
                 if(classIDs){
-                    for(var n = 0; n < classIDs.length; n++){
-                        if(classIDs[n] == reqClass && oneSub.cancelled[0] || classIDs[n] == reqClass && oneSub.substitution_types){
-                            var changes = oneSub['changes'];
-                            if(oneSub.cancelled[0]){
-                                msg+='anulowanie';
-                            }else {
-                                msg+='Typ: ' + oneSub.substitution_types;
-                            }
-                            msg+='\nLekcja: ' + oneSub.periods;
-                            msg+='\nNauczyciel: ' + oneSub.teachers;
-                            if(changes){
-                                if(changes.teachers){
-                                    msg+=' => ' + changes.teachers;
-                                }
-                            }
-                            msg+='\nPrzedmiot: ' + oneSub.subjects;
-                            if(changes){
-                                if(changes.subjects){
-                                    msg+= ' => ' + changes.subjects;
-                                }
-                            }
-                            msg+='\nSala: ' + oneSub.classrooms;
-                            if(changes){
-                                if(changes.classrooms){
-                                    msg+=' => ' + changes.classrooms;
-                                }
-                            }
-                            if(oneSub.groupnames){
-                                if(oneSub.groupnames != ""){
-                                    msg+='\nGrupa: ' + oneSub.groupnames;
-                                }
-                            }
-                            if(oneSub.note){
-                                if(oneSub.note != ""){
-                                    msg+='\nKomentarz: '  + oneSub.note;
-                                }
-                            }
-                            tableOfMesseges[tableOfMesseges.length]=msg;
-                            msg='';
+                    if((classIDs.includes(reqClass) || oneSub.teachers.includes(reqClass) || (oneSub.changes && oneSub.changes.teachers && oneSub.changes.teachers.includes(reqClass))) && (oneSub.cancelled[0] || oneSub.substitution_types)){
+                        var {changes} = oneSub;
+                        if(oneSub.cancelled[0]){
+                            msg+='anulowanie';
+                        }else {
+                            msg+='Typ: ' + oneSub.substitution_types;
                         }
+                        msg+='\nLekcja: ' + oneSub.periods;
+                        msg+='\nNauczyciel: ' + oneSub.teachers;
+                        if(changes && changes.teachers){
+                            msg+=' => ' + changes.teachers;
+                        }
+                        msg+='\nPrzedmiot: ' + oneSub.subjects;
+                        if(changes && changes.subjects){
+                            msg+= ' => ' + changes.subjects;
+                        }
+                        msg+='\nSala: ' + oneSub.classrooms;
+                        if(changes && changes.classrooms){
+                            msg+=' => ' + changes.classrooms;
+                        }
+                        if((oneSub.teachers.includes(reqClass) || (changes && changes.teachers && changes.teachers.includes(reqClass))) || changes.classes){ //include class if sending substitutions for a teacher or if there is a change in list of classes
+                            msg+='\nKlasa: ' + oneSub.classes.join(", ");
+                            if(changes && changes.classes){
+                                msg+=' => ' + changes.classes.join(", ");
+                            }
+                        }
+                        if(oneSub.groupnames){
+                            if(oneSub.groupnames != ""){
+                                msg+='\nGrupa: ' + oneSub.groupnames;
+                            }
+                        }
+                        if(oneSub.note){
+                            if(oneSub.note != ""){
+                                msg+='\nKomentarz: '  + oneSub.note;
+                            }
+                        }
+                        tableOfMessages.push(msg);
+                        msg='';
                     }
                 }
             }
         }
-        setImmediate(function() {
-            callback(tableOfMesseges,weekDay);
+        setImmediate(function(){
+            callback(tableOfMessages, weekDay);
         });
     });
 }
