@@ -187,27 +187,7 @@ function analizeText(mess){
         if (mess.text[0] == "2"){
             adminCommunication(mess);
         } else {
-            ifChanges(text,function(changes,weekDay){
-                //console.log('chnages',changes);
-                if(changes){
-                    if(changes.length>0){
-                        messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
-                                //com += ' Są zastępstwa dla klasy ' + text[1];
-                                var content={
-                                    text:'Są zastępstwa na '+weekDay+' dla klasy ' + text[1],
-                                    buttons: buttons
-                                };
-                                messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
-                                    messenger.send(messageTS);
-                                });
-                            });
-                    } else {
-                        messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
-                            messenger.send(messageTS);
-                        });
-                    }
-                }
-            });
+            checkSubstitutions(text, mess);
         }
     } else {
         if(text[0]=="pomoc"||text[0]=="help"){
@@ -216,9 +196,37 @@ function analizeText(mess){
         } else if (mess.text[0] == "2"){
             adminCommunication(mess);
         } else {
-            console.log("Pop info about bad message to Admins");
+            commandValidation(text, isCommand => {
+                if(isCommand){
+                    checkSubstitutions(text, mess);
+                } else {
+                    console.log("Pop info about bad message to Admins");
+                }
+            });
         }
     }
+}
+function checkSubstitutions(text, mess) {
+    ifChanges(text, function (changes, weekDay) {
+        if (changes) {
+            if (changes.length > 0) {
+                messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text[1] + '"}', 'Wyślij na czacie']], function (buttons) {
+                    var content = {
+                        text: 'Są zastępstwa na ' + weekDay + ' dla klasy ' + text[1],
+                        buttons: buttons
+                    };
+                    messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
+                        messenger.send(messageTS);
+                    });
+                });
+            }
+            else {
+                messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla klasy ' + text[1], function (messageTS) {
+                    messenger.send(messageTS);
+                });
+            }
+        }
+    });
 }
 function analizePostback(mess) {
     var payload = mess.payload;
@@ -365,11 +373,18 @@ function notifyAdmin(mess){
         });
     });
 }
-function commandValidation(text){
+function commandValidation(text, callback){
     var allClasses = config.classList;
-    if(allClasses.indexOf(text[1]) > -1){
-        if(text[0] == "0" || text[0] == "1")
-            return true;
+    if(allClasses.includes(text[1])){
+        if(text[0] == "0" || text[0] == "1"){
+            setImmediate(() => {
+                callback(true);
+            });
+        } else {
+            setImmediate(() => {
+                callback(false);
+            });
+        }
     } else { //check if user asks for a teacher
         mongo.findById('all', 'teachers', function(err, obj){
             if(!err && obj && obj.teachers){
@@ -378,34 +393,45 @@ function commandValidation(text){
                 });
                 var teacher = text.slice(1).join(" ");
                 if(tList.includes(teacher) && (text[0] == "0" || text[0] == "1")){
-                    return true;
+                    setImmediate(() => {
+                        callback(true);
+                    });
+                } else {
+                    setImmediate(() => {
+                        callback(false);
+                    });
                 }
+            } else {
+                setImmediate(() => {
+                    callback(false);
+                });
             }
         });
     }
-    return false;
 }
 function ifChanges(text,callback){
-    if(commandValidation(text)){
-        var day;
-        switch(text[0]){
-            case "0":
-                day="today";
-            break;
-            case "1":
-                day="tommorow";
-            break;
-        }
-        changesForMessenger(text,day,function(allChanges,weekDay){
-            setImmediate(function(){
-                callback(allChanges,weekDay);
+    commandValidation(text, isCommand => {
+        if(isCommand){
+            var day;
+            switch(text[0]){
+                case "0":
+                    day="today";
+                break;
+                case "1":
+                    day="tommorow";
+                break;
+            }
+            changesForMessenger(text,day,function(allChanges,weekDay){
+                setImmediate(function(){
+                    callback(allChanges,weekDay);
+                });
             });
-        });
-    } else {
-        setImmediate(function(){
-            callback();
-        });
-    }
+        } else {
+            setImmediate(function(){
+                callback();
+            });
+        }
+    });
 }
 
 function attachments(event){
