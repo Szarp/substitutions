@@ -200,15 +200,7 @@ function analizeText(mess){
                 if(isCommand){
                     checkSubstitutions(text, mess);
                 } else if (mess.text[0] == "0" || mess.text[0] == "1"){
-                    messFunc.prepareBtn([['postback', '{type: "teachers"}', "Lista nauczycieli"]], (buttons) => {
-                        var content = {
-                            text: "Podana klasa lub nauczyciel nie istnieje. Lista klas:\n" + config.classList.join(", "),
-                            buttons: buttons
-                        };
-                        messFunc.preapreMessage('generic', mess.sender, content, (messageTS) => {
-                            messenger.send(messageTS);
-                        });
-                    });
+                    wrongClass(mess);
                 } else {
                     console.log("Pop info about bad message to Admins");
                 }
@@ -217,29 +209,50 @@ function analizeText(mess){
     }
 }
 /**
+ * Notify user that they asked for substitutions for a not existing class/teacher
+ * @param {Mess} mess message object received form `analizeText`
+ */
+function wrongClass(mess) {
+    messFunc.prepareBtn([['postback', 'teachers', "Lista nauczycieli"]], (buttons) => {
+        var content = {
+            text: "Podana klasa lub nauczyciel nie istnieje. Lista klas:\n" + config.classList.join(", "),
+            buttons: buttons
+        };
+        messFunc.preapreMessage('generic', mess.sender, content, (messageTS) => {
+            messenger.send(messageTS);
+        });
+    });
+}
+/**
  * Check if there are substitutions for class/teacher and send relevat response
  * @param {string[]} text `mess.text.split(" ")`
  * @param {Mess} mess object received from `analizeText`
  */
 function checkSubstitutions(text, mess) {
-    ifChanges(text, function (changes, weekDay) {
-        if (changes) {
-            if (changes.length > 0) {
-                messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
-                    var content = {
-                        text: 'Są zastępstwa na ' + weekDay + ' dla ' + text.slice(1).join(" "),
-                        buttons: buttons
-                    };
-                    messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
-                        messenger.send(messageTS);
-                    });
-                });
-            }
-            else {
-                messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + text.slice(1).join(" "), function (messageTS) {
-                    messenger.send(messageTS);
-                });
-            }
+    commandValidation(text, (isCommand) => {
+        if (isCommand) {
+            ifChanges(text, function (changes, weekDay) {
+                if (changes) {
+                    if (changes.length > 0) {
+                        messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
+                            var content = {
+                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + text.slice(1).join(" "),
+                                buttons: buttons
+                            };
+                            messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
+                                messenger.send(messageTS);
+                            });
+                        });
+                    }
+                    else {
+                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + text.slice(1).join(" "), function (messageTS) {
+                            messenger.send(messageTS);
+                        });
+                    }
+                }
+            });
+        } else {
+            wrongClass(mess);
         }
     });
 }
