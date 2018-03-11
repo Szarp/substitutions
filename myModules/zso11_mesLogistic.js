@@ -109,7 +109,7 @@ function messageDistribution(mess){
                         else{
                             console.log("Error in saving user\'s message",e);
                         }
-                })
+                });
                 //console.log('Saving to users\'s message');
             }
         break;
@@ -179,48 +179,43 @@ function sendToMessengerBtn(mess){
  * @param {Mess} mess object received from messageDistribution
  */
 function analizeText(mess){
-    mess.text=mess.text.toLowerCase();
-    var text = mess.text.split(' ');
+    var text = mess.text.toLowerCase().split(' ');
     if(text[0]=="4"){
         token(text,mess);        
     }
     else if(text.length == 2){
-        //console.log("Maybe thats ask for changes");
-        ifChanges(text,function(changes,weekDay){
-            //console.log('chnages',changes);
-            if(changes){
-                if(changes.length>0){
-                    messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
-                            //com += ' Są zastępstwa dla klasy ' + text[1];
-                            var content={
-                                text:'Są zastępstwa na '+weekDay+' dla klasy ' + text[1],
-                                buttons: buttons
-                            };
-                            messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
-                                messenger.send(messageTS);
+        if (mess.text[0] == "2"){
+            adminCommunication(mess);
+        } else {
+            ifChanges(text,function(changes,weekDay){
+                //console.log('chnages',changes);
+                if(changes){
+                    if(changes.length>0){
+                        messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
+                                //com += ' Są zastępstwa dla klasy ' + text[1];
+                                var content={
+                                    text:'Są zastępstwa na '+weekDay+' dla klasy ' + text[1],
+                                    buttons: buttons
+                                };
+                                messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
+                                    messenger.send(messageTS);
+                                });
                             });
+                    } else {
+                        messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
+                            messenger.send(messageTS);
                         });
-                } else {
-                    messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
-                        messenger.send(messageTS);
-                    });
+                    }
                 }
-            }
-        });
-    }
-    else{
+            });
+        }
+    } else {
         if(text[0]=="pomoc"||text[0]=="help"){
             console.log("user id",mess.sender);
             messenger.send(template.helpPage(mess.sender));
-        } else if (text[0] == "2"){
-            if(mess.text.length > 5) { //Users sometimes may type `2 className` and className is (in this case) not longer than 3 characters
-                notifyAdmin(mess);
-            } else {
-				messFunc.preapreMessage('text', mess.sender, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(\nJeśli chciałeś spytać o zastępstwa, użyj 0 lub 1. Instrukcja dostępna jest w \"Funkcje szkolne\" w pomocy.", function(messageTS){
-					messenger.send(messageTS);
-				});
-            }
-        } else{
+        } else if (mess.text[0] == "2"){
+            adminCommunication(mess);
+        } else {
             console.log("Pop info about bad message to Admins");
         }
     }
@@ -267,7 +262,7 @@ function analizePostback(mess) {
                 var content={
                     text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
                     buttons: buttons
-                }
+                };
                 messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
                     messenger.send(messageTS);
                 });
@@ -327,8 +322,22 @@ function sTL(teachers, msg, i, senderID){
 	}
 }
 /**
+ * Check if user asked a question or just made a mistake and pass message to `notifyAdmin()` if it is not a mistake.
+ * In case of a mitake notify user about it.
+ * @param {Mess} mess message passed from `analizeText()`
+ */
+function adminCommunication(mess){
+    if(mess.text.length > 5) { //Users sometimes may type `2 className` and className is (in this case) not longer than 3 characters
+        notifyAdmin(mess);
+    } else {
+        messFunc.preapreMessage('text', mess.sender, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(\nJeśli chciałeś spytać o zastępstwa, użyj 0 lub 1. Instrukcja dostępna jest w \"Instrukcja\" w pomocy.", function(messageTS){
+            messenger.send(messageTS);
+        });
+    }
+}
+/**
  * Notify admin if user needs help
- * @param {Mess} mess Object received from `messageDistribution()/analizeText()`
+ * @param {Mess} mess Object received from `adminCommunication()`.
  */
 function notifyAdmin(mess){
     var oMessage = mess.text;
@@ -376,7 +385,7 @@ function ifChanges(text,callback){
                 day="today";
             break;
             case "1":
-                day="tommorow"
+                day="tommorow";
             break;
         }
         changesForMessenger(text[1],day,function(allChanges,weekDay){
@@ -395,8 +404,8 @@ function ifChanges(text,callback){
 function attachments(event){
     var type = event.message.attachment.type;
     var link = event.message.attachment.payload.url;
-    console.log('Got attachments: '+type)
-    console.log('Location: '+link)
+    console.log('Got attachments: '+type);
+    console.log('Location: '+link);
     
 }
 function delivered(event){
@@ -440,11 +449,11 @@ function getChanges(body,callback){ //resposne app's format changes
     //console.log('requested date: ',time.displayTime());
     subDB.find({_id:time.displayTime()},{},function(err,elems){
         var obj = elems[0];
-        if(err){console.log('err in sending substitutions')}
+        if(err){console.log('err in sending substitutions');}
         var objToSend={};
         if(obj){
             objToSend['substitution']=obj['substitution'];
-            if(obj['date'] == undefined){obj['date']='31-12-2016'}
+            if(obj['date'] == undefined){obj['date']='31-12-2016';}
             objToSend['date']=obj['date'];
         } 
         else {
