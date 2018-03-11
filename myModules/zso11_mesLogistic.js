@@ -353,7 +353,7 @@ function notifyAdmin(mess){
                 uMessage = oMessage.substring(1);
             }
             var content={
-                text: 'nowa wiadomość od ' + userData.first_name + ' ' + userData.last_name + ":\n" + uMessage,
+                text: 'nowa wiadomość od ' + userData.first_name + ' ' + userData.last_name + ":\n" + uMessage.trim(),
                 buttons: buttons
             };
             messFunc.preapreMessage('generic', adm1, content, function(messageTS){
