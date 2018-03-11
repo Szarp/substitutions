@@ -474,15 +474,17 @@ function getChanges(body,callback){ //resposne app's format changes
 }
 /**
  * Creates an array of messages **(plain text, not an object which can be send)** containing substitutions data. One element per substitution.
- * @param {string[]} reqClass Array containing class on index 1 or teachers name (index 1 and all after (if there are more elements than 2))
+ * @param {string|string[]} reqClass Array containing class on index 1 or teachers name (index 1 and all after (if there are more elements than 2)) **OR** a string (if coming from postback)
  * @param {string} day can be "TDAT", "today" or anything else (then it means today)
  * @param {Function} callback callback to execute - 2 parameters passed: string[] - array of messages, string - day of week eg. "Pon", "Pt"
  */
 function changesForMessenger(reqClass, day, callback){
-    if(config.classList.includes(reqClass[1])){ //It's a class
-        reqClass = reqClass[1];
-    } else { //It's a teacher
-        reqClass = reqClass.slice(1).split(" ");
+    if(typeof reqClass != "string"){ //postback passes a string, analizeText - array of strings (typeof array === 'object')
+        if(config.classList.includes(reqClass[1])){ //It's a class
+            reqClass = reqClass[1];
+        } else { //It's a teacher
+            reqClass = reqClass.slice(1).split(" ");
+        }
     }
     getChanges({param: day}, function(obj, weekDay){
         /** Array of messages with substitutions
@@ -516,7 +518,7 @@ function changesForMessenger(reqClass, day, callback){
                         if(changes && changes.classrooms){
                             msg+=' => ' + changes.classrooms;
                         }
-                        if((oneSub.teachers.includes(reqClass) || (changes && changes.teachers && changes.teachers.includes(reqClass))) || changes.classes){ //include class if sending substitutions for a teacher or if there is a change in list of classes
+                        if((oneSub.teachers.includes(reqClass) || (changes && changes.teachers && changes.teachers.includes(reqClass))) || (changes && changes.classes)){ //include class if sending substitutions for a teacher or if there is a change in list of classes
                             msg+='\nKlasa: ' + oneSub.classes.join(", ");
                             if(changes && changes.classes){
                                 msg+=' => ' + changes.classes.join(", ");
