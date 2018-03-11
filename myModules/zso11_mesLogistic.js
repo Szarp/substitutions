@@ -236,7 +236,7 @@ function checkSubstitutions(text, mess) {
                     if (changes.length > 0) {
                         messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
                             var content = {
-                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + text.slice(1).join(" "),
+                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")),
                                 buttons: buttons
                             };
                             messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
@@ -245,7 +245,7 @@ function checkSubstitutions(text, mess) {
                         });
                     }
                     else {
-                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + text.slice(1).join(" "), function (messageTS) {
+                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")), function (messageTS) {
                             messenger.send(messageTS);
                         });
                     }
