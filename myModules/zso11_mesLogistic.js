@@ -383,11 +383,10 @@ function notifyAdmin(mess){
     messFunc.prepareBtn([["web_url", "https://www.facebook.com/ZastepstwaDlaSzkol/inbox/", "Odpowiedz"]], function(buttons){
         facebook.messengerUserInfo(mess.sender, function(userData){
             var uMessage;
-            if(oMessage[1] == " " || oMessage[1] == "." || oMessage[1] == "_"){
-                uMessage = oMessage.substring(2);
-            } else {
+            if(oMessage[0] == "2"){
                 uMessage = oMessage.substring(1);
             }
+            uMessage = uMessage.trim();
             var content={
                 text: 'nowa wiadomość od ' + userData.first_name + ' ' + userData.last_name + ":\n" + uMessage.trim(),
                 buttons: buttons
