@@ -202,7 +202,7 @@ function analizeText(mess){
                 } else if (mess.text[0] == "0" || mess.text[0] == "1"){
                     wrongClass(mess);
                 } else {
-                    console.log("Pop info about bad message to Admins");
+                    notifyAdmin(mess);
                 }
             });
         }
