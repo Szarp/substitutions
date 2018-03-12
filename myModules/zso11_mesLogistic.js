@@ -385,6 +385,8 @@ function notifyAdmin(mess){
             var uMessage;
             if(oMessage[0] == "2"){
                 uMessage = oMessage.substring(1);
+            } else {
+                uMessage = oMessage;
             }
             uMessage = uMessage.trim();
             var content={
