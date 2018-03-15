@@ -212,13 +212,19 @@ var mongoSub = new mon.zckoizSubstitutions(config.db);
 //getChanges(function(){})
 function getChanges(callback){
     request("http://www.zckoiz.zabrze.pl/zastepstwa",function(err,res,body){
-        var convert = new zckioz(body);
-        convert.init();
-        mongoSub.save(assignId(convert.toSave),function(){
-            setImmediate(function(){
-                callback();
-            });
-        });
+		if(!err && body){
+			var convert = new zckioz(body);
+			convert.init();
+			mongoSub.save(assignId(convert.toSave),function(){
+				setImmediate(function(){
+					callback();
+				});
+			});
+		} else if(err){
+			console.error("An error occured while downloading data (ZCKOIZ):", err);
+		} else {
+			console.error("An error occured while downloading data (ZCKOIZ): body is undefined");
+		}
 	});
 }
 function assignId(preparedData){
