@@ -308,9 +308,11 @@ function zckioz(body){
     this.splitText=function(){
         var text=""
         self.rawChanges.map(function(el){
-            text = el["text"];
-            el["lessonNum"]=self.lessonNum(text);
-            el["className"]=self.findClass(text);
+            if(el.text){
+                text = el["text"];
+                el["lessonNum"]=self.lessonNum(text);
+                el["className"]=self.findClass(text);
+            }
             return el;
         })
     }
