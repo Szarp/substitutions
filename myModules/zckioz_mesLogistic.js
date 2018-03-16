@@ -233,7 +233,7 @@ function assignId(preparedData){
     })
     var classList=[];
     for(var j =0;j<data.length;j++){
-        if(classList.indexOf(data[j])==-1){
+        if(classList.indexOf(data[j])==-1 && data[j]){
             classList[classList.length]=data[j].replace(" ","");//special space
         }
     }
