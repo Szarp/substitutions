@@ -4,15 +4,18 @@ var request=require('request');
 var config = require('./configs/zso11');
 //var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
-//var mongo =require('./mongoFunctions.js');
+var mongo =require('./mongoFunctions.js');
 var mon = require('./mongoConnection.js');
 var callFunc = require('./postCallFunctions.js');
+var facebook = require('./facebookComunication.js');
 //messenger
 var template = require('./messTemplates.js');
 var messFunc = require('./messFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
 var setTime = require('./setTime.js');
 var time = new setTime();
+var adm1 = config.adm1;
+var adm2 = config.adm2;
 //var myFunc = require(__dirname+'/myModules/zsoServerComunication.js');
 //var fs = require ('fs');
 //var mon = require('./mongoConnection.js');
@@ -74,6 +77,9 @@ function messageDistribution(mess){
                 });
             }
         break;
+        case "optin":
+            sendToMessengerBtn(mess);
+            break;
         default:
             if(mess["echo"]==true){
                 //console.log('Saving to user message');
@@ -103,14 +109,13 @@ function messageDistribution(mess){
                         else{
                             console.log("Error in saving user\'s message",e);
                         }
-                })
+                });
                 //console.log('Saving to users\'s message');
             }
         break;
     }
 }
 function token(text,mess){
-    	day='';
     var senderID=mess.sender;
     var tkn = text[1];
 		//var tkn = oMessage.substring(2);
@@ -131,64 +136,136 @@ function token(text,mess){
 						});
 					} else {
 						messFunc.preapreMessage('text', senderID, 'Wystąpił błąd. Spróbuj jeszcze raz.', function(messageTS){
-							send(messageTS);
+							messenger.send(messageTS);
 						});
 					}
 				});
 			}    
 }
-function analizeText(mess){
-    mess.text=mess.text.toLowerCase();
-    var text = mess.text.split(' ');
-    if(text[0]=="4"){
-            token(text,mess);        
-        }
-    else if(text.length == 2){
-        //console.log("Maybe thats ask for changes");
-        ifChanges(text,function(changes,weekDay){
-            //console.log('chnages',changes);
-            if(changes){
-                if(changes.length>0){
-                messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
-                        //com += ' Są zastępstwa dla klasy ' + text[1];
-                        var content={
-                            text:'Zastępstwa na '+weekDay+' dla klasy ' + text[1],
-                            buttons: buttons
-                        }
-                        messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
-                            messenger.send(messageTS);
-                        });
+/**
+ * Connects user's Messenger id with their Facebook id and enables auto notifications
+ * @param {Mess} mess object passed from moduleSwitch and messageDistribution
+ * 
+*/
+function sendToMessengerBtn(mess){
+	var senderID = mess.sender;
+	var recipientID = mess.page;
+    var timeOfAuth = mess.timestamp;
+	var passThroughParam = mess.passThroughParam;
+	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
+	if(!(passThroughParam)){
+		console.error("no passThroughParam received");
+	} else {
+        var fbUID = passThroughParam;
+        secretToken.connectAccounts(fbUID, senderID, function () {
+            console.log("Accounts connected!");
+            mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
+                console.log("Notifications for", fbUID, "are on.");
+                messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
+                    var content = {
+                        text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
+                        buttons: buttons
+                    };
+                    messFunc.preapreMessage('generic', senderID, content, function(messageTS){
+                        messenger.send(messageTS);
                     });
-                }
-                else{
-                    messFunc.preapreMessage('text', mess.sender,'Brak zastępstw na '+weekDay+' dla klasy '+ text[1], function(messageTS){
-                    messenger.send(messageTS);
-                    })
-                }
-            }
+                });
+            });
         });
+	}
+}
+/**
+ * Analyse text of user's message and react to it
+ * @param {Mess} mess object received from messageDistribution
+ */
+function analizeText(mess){
+    var text = mess.text.toLowerCase().split(' ');
+    if(text[0]=="4"){
+        token(text,mess);        
     }
-    else{
+    else if(text.length == 2){
+        if (mess.text[0] == "2"){
+            adminCommunication(mess);
+        } else {
+            checkSubstitutions(text, mess);
+        }
+    } else {
         if(text[0]=="pomoc"||text[0]=="help"){
             console.log("user id",mess.sender);
             messenger.send(template.helpPage(mess.sender));
-        }
-        else{
-            console.log("Pop info about bad message to Admins");
+        } else if (mess.text[0] == "2"){
+            adminCommunication(mess);
+        } else {
+            commandValidation(text, isCommand => {
+                if(isCommand){
+                    checkSubstitutions(text, mess);
+                } else if (mess.text[0] == "0" || mess.text[0] == "1"){
+                    wrongClass(mess);
+                } else {
+                    notifyAdmin(mess);
+                }
+            });
         }
     }
 }
+/**
+ * Notify user that they asked for substitutions for a not existing class/teacher
+ * @param {Mess} mess message object received form `analizeText`
+ */
+function wrongClass(mess) {
+    messFunc.prepareBtn([['postback', 'teachers', "Lista nauczycieli"]], (buttons) => {
+        var content = {
+            text: "Podana klasa lub nauczyciel nie istnieje. Lista klas:\n" + config.classList.join(", "),
+            buttons: buttons
+        };
+        messFunc.preapreMessage('generic', mess.sender, content, (messageTS) => {
+            messenger.send(messageTS);
+        });
+    });
+}
+/**
+ * Check if there are substitutions for class/teacher and send relevat response
+ * @param {string[]} text `mess.text.split(" ")`
+ * @param {Mess} mess object received from `analizeText`
+ */
+function checkSubstitutions(text, mess) {
+    commandValidation(text, (isCommand) => {
+        if (isCommand) {
+            ifChanges(text, function (changes, weekDay) {
+                if (changes) {
+                    if (changes.length > 0) {
+                        messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
+                            var content = {
+                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")),
+                                buttons: buttons
+                            };
+                            messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
+                                messenger.send(messageTS);
+                            });
+                        });
+                    }
+                    else {
+                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")), function (messageTS) {
+                            messenger.send(messageTS);
+                        });
+                    }
+                }
+            });
+        } else {
+            wrongClass(mess);
+        }
+    });
+}
 function analizePostback(mess) {
-	var payload = {};
-	if(mess.payload == "help"){
-        payload["type"]= "help";
-    }
-    else if(mess.payload == "get_started_btn"){
-        payload["type"]= "begin";
-        
-    }
-    else{
-        payload = JSON.parse(mess.payload);            
+    var payload = mess.payload;
+    try {
+        payload = JSON.parse(payload);
+    } catch (e) {
+        if (e instanceof SyntaxError) {
+            payload = { type: payload };
+        } else {
+            console.error(e);
+        }
     }
     switch(payload.type){
         case "example":
@@ -216,18 +293,31 @@ function analizePostback(mess) {
 			}
         });
         break;
-        case "begin":
+        case "get_started_btn":
             messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
                 var content={
                     text: "Bot z zastępstwami wita Cię!\nDziękujemy za korzystanie z bota. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
                     buttons: buttons
-                }
+                };
                 messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
                     messenger.send(messageTS);
                 });
             });
         break;
+        case "teachers":
+            mongo.findById('all', 'teachers', function(err, obj){
+                if(!err){
+                    sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, mess.sender);
+                } else {
+                    console.log("Error getting teachers list");
+                    messFunc.preapreMessage('text', mess.sender, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
+                        messenger.send(messageTS);
+                    });
+                }
+            });
+            break;
         default:
+            console.warn("Unknown payload received:", payload);
         break;
     }
     /*
@@ -245,47 +335,139 @@ function analizePostback(mess) {
 
 	sendList(senderID, payload);*/
 }
-function commandValidation(text){
-    var allClasses = config.classList;
-    var day="";
-    if(allClasses.indexOf(text[1]) > -1){
-        if(text[0] == "0" || text[0] == "1")
-        return true;
+/**
+ * Send list of all teachers
+ * @param {string[]} teachers list of all teachers that will be sent
+ * @param {string} msg message (beginning)
+ * @param {number} i number of teacher to add *(should be 0 if sTL is not executed by itself)*
+ * @param {number} senderID id of user, who asked for list
+*/
+function sTL(teachers, msg, i, senderID){
+	msg += '\n' + teachers[i];
+	if(i != 0 && i%10 == 0 || i == (teachers.length-1)){
+		messFunc.preapreMessage('text', senderID, msg, function(messageTS){
+			messenger.sendWC(messageTS, function(err){
+				if(!err){
+					msg = '';
+					sTL(teachers, msg, (i+1), senderID);
+				}
+			});
+		});
+	} else if(i < teachers.length){
+		sTL(teachers, msg, (i+1), senderID);
+	}
+}
+/**
+ * Check if user asked a question or just made a mistake and pass message to `notifyAdmin()` if it is not a mistake.
+ * In case of a mitake notify user about it.
+ * @param {Mess} mess message passed from `analizeText()`
+ */
+function adminCommunication(mess){
+    if(mess.text.length > 5) { //Users sometimes may type `2 className` and className is (in this case) not longer than 3 characters
+        notifyAdmin(mess);
+    } else {
+        messFunc.preapreMessage('text', mess.sender, "Nie potrafimy odpowiedzieć na pytanie, którego nie zadano.\nPrzykro nam :'(\nJeśli chciałeś spytać o zastępstwa, użyj 0 lub 1. Instrukcja dostępna jest w \"Instrukcja\" w pomocy.", function(messageTS){
+            messenger.send(messageTS);
+        });
     }
-    else 
-        return false;
-    
-    
+}
+/**
+ * Notify admin if user needs help
+ * @param {Mess} mess Object received from `adminCommunication()`.
+ */
+function notifyAdmin(mess){
+    var oMessage = mess.text;
+    messFunc.preapreMessage("text", mess.sender, "Skontaktujemy się aby odpowiedzieć na pytanie.", function(messageTS){
+        messenger.send(messageTS);
+    });
+    messFunc.prepareBtn([["web_url", "https://www.facebook.com/ZastepstwaDlaSzkol/inbox/", "Odpowiedz"]], function(buttons){
+        facebook.messengerUserInfo(mess.sender, function(userData){
+            var uMessage;
+            if(oMessage[0] == "2"){
+                uMessage = oMessage.substring(1);
+            } else {
+                uMessage = oMessage;
+            }
+            uMessage = uMessage.trim();
+            var content={
+                text: 'nowa wiadomość od ' + userData.first_name + ' ' + userData.last_name + ":\n" + uMessage.trim(),
+                buttons: buttons
+            };
+            messFunc.preapreMessage('generic', adm1, content, function(messageTS){
+                messenger.send(messageTS);
+            });
+            messFunc.preapreMessage('generic', adm2, content, function(messageTS){
+                messenger.send(messageTS);
+            });
+        });
+    });
+}
+function commandValidation(text, callback){
+    var allClasses = config.classList;
+    if(allClasses.includes(text[1])){
+        if(text[0] == "0" || text[0] == "1"){
+            setImmediate(() => {
+                callback(true);
+            });
+        } else {
+            setImmediate(() => {
+                callback(false);
+            });
+        }
+    } else { //check if user asks for a teacher
+        mongo.findById('all', 'teachers', function(err, obj){
+            if(!err && obj && obj.teachers){
+                var tList = obj.teachers.map(function(value) {
+                    return value.toLowerCase();
+                });
+                var teacher = text.slice(1).join(" ");
+                if(tList.includes(teacher) && (text[0] == "0" || text[0] == "1")){
+                    setImmediate(() => {
+                        callback(true);
+                    });
+                } else {
+                    setImmediate(() => {
+                        callback(false);
+                    });
+                }
+            } else {
+                setImmediate(() => {
+                    callback(false);
+                });
+            }
+        });
+    }
 }
 function ifChanges(text,callback){
-    if(commandValidation(text)){
-        var day;
-        switch(text[0]){
-            case "0":
-                day="today";
-            break;
-            case "1":
-                day="tommorow"
-            break;
-        }
-        changesForMessenger(text[1],day,function(allChanges,weekDay){
+    commandValidation(text, isCommand => {
+        if(isCommand){
+            var day;
+            switch(text[0]){
+                case "0":
+                    day="today";
+                break;
+                case "1":
+                    day="tommorow";
+                break;
+            }
+            changesForMessenger(text,day,function(allChanges,weekDay){
+                setImmediate(function(){
+                    callback(allChanges,weekDay);
+                });
+            });
+        } else {
             setImmediate(function(){
-                callback(allChanges,weekDay);
-            });            
-        });    
-    }
-    else{
-        setImmediate(function(){
                 callback();
             });
-    }
+        }
+    });
 }
 
 function attachments(event){
     var type = event.message.attachment.type;
     var link = event.message.attachment.payload.url;
-    console.log('Got attachments: '+type)
-    console.log('Location: '+link)
+    console.log('Got attachments: '+type);
+    console.log('Location: '+link);
     
 }
 function delivered(event){
@@ -329,11 +511,11 @@ function getChanges(body,callback){ //resposne app's format changes
     //console.log('requested date: ',time.displayTime());
     subDB.find({_id:time.displayTime()},{},function(err,elems){
         var obj = elems[0];
-        if(err){console.log('err in sending substitutions')}
+        if(err){console.log('err in sending substitutions');}
         var objToSend={};
         if(obj){
             objToSend['substitution']=obj['substitution'];
-            if(obj['date'] == undefined){obj['date']='31-12-2016'}
+            if(obj['date'] == undefined){obj['date']='31-12-2016';}
             objToSend['date']=obj['date'];
         } 
         else {
@@ -345,65 +527,83 @@ function getChanges(body,callback){ //resposne app's format changes
         });
     });
 }
-function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
-    //reqClass String [class]
-    //day String [today;tommorow]
-    getChanges({param:day},function(obj,weekDay){
-        var tableOfMesseges=[];
+/**
+ * Creates an array of messages **(plain text, not an object which can be send)** containing substitutions data. One element per substitution.
+ * @param {string|string[]} reqClass Array containing class on index 1 or teachers name (index 1 and all after (if there are more elements than 2)) **OR** a string (if coming from postback)
+ * @param {string} day can be "TDAT", "today" or anything else (then it means today)
+ * @param {Function} callback callback to execute - 2 parameters passed: string[] - array of messages, string - day of week eg. "Pon", "Pt"
+ */
+function changesForMessenger(reqClass, day, callback){
+    if(typeof reqClass != "string"){ //postback passes a string, analizeText - array of strings (typeof array === 'object')
+        if(config.classList.includes(reqClass[1])){ //It's a class
+            reqClass = reqClass[1];
+        } else { //It's a teacher
+            reqClass = reqClass.slice(1).join(" ");
+        }
+    }
+    getChanges({param: day}, function(obj, weekDay){
+        /** Array of messages with substitutions
+         * @type {string[]}
+         */
+        var tableOfMessages = [];
 		var msg = "";
-        //console.log(obj);
-        if(obj['substitution'] != 'no substitutions'){
-            var subs = obj['substitution'];
+        if(obj.substitution != 'no substitutions'){
+            var subs = obj.substitution;
             for(var i = 0; i < subs.length; i++){
                 var oneSub = subs[i];
+                var {changes} = oneSub;
                 var classIDs = oneSub.classes;
+                var tList = oneSub.teachers;
+                if(changes && changes.teachers){
+                    tList = tList.concat(changes.teachers);
+                }
+                tList = tList.map(function(value) {
+                    return value.toLowerCase();
+                });
                 if(classIDs){
-                    for(var n = 0; n < classIDs.length; n++){
-                        if(classIDs[n] == reqClass && oneSub.cancelled[0] || classIDs[n] == reqClass && oneSub.substitution_types){
-                            var changes = oneSub['changes'];
-                            if(oneSub.cancelled[0]){
-                                msg+='anulowanie';
-                            }else {
-                                msg+='Typ: ' + oneSub.substitution_types;
-                            }
-                            msg+='\nLekcja: ' + oneSub.periods;
-                            msg+='\nNauczyciel: ' + oneSub.teachers;
-                            if(changes){
-                                if(changes.teachers){
-                                    msg+=' => ' + changes.teachers;
-                                }
-                            }
-                            msg+='\nPrzedmiot: ' + oneSub.subjects;
-                            if(changes){
-                                if(changes.subjects){
-                                    msg+= ' => ' + changes.subjects;
-                                }
-                            }
-                            msg+='\nSala: ' + oneSub.classrooms;
-                            if(changes){
-                                if(changes.classrooms){
-                                    msg+=' => ' + changes.classrooms;
-                                }
-                            }
-                            if(oneSub.groupnames){
-                                if(oneSub.groupnames != ""){
-                                    msg+='\nGrupa: ' + oneSub.groupnames;
-                                }
-                            }
-                            if(oneSub.note){
-                                if(oneSub.note != ""){
-                                    msg+='\nKomentarz: '  + oneSub.note;
-                                }
-                            }
-                            tableOfMesseges[tableOfMesseges.length]=msg;
-                            msg='';
+                    if((classIDs.includes(reqClass) || tList.includes(reqClass)) && (oneSub.cancelled[0] || oneSub.substitution_types)){
+                        if(oneSub.cancelled[0]){
+                            msg+='anulowanie';
+                        }else {
+                            msg+='Typ: ' + oneSub.substitution_types;
                         }
+                        msg+='\nLekcja: ' + oneSub.periods;
+                        msg+='\nNauczyciel: ' + oneSub.teachers;
+                        if(changes && changes.teachers){
+                            msg+=' => ' + changes.teachers;
+                        }
+                        msg+='\nPrzedmiot: ' + oneSub.subjects;
+                        if(changes && changes.subjects){
+                            msg+= ' => ' + changes.subjects;
+                        }
+                        msg+='\nSala: ' + oneSub.classrooms;
+                        if(changes && changes.classrooms){
+                            msg+=' => ' + changes.classrooms;
+                        }
+                        if((oneSub.teachers.includes(reqClass) || (changes && changes.teachers && changes.teachers.includes(reqClass))) || (changes && changes.classes)){ //include class if sending substitutions for a teacher or if there is a change in list of classes
+                            msg+='\nKlasa: ' + oneSub.classes.join(", ");
+                            if(changes && changes.classes){
+                                msg+=' => ' + changes.classes.join(", ");
+                            }
+                        }
+                        if(oneSub.groupnames){
+                            if(oneSub.groupnames != ""){
+                                msg+='\nGrupa: ' + oneSub.groupnames;
+                            }
+                        }
+                        if(oneSub.note){
+                            if(oneSub.note != ""){
+                                msg+='\nKomentarz: '  + oneSub.note;
+                            }
+                        }
+                        tableOfMessages.push(msg);
+                        msg='';
                     }
                 }
             }
         }
-        setImmediate(function() {
-            callback(tableOfMesseges,weekDay);
+        setImmediate(function(){
+            callback(tableOfMessages, weekDay);
         });
     });
 }
@@ -418,3 +618,14 @@ exports.echo=echo;
 exports.attachments=attachments;
 exports.messageDistribution=messageDistribution;
 exports.checkId=isThisMe;
+/**
+ * Object passed from moduleSwitch and messageDistribution
+ * @typedef {Object} Mess
+ * @property {number} sender id of user who sent the message
+ * @property {number} page page (receiver) id
+ * @property {number} timestamp message timestamp
+ * @property {string} type type of received event
+ * @property {string} [passThroughParam] param passed by Send to Messenger button
+ * @property {string} [text] text of message
+ * @property {string} [payload] payload of received postback
+*/

@@ -2,7 +2,7 @@
 var zckioz = require("./zckioz_mesLogistic.js");
 var CE = require("./zso11_mesLogistic.js");
 function messageLogistic(params,event){
-    var mess={}
+    var mess={};
     mess["timestamp"]=event.timestamp;
     mess["sender"]=event.sender.id;
     mess["page"]=event.recipient.id;
@@ -38,9 +38,13 @@ function messageLogistic(params,event){
             mess["echo"]=true;
             //console.log('   message from server')
         }
+        if(event.optin){ // Send to Messenger button clicked
+            mess.type = "optin";
+            mess.passThroughParam = event.optin.ref;
+        }
         //break;
     //}
-    moduleSwitch(mess)
+    moduleSwitch(mess);
     //messageDistribution(mess);
 }
 

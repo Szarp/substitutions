@@ -68,7 +68,36 @@ function callSendAPI(token) {
               console.error("res",error);
             }
         });
-    }
+	};
+	/**
+	 * Send `messageData` and execute callback
+	 * @param {Object} messageData - object created by `createMessage()`
+	 * @param {Object} messageData.recipient - receipient object
+	 * @param {number|string} messageData.recipient.id id of recipient
+	 * @param {string} messageData.text text of message (if it's a text message)
+	 * @param {Function} callback callback to execute, one parameter passed - error (`true/null`)
+	 */
+	this.sendWC = function (messageData, callback){
+		request({
+			uri: 'https://graph.facebook.com/v2.7/me/messages',
+			qs: { access_token: self.token },
+			method: 'POST',
+			json: messageData
+		}, function (error, response, body) {
+			if (!error && response.statusCode == 200) {
+				setImmediate(function(){
+					callback(null);
+				});
+			} else {
+				console.error("Unable to send message.");
+				console.error(response);
+				console.error(error);
+				setImmediate(function(){
+					callback(true);
+				});
+			}
+		});
+	};
 }
 exports.send=callSendAPI;
 exports.preapreMessage=createMessage;

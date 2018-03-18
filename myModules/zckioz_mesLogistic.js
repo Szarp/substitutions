@@ -212,13 +212,19 @@ var mongoSub = new mon.zckoizSubstitutions(config.db);
 //getChanges(function(){})
 function getChanges(callback){
     request("http://www.zckoiz.zabrze.pl/zastepstwa",function(err,res,body){
-        var convert = new zckioz(body);
-        convert.init();
-        mongoSub.save(assignId(convert.toSave),function(){
-            setImmediate(function(){
-                callback();
-            });
-        });
+		if(!err && body){
+			var convert = new zckioz(body);
+			convert.init();
+			mongoSub.save(assignId(convert.toSave),function(){
+				setImmediate(function(){
+					callback();
+				});
+			});
+		} else if(err){
+			console.error("An error occured while downloading data (ZCKOIZ):", err);
+		} else {
+			console.error("An error occured while downloading data (ZCKOIZ): body is undefined");
+		}
 	});
 }
 function assignId(preparedData){
@@ -227,7 +233,7 @@ function assignId(preparedData){
     })
     var classList=[];
     for(var j =0;j<data.length;j++){
-        if(classList.indexOf(data[j])==-1){
+        if(classList.indexOf(data[j])==-1 && data[j]){
             classList[classList.length]=data[j].replace(" ","");//special space
         }
     }
@@ -302,9 +308,11 @@ function zckioz(body){
     this.splitText=function(){
         var text=""
         self.rawChanges.map(function(el){
-            text = el["text"];
-            el["lessonNum"]=self.lessonNum(text);
-            el["className"]=self.findClass(text);
+            if(el.text){
+                text = el["text"];
+                el["lessonNum"]=self.lessonNum(text);
+                el["className"]=self.findClass(text);
+            }
             return el;
         })
     }
