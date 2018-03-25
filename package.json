@@ -4,9 +4,11 @@
 	"version": "0.8.0",
 	"author": "Szarp",
 	"main": "index.js",
-	"contributors": [{
-		"name": "krzysdz"
-	}],
+	"contributors": [
+		{
+			"name": "krzysdz"
+		}
+	],
 	"scripts": {
 		"test": "echo No command given\nTry 'start'",
 		"start": "node index.js"
