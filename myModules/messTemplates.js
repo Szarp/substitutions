@@ -33,7 +33,7 @@ function helpPageMessage(id){
                     ]
                 },
                 {
-                    "title": "Funkcje szkolne",
+                    "title": "Instrukcja",
                     "subtitle": "Dowiadywanie się o zastępstwach; komunikacja z adminem; powiadomienia autom.",
                     "buttons": [
                         {
