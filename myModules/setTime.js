@@ -1,5 +1,14 @@
 module.exports = setTime;
 
+/**
+ * Gets the time value in current timezone in milliseconds.
+ * @returns {number}
+ * @memberof Date
+ */
+Date.prototype.getLocaleTime = function(){
+    return this.getTime() - this.getTimezoneOffset() * 60 * 1000;
+};
+
 function setTime(){
     var self=this;
     this.Today;
@@ -33,15 +42,15 @@ function setTime(){
 
     }
     this.tommorowIs=function(){
-        self.Today = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getLocaleTime() + 24 * 60 * 60 * 1000);
         self.updateTime();
     }
     this.theDayAfterTomorrowIs=function(){
-        self.Today = new Date(new Date().getTime() + 2*24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getLocaleTime() + 2 * 24 * 60 * 60 * 1000);
         self.updateTime();
     }
     this.yeasterdayIs=function(){
-        self.Today = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getLocaleTime() - 24 * 60 * 60 * 1000);
         self.updateTime();
     }
     this.nextSchoolDay = function(){
@@ -51,7 +60,7 @@ function setTime(){
             howManyDays = 3;
         else if (day == 6) //Saturday
             howManyDays = 2;
-        self.Today = new Date(new Date().getTime() + howManyDays*24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getLocaleTime() + howManyDays*24 * 60 * 60 * 1000);
         self.updateTime();
     }
     /*
