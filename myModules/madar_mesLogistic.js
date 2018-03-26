@@ -1,3 +1,6 @@
+Date.prototype.localTime = function(){
+   return this.getTime() - this.getTimezoneOffset()*1000*60/2;
+}
 function messengerFunc(configParams){
     var self=this
     sensorStatus.call(this,configParams);
