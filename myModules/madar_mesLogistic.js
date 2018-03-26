@@ -1,6 +1,17 @@
 Date.prototype.localTime = function(){
    return this.getTime() - this.getTimezoneOffset()*1000*60/2;
 }
+var madar = new messengerFunc(config.madarParams);
+    madar.status(function(status){
+        console.log("status")
+        for(k in status)
+            console.log(k+" devices: "+status[k]);
+    });
+    //z.sensor(,function(a){});
+madar.sensor("001703e1",function(res){console.log("sensor",res)});
+//z.lastMeasure("001703e1",function(res){console.log("measure",res)});
+madar.sensor("0017008f",function(res){console.log("sensors",res)});
+//madar.status(function(res){console.log("sensor",res)});
 function messengerFunc(configParams){
     var self=this
     sensorStatus.call(this,configParams);
