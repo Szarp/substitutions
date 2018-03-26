@@ -89,7 +89,7 @@ function analizeText(mess){
             console.log('chnages',changes);
             if(changes){
                 if(changes.length>0){
-                messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
+                messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie'],['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[1]+'"}', 'Wyślij na czacie']], function(buttons){
                         //com += ' Są zastępstwa dla klasy ' + text[1];
                         var content={
                             text:'Zastępstwa na '+weekDay+' dla klasy ' + text[1],
@@ -115,9 +115,27 @@ function analizeText(mess){
             //messenger.send(template.test(mess.sender));
         }
         else if(text[0]=="news"||text[0]=="aktualnosci"){
-            console.log("user id",mess.sender);
+            messFunc.prepareBtn([['postback','{"type":"changes","day":"'+text[0]+'","class":"'+text[0]+'"}', 'Wyślij na czacie'],['postback','{"type":"info","class":"seba"}', 'THE NIGHT SPRINGS']], function(buttons){
+                        //com += ' Są zastępstwa dla klasy ' + text[1];
+                        var content={
+                            text:'Zastępstwa na  dla klasy ' + text[0],
+                            buttons: buttons
+                        }
+                        messFunc.preapreMessage('generic', mess.sender, content, function(messageTS){
+                            messenger.send(messageTS);
+                        });
+                    });
+            //console.log("user id",mess.sender);
             //messenger.send(template.helpPage_zckoiz(mess.sender));
-            messenger.send(template.test(mess.sender));
+            //messenger.send(template.test(mess.sender));
+        }
+        else if(text[0]=="konkurs"){
+            messFunc.preapreMessage('text', mess.sender,testText, function(messageTS){
+                    messenger.send(messageTS);
+                    })
+            //console.log("user id",mess.sender);
+            //messenger.send(template.helpPage_zckoiz(mess.sender));
+            //messenger.send(template.test(mess.sender));
         }
         else{
             console.log("Pop info about bad message to Admins");
@@ -125,12 +143,21 @@ function analizeText(mess){
     }
 }
 function analizePostback(mess) {
+    var testText ="The Night Springs z naszej szkoły ma szansę zagrać na festiwalu. Głosowanie jest całkowicie darmowe, sms to jedynie forma weryfikacji głosu(btw możesz codziennie głosować)\n Link do strony: https://lifeonstage.onet.pl/1062/zespol.html \n\nFanpage:https://www.facebook.com/TheNightSprings/ \n\nJak to bot oczywiście umożliwia automatyczne głosowanie, podaj nr telefonu (otrzymasz sms) i odeślij nam otrzymany nr!!\n(strona słabo działa na smartfonach :-( )";
     var payload = JSON.parse(mess.payload);
     switch(payload.type){
         case "example":
 		messFunc.preapreMessage('text', mess.sender, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			messenger.send(messageTS);
         });
+        break;
+        case "info":
+            if(payload.class=="seba"){
+                messFunc.preapreMessage('text', mess.sender, testText, function(messageTS){
+                    messenger.send(messageTS);
+
+                });
+            }
         break;
         case "changes":
             var day;
