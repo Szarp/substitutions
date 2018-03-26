@@ -573,7 +573,7 @@ function sTL(teachers, msg, i, senderID){
 
 function callSendAPIwC(messageData, callback){
 	request({
-		uri: 'https://graph.facebook.com/v2.7/me/messages',
+		uri: 'https://graph.facebook.com/v2.9/me/messages',
 		qs: { access_token: config.pageToken },
 		method: 'POST',
 		json: messageData
@@ -598,7 +598,7 @@ function callSendAPIwC(messageData, callback){
 
 function callSendAPI(messageData) {
   request({
-    uri: 'https://graph.facebook.com/v2.7/me/messages',
+    uri: 'https://graph.facebook.com/v2.9/me/messages',
     qs: { access_token: config.pageToken },
     method: 'POST',
     json: messageData

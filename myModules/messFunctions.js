@@ -51,7 +51,7 @@ function callSendAPI(token) {
     this.token=token;
     this.send=function(messageData){
         request({
-            uri: 'https://graph.facebook.com/v2.7/me/messages',
+            uri: 'https://graph.facebook.com/v2.9/me/messages',
             qs: { access_token: self.token },
             method: 'POST',
             json: messageData
@@ -79,7 +79,7 @@ function callSendAPI(token) {
 	 */
 	this.sendWC = function (messageData, callback){
 		request({
-			uri: 'https://graph.facebook.com/v2.7/me/messages',
+			uri: 'https://graph.facebook.com/v2.9/me/messages',
 			qs: { access_token: self.token },
 			method: 'POST',
 			json: messageData

@@ -37,7 +37,7 @@ function setTime(){
         self.updateTime();
     }
     this.theDayAfterTomorrowIs=function(){
-        self.Today = new Date(new Date().getTime() + 2*24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000);
         self.updateTime();
     }
     this.yeasterdayIs=function(){
@@ -51,18 +51,7 @@ function setTime(){
             howManyDays = 3;
         else if (day == 6) //Saturday
             howManyDays = 2;
-        self.Today = new Date(new Date().getTime() + howManyDays*24 * 60 * 60 * 1000);
+        self.Today = new Date(new Date().getTime() + howManyDays * 24 * 60 * 60 * 1000);
         self.updateTime();
     }
-    /*
-    this.setTime=function(year,month,day){
-        this.Today=new Date();
-        this.Today.setFullYear(year);
-        this.Today.setDate(day);
-        this.Today.setMonth(month);
-        this.updateTime();
-        
-    }
-    */
-    
 }
