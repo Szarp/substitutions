@@ -3,9 +3,10 @@ var zckoiz = require("./zckioz_mesLogistic.js");
 var zso11 = require("./zsoServerComunication.js");
 var setTime = require('./setTime.js');
 var time = new setTime();
+//downloadAll();
 function downloadAll(){
-    getZckioz();
-    getZso11();
+    //getZckioz();
+    //getZso11();
     
 }
 function getZso11(){
