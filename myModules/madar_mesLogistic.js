@@ -1,3 +1,67 @@
+function sensorStatus(configParams){
+    var self=this;
+    Madar.call(this,configParams);
+    this.average=function(arr){
+        arr=arr["values"][0];
+        arr=arr.filter(function(el){return el != null})
+        var sum=0
+        for(k in arr)
+            sum+=arr[k];
+        return Math.floor(sum/arr.length*10)/10;
+    }
+    this.sensor=function(text,callback){
+        var form={}
+        self.convertName(text,function(sens){
+            if(sens !== undefined){
+                form["name"]=sens["name"]
+                if(sens["RSSI"]!=""){
+                    form["status"]="connected";
+                    self.lastMeasure(sens["MAC"],function(data){
+                        form["data"]=self.average(data);
+                        setImmediate(function(){
+                            callback(form);
+                        });  
+                    })
+                }
+                else{
+                    form["status"]="deconnected";
+                    setImmediate(function(){
+                        callback(form);
+                    });
+                }
+            }
+            else{
+                setImmediate(function(){
+                        callback({"name":text,"status":"not found"});
+                    });  
+            }
+        })
+    }
+    this.convertName=function(text,callback){
+        self.macList(function(list){
+            list=JSON.parse(list)["connection"]
+            text=text.toLocaleLowerCase();
+            var sensor;
+            for(k in list){
+                if(list[k]["name"].toLowerCase()==text || list[k]["MAC"].toLowerCase()==text){
+                    sensor=list[k]
+                    break;
+                }
+            }
+            setImmediate(function(){
+                callback(sensor);
+            });  
+        })
+    }
+    this.lastMeasure=function(macAddr,callback){
+        var x= new Date().localTime();
+        self.measure(macAddr,x-60*1000*20,x-60*1000*5,function(params){
+            setImmediate(function(){
+                callback(JSON.parse(params));
+            });  
+        });
+    }
+}
 function Madar(configParams){
     var self=this;
     this.dest="json.htm";
