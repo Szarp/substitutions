@@ -1,3 +1,27 @@
+function messengerFunc(configParams){
+    var self=this
+    sensorStatus.call(this,configParams);
+    //this.test=function(){console.log("test")};
+    this.status=function(callback){
+        self.macList(function(list){
+            list=JSON.parse(list)["connection"];
+            var connected=0;
+            var deconnected=-1;
+            for(k in list){
+                if(list[k]["RSSI"]!="")
+                    connected++;
+                else
+                    deconnected++;
+            }
+            //list.forEach(function(a){console.log("name",a.name,"RSSI",a.RSSI)})
+            //console.log(connected+" connected devices")
+            //console.log(deconnected+" deconnected devices")
+            setImmediate(function(){
+                callback({"connected":connected,"deconnected":deconnected});
+            });  
+        })
+    }
+}
 function sensorStatus(configParams){
     var self=this;
     Madar.call(this,configParams);
