@@ -167,3 +167,46 @@ function Madar(configParams){
         return newTab.slice(0,newTab.length-1);
     }
 }
+function test(callback){
+    //var cookie=params['cookie'];
+    	var url1='https://anulowano.pl:9001/webhook2';
+    var form = {
+        "object":"page",
+        "entry":[
+            {"id":"729532674508915",//pageID
+             "time":1520265964263, //when message arrived
+             "messaging":[
+                 {"sender":{ //to whom
+                     "id":"1765706666826061"},//my own id
+                  "recipient":{//pageID
+                      "id":"729532674508915"},//given by me
+                  "timestamp":1520265963414,//when message was sent
+                  "message":{
+                      "mid":"mid.$cAADp-vjY5PxoKC7vllh9umnuRknk", //hash of message (not used)
+                      "seq":679112, //number of message (not used)
+                      "text":"<your-text>"}//text of message
+                 }]
+            }
+        ]
+    };/*
+    var form={"object":"page","entry":[{"id":"729532674508915","time":1520265964263,"messaging":[{"sender":{"id":"1765706666826061"},"recipient":{"id":"729532674508915"},"timestamp":1520265963414,"message":{"mid":"mid.$cAADp-vjY5PxoKC7vllh9umnuRknk","seq":679112,"text":"<your-text>"}}]}]};*/
+    //form=JSON.stringify(form);
+    //console.log("form",form);
+			//var formData = querystring.stringify(form);
+			//var contentLength = formData.length;
+			request({
+				url: url1,
+				json: form,
+				method: 'POST'
+			}, function (err, res, body) {
+                console.log(res.body,body);
+                //console.log(formData,contentLength);
+				setImmediate(function() {
+					if(err){
+						callback(true, body);
+					} else {
+						callback(body.length<100,body);
+					}
+				});
+			});
+}
