@@ -80,6 +80,34 @@ function messageDistribution(mess){
         break;
     }   
 }
+checkTickets(function(res){console.log("res",res)})
+function checkTickets(callback){
+    request("https://www.biletomat.pl/search/ajax/search/?q=TACONAFIDE+&p=1",function(err,res,body){
+        var json = JSON.parse(body).pools;
+        var res=false;
+        for(k in json){
+            if(json[k].event.city=="Katowice")
+                res=true;
+        }
+        if(JSON.parse(body).num_results != 2)
+            res=true;
+        setImmediate(function(){
+            callback(res);
+        });
+	});
+}/*
+setInterval(function(){
+    checkTickets(function(res){
+        var id = "1588365534610121"
+        if(res != false){
+            messFunc.preapreMessage('text', id,"Katowice!  "+res, function(messageTS){
+                messenger.send(messageTS);
+            });
+        }
+        //console.log("res",res)
+    
+    })
+},1000*60*10); //now running once per 10 minutes*/
 function analizeText(mess){
     mess.text=mess.text.toLowerCase();
     var text = mess.text.split(' ');
