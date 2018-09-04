@@ -4,9 +4,9 @@ var zso11 = require("./zsoServerComunication.js");
 var setTime = require('./setTime.js');
 var time = new setTime();
 function downloadAll(){
-    getZckioz();
+    //getZckioz();
     getZso11();
-    
+
 }
 function getZso11(){
     time.tommorowIs();

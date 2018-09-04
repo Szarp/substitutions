@@ -52,7 +52,7 @@ function messageLogistic(params,event){
 
 function moduleSwitch(messParams){
     if(zckioz.checkId(messParams.page)){
-        zckioz.messageDistribution(messParams);
+        //zckioz.messageDistribution(messParams);
     }
     else if(CE.checkId(messParams.page)){
         CE.messageDistribution(messParams);
@@ -60,6 +60,6 @@ function moduleSwitch(messParams){
     else{
         //console.log("im here");
         //console.log(messParams,event,pageId);
-    }   
+    }
 }
 exports.messageLogistic=messageLogistic;

@@ -181,7 +181,7 @@ function downloadData(date,callback){
 				console.log(dt);
 				downloadData(date, callback);
 			})
-		} else { 
+		} else {
 			var cookie=params['cookie'];
 			var form = {
 				gpid:params['gpid'],
@@ -255,14 +255,14 @@ function checkIfAnySubstitutions(callback){
 		});
 	})
 }
-function saveSubstitutions(date,data,callback){
+/*function saveSubstitutions(date,data,callback){
     sub.save(date,data,function(){
       setImmediate(function() {
 			callback(); //callback not necessary
 		});
     });
-}
-function saveSubstitutions_old(date,data,callback){
+}*/
+function saveSubstitutions(date,data,callback){
 	var dataToSave={};
 		dataToSave['substitution']=data.substitution;
 		dataToSave['userList']=data.userList;
