@@ -9,7 +9,7 @@ var mess = require('./messTemplates.js');
 //mongo.url("ZSO11");
 var adm1 = config.adm1;
 var adm2 = config.adm2;
-var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
+var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","2e", "2f","3a","3b","3c","3d","3ga","3gb","3gc","3gd"];
 
 function createMessage(type, id, content, callback){
 	var message = {
@@ -174,7 +174,7 @@ function sendSubstitutions(senderID, message){
 					createMessage('generic', senderID, content, function(messageTS){
 						callSendAPI(messageTS);
 					});
-				});   
+				});
             }
             else{
 				callFunc.changesTeacherForMessenger(reqTeacher.toLowerCase(),day,function(allChanges){
@@ -191,7 +191,7 @@ function sendSubstitutions(senderID, message){
 						});
 					}else{
 						if(allClasses.indexOf(reqClass) > -1){
-							dayToMSG += ' brak zastępstw dla klasy ' + reqClass;   
+							dayToMSG += ' brak zastępstw dla klasy ' + reqClass;
 							createMessage('text', senderID, dayToMSG, function(messageTS){
 								callSendAPI(messageTS);
 							});
@@ -216,7 +216,7 @@ function sendSubstitutions(senderID, message){
 									}
 								}
 								if(!exist && !tExist && reqClass.length > 0){
-									dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';	
+									dayToMSG = 'Żądana klasa nie istnieje. Dostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
 									createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
 										var content={
 											text: dayToMSG,
@@ -227,7 +227,7 @@ function sendSubstitutions(senderID, message){
 										});
 									});
 								} else if(!exist && !tExist){
-									dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';	
+									dayToMSG = 'Nie podałeś klasy :/\nDostępne klasy to:\n' + klasy + '\nDostępni nauczyciele - naciśnij guzik';
 									createButtons([['postback', 'teachers', 'Nauczyciele']], function(buttons){
 										var content={
 											text: dayToMSG,
@@ -313,9 +313,9 @@ function substitutionNotification(day, date, callback){
 	} else if(day == 'TDAT'){
 		day = days[(now.getDay() + 2)%7];
 	}
-    
-    
-    
+
+
+
 	differencesBetweenSubs(date, function(newAndOld){
         var newSub=newAndOld[0];
         var oldSub=newAndOld[1];
@@ -456,14 +456,14 @@ function messengerTypeChange(oneSub, uId, callback){
                 list[i]=arr;
                 arr={};
             }
-            
+
             setImmediate(function(){
 					callback(list);
-            }); 
-            
+            });
+
         })
-      
-        
+
+
         //db.close();
  }
 
@@ -608,7 +608,7 @@ function callSendAPI(messageData) {
       var recipientId = body.recipient_id;
       var messageId = body.message_id;
 
-      console.log("Successfully sent generic message with id %s to recipient %s", 
+      console.log("Successfully sent generic message with id %s to recipient %s",
         messageId, recipientId);
     } else {
       console.error("Unable to send message.");

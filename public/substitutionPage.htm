@@ -1,244 +1,246 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-		<meta name="mobile-web-app-capable" content="yes">
-		<meta name="theme-color" content="#1e2327">
-        <title>Zastępstwa</title>
-        <meta name="description" content="Strona z zastępstwami dla ZSO nr 11 w Zabrzu.">
-		<meta name="keywords" content="zastępstwa, zso nr 11, zabrze, zso11, mobilne">
-		<meta name="robots" content="index, follow">
-		<meta name="googlebot" content="index, follow">
-		<link rel="shortcut icon" href="/favicon.ico">
-		<link rel="icon" href="/css/favicon.png" type="image/png">
-		<link rel="icon" sizes="1024x1024" href="/img/icon1024.png">
-		<link rel="icon" sizes="192x192" href="/img/icon192.png">
-		<link rel="icon" sizes="144x144" href="/img/icon144.png">
-		<link rel="manifest" href="/manifest.json">
-        <link rel="stylesheet" href="css/webPage.css">
-         <link rel="stylesheet" href="css/mediaSize.css">
-        <link rel="stylesheet" href="css/gCode.css">
-        <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
-        <script type="text/javascript" src="js/sendForm.js"></script>
-        
-    </head>
-    <body onload="onLoadFunc()">
-<ul class="navigation navDisplay navSize" >
-  <li><a class="menuElem" id="navbar_home">Home</a></li>
-  <li><a class="menuElem" id="navbar_substitution">Zastępstwa</a></li>
-  <li><a class="menuElem" id="navbar_settings">Ustawienia</a></li>
-  <li style="float:right"> <a class="menuElem" id="navbar_photo" style="padding: 0"><img id="personPictureVer" alt="Profile picture"/></a></li>
-</ul>
-<ul class="drop dropDisplay">
-    <li >
-     <a href="javascript:void(0)" >Menu</a>
-     <div class="dropdown-content">
-       <a class="menuElem" id="navbar_homeD">Home</a>
-       <a class="menuElem" id="navbar_substitutionD">Zastępstwa</a>
-       <a class="menuElem" id="navbar_settingsD">Ustawienia</a>
-       <a class="menuElem" id="navbar_photoD" style="padding: 3px 0px 10px 0px; max-width: 42px; max-height: 42px; margin: auto;"><img id="personPictureHor" alt="Profile picture"/></a>
-     </div>
-    </li>
-</ul>
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="theme-color" content="#1e2327">
+	<title>Zastępstwa</title>
+	<meta name="description" content="Strona z zastępstwami dla ZSO nr 11 w Zabrzu.">
+	<meta name="keywords" content="zastępstwa, zso nr 11, zabrze, zso11, mobilne">
+	<meta name="robots" content="index, follow">
+	<meta name="googlebot" content="index, follow">
+	<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="icon" href="/css/favicon.png" type="image/png">
+	<link rel="icon" sizes="1024x1024" href="/img/icon1024.png">
+	<link rel="icon" sizes="192x192" href="/img/icon192.png">
+	<link rel="icon" sizes="144x144" href="/img/icon144.png">
+	<link rel="manifest" href="/manifest.json">
+	<link rel="stylesheet" href="css/webPage.css">
+	<link rel="stylesheet" href="css/mediaSize.css">
+	<link rel="stylesheet" href="css/gCode.css">
+	<link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet">
+	<script type="text/javascript" src="js/sendForm.js"></script>
+
+</head>
+
+<body onload="onLoadFunc()">
+	<ul class="navigation navDisplay navSize">
+		<li><a class="menuElem" id="navbar_home">Home</a></li>
+		<li><a class="menuElem" id="navbar_substitution">Zastępstwa</a></li>
+		<li><a class="menuElem" id="navbar_settings">Ustawienia</a></li>
+		<li style="float:right"> <a class="menuElem" id="navbar_photo" style="padding: 0"><img id="personPictureVer" alt="Profile picture" /></a></li>
+	</ul>
+	<ul class="drop dropDisplay">
+		<li>
+			<a href="javascript:void(0)">Menu</a>
+			<div class="dropdown-content">
+				<a class="menuElem" id="navbar_homeD">Home</a>
+				<a class="menuElem" id="navbar_substitutionD">Zastępstwa</a>
+				<a class="menuElem" id="navbar_settingsD">Ustawienia</a>
+				<a class="menuElem" id="navbar_photoD" style="padding: 3px 0px 10px 0px; max-width: 42px; max-height: 42px; margin: auto;"><img
+					    id="personPictureHor" alt="Profile picture" /></a>
+			</div>
+		</li>
+	</ul>
 	<div id="msgArea"></div>
-	<div class="flex-container nowrap mainContentSize" id="mainContent" >
-        <div id="substitutionList">
-            <div  class="item-size  boxed-group" id="elementsContent">
-                    <h3>Zastępstwa</h3>
-                    <div class="boxed-group-inner" style="padding:0px; ">
-                        <div>Wybierz dzień</div>
-                        <div class="chooseDay" style="border-bottom:1px solid black;">
-                            <ul>
-                                <li class="btn" id="todayBtn" >today</li>
-                                <li class="btn" id="tommorowBtn"  >tomorrow</li>
-                            </ul>
-                        </div>
-                         <div id="forDay">
-                            miejsce na nazwę
-                        </div>
-                         <div class="allClasses" id="forClasses" style="white-space: normal">
-                            Klasy ze zmianami: 
-							<div class="className" id="1a">1a</div>
-							<div class="className" id="1b">1b</div>
-							<div class="className" id="1c">1c</div>
-                            <div class="className" id="1d">1d</div>
-                            <div class="className" id="1e">1e</div>
-							<div class="className" id="1f">1f</div>
-							<div class="className" id="2a">2a</div>
-							<div class="className" id="2b">2b</div>
-							<div class="className" id="2c">2c</div>
-							<div class="className" id="2d">2d</div>
-							<div class="className" id="3a">3a</div>
-							<div class="className" id="3b">3b</div>
-							<div class="className" id="3c">3c</div>
-							<div class="className" id="3d">3d</div>
-							<div class="className" id="2ga">2ga</div>
-							<div class="className" id="2gb">2gb</div>
-							<div class="className" id="2gc">2gc</div>
-							<div class="className" id="2gd">2gd</div>
-							<div class="className" id="3ga">3ga</div>
-							<div class="className" id="3gb">3gb</div>
-							<div class="className" id="3gc">3gc</div>
-							<div class="className" id="3gd">3gd</div>
-                        </div>
-						<div id="forTeachers" class="allClasses" style="display: hidden"></div>
-                        <div class="scrollableList" id='elementsList'>
-                         <div class="boxed-group-section first" id="changesContainer">
-                             <div class="displayChanges" >
-        
-                        <ul>
-                        <li><a>typ</a> zmiana</li>
-                        <li><a>notatka</a> "kawalek tekstu(jeśli jest)</li>
-                        <li>Jakiś dziwny tekst</li>
-                        <li><a>lekcja</a> 5</li>
-                        <li><a>przedmiot </a>angielski -> polski</li>
-                        <li><a>nauczyciel </a> Lee -> Wiencierz</li>
-                        <li><a>klasa </a> 1b</li>    
-                        <li><a>sala </a> 15 -> 32</li>
-                        </ul>                        
+	<div class="flex-container nowrap mainContentSize" id="mainContent">
+		<div id="substitutionList">
+			<div class="item-size  boxed-group" id="elementsContent">
+				<h3>Zastępstwa</h3>
+				<div class="boxed-group-inner" style="padding:0px; ">
+					<div>Wybierz dzień</div>
+					<div class="chooseDay" style="border-bottom:1px solid black;">
+						<ul>
+							<li class="btn" id="todayBtn">today</li>
+							<li class="btn" id="tommorowBtn">tomorrow</li>
+						</ul>
+					</div>
+					<div id="forDay">
+						miejsce na nazwę
+					</div>
+					<div class="allClasses" id="forClasses" style="white-space: normal">
+						Klasy ze zmianami:
+						<div class="className" id="1a">1a</div>
+						<div class="className" id="1b">1b</div>
+						<div class="className" id="1c">1c</div>
+						<div class="className" id="1d">1d</div>
+						<div class="className" id="1e">1e</div>
+						<div class="className" id="1f">1f</div>
+						<div class="className" id="2a">2a</div>
+						<div class="className" id="2b">2b</div>
+						<div class="className" id="2c">2c</div>
+						<div class="className" id="2d">2d</div>
+						<div class="className" id="2e">2e</div>
+						<div class="className" id="2f">2f</div>
+						<div class="className" id="3a">3a</div>
+						<div class="className" id="3b">3b</div>
+						<div class="className" id="3c">3c</div>
+						<div class="className" id="3d">3d</div>
+						<div class="className" id="3ga">3ga</div>
+						<div class="className" id="3gb">3gb</div>
+						<div class="className" id="3gc">3gc</div>
+						<div class="className" id="3gd">3gd</div>
+					</div>
+					<div id="forTeachers" class="allClasses" style="display: hidden"></div>
+					<div class="scrollableList" id='elementsList'>
+						<div class="boxed-group-section first" id="changesContainer">
+							<div class="displayChanges">
 
-                            
-                        
-                       
-                        
-                            <ul>
-                        <li><a>typ</a> zmiana</li>
-                        <li><a> notatka</a> "kawalek tekstu(jeśli jest)</li>
-                        <li>Jakiś dziwny tekst</li>
-                        <li><a>lekcja</a> 5</li>
-                        <li><a>przedmiot </a>angielski -> polski</li>
-                        <li><a>nauczyciel </a> Lee -> Wiencierz</li>
-                        <li><a>klasa </a> 1b</li>    
-                        <li><a>sala </a> 15 -> 32</li>
-                        </ul>
-                            
-                        
-                                 </div>
-                            
-                    </div>
-                            </div>
-                    </div>
-                </div>
-        </div>
-        <div id="homePage" style="display:none;">
-            <div  class="boxed-group" >
-                    <h3>Home</h3>
-                    <div class="boxed-group-inner" style="text-align: justify;">
-                      Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
-                        <div><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>  </div>
-                        <a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
+								<ul>
+									<li><a>typ</a> zmiana</li>
+									<li><a>notatka</a> "kawalek tekstu(jeśli jest)</li>
+									<li>Jakiś dziwny tekst</li>
+									<li><a>lekcja</a> 5</li>
+									<li><a>przedmiot </a>angielski -> polski</li>
+									<li><a>nauczyciel </a> Lee -> Wiencierz</li>
+									<li><a>klasa </a> 1b</li>
+									<li><a>sala </a> 15 -> 32</li>
+								</ul>
 
-                    </div>
-                    
-                </div>
 
-        </div>        
-        <div id="about1" style="display:none;">
-            <div  class="boxed-group" >
-                    <h3>O mnie</h3>
-                         <div class="boxed-group-inner" >
-                    <div class="boxed-group-section first" >
-                        <table>
-                          <!--<tr>
-                            <td>                         
-                               Info:
-                            </td>
-                              <td></td>
-                            <td class="btn" id="infoBtn" >Zobacz</td>
 
-                          </tr>-->
-                            
-                            <tr>
-                                <td> Generuj Token: </td>
-                                <td id="tknField"></td>
-                                <td class="btn" id="generateBtn" >Generuj</td>
-                                
-                            </tr>
-                            <tr>
-                                <td> Sprawdź Token: </td>
-                                <td><input type="number" name="token" min="0" max="100000" id="tokenCheck" style="width: 94%" placeholder="Wpisz token"></td>
-                                <td class="btn" id="checkBtn" >Sprawdź</td>
-                                
-                            </tr>
-                        </table>
-                        <div id="STMbtn" style="width: 45%; margin-bottom: -15px">
-                            <a href="login" style="text-align: center;text-decoration: underline;color: black;">
-                                <div style="margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px;padding-bottom: 2px">Zaloguj się aby włączyć powiadomienia</div>
-                            </a>
-                        </div>
-                    </div>
-     
 
-                </div>
-                </div>
 
-        </div>
-        <div id="settingsMenu" class=" pageStyle" style="display:none;">
-            <div class="boxed-group">
-                <h3>Settings</h3>
+								<ul>
+									<li><a>typ</a> zmiana</li>
+									<li><a> notatka</a> "kawalek tekstu(jeśli jest)</li>
+									<li>Jakiś dziwny tekst</li>
+									<li><a>lekcja</a> 5</li>
+									<li><a>przedmiot </a>angielski -> polski</li>
+									<li><a>nauczyciel </a> Lee -> Wiencierz</li>
+									<li><a>klasa </a> 1b</li>
+									<li><a>sala </a> 15 -> 32</li>
+								</ul>
+
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="homePage" style="display:none;">
+			<div class="boxed-group">
+				<h3>Home</h3>
+				<div class="boxed-group-inner" style="text-align: justify;">
+					Witam na pierwszej wersji zastępstw. Pobiera zastępswa ze strony ZSO i umieszcza tutaj. Aplikacja w fazie
+					testowej, więc mogą występować błędy. Zachęcam do podzielenia się nimi, aby umożliwić ich naprawę.
+					<div><textarea id="messageArea" maxlength="1000" style="resize: none; width: 99%;" placeholder="Tu wpisz wiadomość"></textarea>
+					</div>
+					<a id="sendMessage" class="edit-btn btn" onclick="sendMessage()">Wyślij</a>
+
+				</div>
+
+			</div>
+
+		</div>
+		<div id="about1" style="display:none;">
+			<div class="boxed-group">
+				<h3>O mnie</h3>
+				<div class="boxed-group-inner">
+					<div class="boxed-group-section first">
+						<table>
+							<!--<tr>
+							<td>
+							   Info:
+							</td>
+							  <td></td>
+							<td class="btn" id="infoBtn" >Zobacz</td>
+
+						  </tr>-->
+
+							<tr>
+								<td> Generuj Token: </td>
+								<td id="tknField"></td>
+								<td class="btn" id="generateBtn">Generuj</td>
+
+							</tr>
+							<tr>
+								<td> Sprawdź Token: </td>
+								<td><input type="number" name="token" min="0" max="100000" id="tokenCheck" style="width: 94%" placeholder="Wpisz token"></td>
+								<td class="btn" id="checkBtn">Sprawdź</td>
+
+							</tr>
+						</table>
+						<div id="STMbtn" style="width: 45%; margin-bottom: -15px">
+							<a href="login" style="text-align: center;text-decoration: underline;color: black;">
+								<div style="margin: auto; width: 100%; text-align:center;background-color: whitesmoke;border: solid;border-width: 1px;border-radius: 5px;padding-bottom: 2px">Zaloguj
+									się aby włączyć powiadomienia</div>
+							</a>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+		</div>
+		<div id="settingsMenu" class=" pageStyle" style="display:none;">
+			<div class="boxed-group">
+				<h3>Settings</h3>
 				<table class="userSelector">
 					<tr>
 						<td id="uBtn" class="userSelectorType sel">Uczeń</td>
 						<td id="tBtn" class="userSelectorType">Nauczyciel</td>
 					</tr>
 				</table>
-                <div class="boxed-group-inner" >
-                    <div class="boxed-group-section first" >
-                        <table>
-                          <tr>
-                            <td>Class:</td>
-                            <td>
-                                <select id="setClass">
-                                    <option  value="all">All</option>
-									<option disabled id="noClass" style="display: none" value="no">---</option>
-									<option  value="2ga">2ga</option>
-									<option  value="2gd">2gb</option>
-									<option  value="2gc">2gc</option>
-									<option  value="2gd">2gd</option>
-									<option  value="3ga">3ga</option>
-									<option  value="3gb">3gb</option>
-									<option  value="3gc">3gc</option>
-									<option  value="3gd">3gd</option>
-									<option  value="1a">1a</option>
-                                    <option  value="1b">1b</option>
-                                    <option  value="1c">1c</option>
-                                    <option  value="1d">1d</option>
-                                    <option  value="1e">1e</option>
-                                    <option  value="1f">1f</option>
-                                    <option  value="2a">2a</option>
-                                    <option  value="2b">2b</option>
-                                    <option  value="2c">2c</option>
-                                    <option  value="2d">2d</option>
-                                    <option  value="3a">3a</option>
-                                    <option  value="3b">3b</option>
-                                    <option  value="3c">3c</option>
-                                    <option  value="3d">3d</option>
-                                </select>
-                            </td>
-                          </tr>
+				<div class="boxed-group-inner">
+					<div class="boxed-group-section first">
+						<table>
+							<tr>
+								<td>Class:</td>
+								<td>
+									<select id="setClass">
+										<option value="all">All</option>
+										<option disabled id="noClass" style="display: none" value="no">---</option>
+										<option value="3ga">3ga</option>
+										<option value="3gb">3gb</option>
+										<option value="3gc">3gc</option>
+										<option value="3gd">3gd</option>
+										<option value="1a">1a</option>
+										<option value="1b">1b</option>
+										<option value="1c">1c</option>
+										<option value="1d">1d</option>
+										<option value="1e">1e</option>
+										<option value="1f">1f</option>
+										<option value="2a">2a</option>
+										<option value="2b">2b</option>
+										<option value="2c">2c</option>
+										<option value="2d">2d</option>
+										<option value="2e">2e</option>
+										<option value="2f">2f</option>
+										<option value="3a">3a</option>
+										<option value="3b">3b</option>
+										<option value="3c">3c</option>
+										<option value="3d">3d</option>
+									</select>
+								</td>
+							</tr>
 							<tr id="teacher_select" style="display: none">
 								<td>Nauczyciel</td>
 								<td>
 									<select id="teacher"></select>
 								</td>
 							</tr>
-                            <tr>
-                                <td>Notification on Messenger:</td>
-                                <td>
-                                    <select  id="setNotification">
-                                        <option value="yes">yes</option>
-                                        <option value="no">no</option>
-                                    </select>
-                                </td>
-                            </tr>
-                        </table>
-                        <a id="saveBtn" class="edit-btn btn">Save settings</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+							<tr>
+								<td>Notification on Messenger:</td>
+								<td>
+									<select id="setNotification">
+										<option value="yes">yes</option>
+										<option value="no">no</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+						<a id="saveBtn" class="edit-btn btn">Save settings</a>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<ul class="navigation navSize">
 		<li>
@@ -248,8 +250,10 @@
 			<a href="/tos.html">Warunki</a>
 		</li>
 		<li style="float: right">
-			<a href="https://github.com/szarp/substitutions" rel="noopener" target="_blank" style="padding: 10px; padding-top: 12px"><img alt="GitHub" src="/img/GitHub-Mark-32px.png" type="image/png" width="26px" height="26px"></img></a>
+			<a href="https://github.com/szarp/substitutions" rel="noopener" target="_blank" style="padding: 10px; padding-top: 12px"><img
+				    alt="GitHub" src="/img/GitHub-Mark-32px.png" type="image/png" width="26px" height="26px"></img></a>
 		</li>
 	</ul>
-    </body>
+</body>
+
 </html>

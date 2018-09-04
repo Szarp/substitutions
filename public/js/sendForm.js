@@ -66,7 +66,7 @@ function copyToClipboard(elem) {
     var currentFocus = document.activeElement;
     target.focus();
     target.setSelectionRange(0, target.value.length);
-    
+
     // copy the selection
     var succeed;
     try {
@@ -78,7 +78,7 @@ function copyToClipboard(elem) {
     if (currentFocus && typeof currentFocus.focus === "function") {
         currentFocus.focus();
     }
-    
+
     if (isInput) {
         // restore prior selection
         elem.setSelectionRange(origSelectionStart, origSelectionEnd);
@@ -180,14 +180,14 @@ function getPicture(){
     form['mode']='picture';
     sendObj(url,form,function(obj){
         console.log('res picture:',obj)
-        
+
         document.getElementById('personPictureVer').src=obj;
         document.getElementById('personPictureHor').src=obj;
-        
-        
+
+
     })
-    
-    
+
+
 }
 
 function getTeachersList(form){
@@ -220,13 +220,13 @@ function requestForChanges(type){
     form['mode']='getChanges'
     if(type =='today'){
         form['param']='today';
-        
+
     }
     if(type == 'tommorow'){
         form['param']='tommorow';
     }
     //console.log(form);
-    
+
     sendObj(url,form,function(obj){
         var json = obj;
         //set.saveData(json);
@@ -292,7 +292,7 @@ function generateSTMbtn() {
                 scrTag.remove();
                 let newScript = document.createElement("script");
                 let inlineScript = document.createTextNode(scr);
-                newScript.appendChild(inlineScript); 
+                newScript.appendChild(inlineScript);
                 target.appendChild(newScript);
                 document.getElementById("STMbtn").style = "width: 172px; margin-left: 7px;margin-right: -10px;";
             }
@@ -418,7 +418,7 @@ function sendObj (url,json_obj,callback){
     http.send(string_obj);
 }
 function filtrEvents(){
-	var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","3a","3b","3c","3d","2ga","2gb","2gc","2gd","3ga","3gb","3gc","3gd"];
+	var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","2e","2f","3a","3b","3c","3d","3ga","3gb","3gc","3gd"];
 	for(var i=0; i<allClasses.length; i++){
 		var el = document.getElementById(allClasses[i]);
 		var new_element = el.cloneNode(true);
@@ -456,7 +456,7 @@ function btnClicked(type){
         }
         else{ document.getElementById(idList[k]).className='btn';}
     }
-    
+
 }
 function homePosition(id){
         var el;
@@ -481,7 +481,7 @@ function traslateSettings(){
             this.changeDisplayOnClick(this.changeDisplayEvents[k]);
         }
     }
-    
+
     this.changeDisplayOnClick=function(key){
         console.log(key[0]);
         var key1 =key[0];
@@ -514,7 +514,7 @@ function translateChanges(){
     //fieldsToFill.call(this);
     this.setFields = function(fields){
         this.fields=fields;
-        
+
     }
 	this.setTeacherName=function(teacherName){
 		this.teacherName = teacherName;
@@ -583,9 +583,9 @@ function translateChanges(){
     }
     this.newParams=function(key,value,ifchanges){
         if (ifchanges == true){
-            
+
         }
-        
+
     }
     this.assignParams = function(oneChange){
         this.i=0;
@@ -594,7 +594,7 @@ function translateChanges(){
         var keyValue=""
         var elInChange={};
         for (k in oneChange){
-           
+
     //console.log('hey',k);
     //console.log('hey',this.fields);
             keyText=this.fields[k];
@@ -621,12 +621,12 @@ function translateChanges(){
         for(j in oneChange['changes']){
             keyText=this.fields[j];
                     //x['z'+keyText] =changesIn[l];
-            
+
             keyValue=oneChange['changes'][j];
             elInChange[keyText]+=' -> '+keyValue;
-            
+
         }
-        
+
         return elInChange;
         //this.createElement(elInChange);
         //console.log('changes ',elInChange);
@@ -649,19 +649,19 @@ function translateChanges(){
         //console.log('tabs',tabs);
         var allLi=""
         for(var i=0;i<patternOfDisplay.length;i++){
-            
-           if(obj[patternOfDisplay[i]] == undefined ||obj[patternOfDisplay[i]] == ""){    
+
+           if(obj[patternOfDisplay[i]] == undefined ||obj[patternOfDisplay[i]] == ""){
                //do nothing
            }
             else{
-                allLi+=this.createLi(patternOfDisplay[i],obj[patternOfDisplay[i]]); 
+                allLi+=this.createLi(patternOfDisplay[i],obj[patternOfDisplay[i]]);
             }
         }
         var string = '<ul>'+allLi+'</ul>';
         return string;
     }
     this.createLi=function(name,text){
-    return '<li><a>'+name+' </a>'+text+'</li>';   
+    return '<li><a>'+name+' </a>'+text+'</li>';
     }
-    
+
 }
