@@ -562,7 +562,7 @@ function changesForMessenger(reqClass, day, callback){
                 });
                 if(classIDs){
                     /** Array of changes in this substitution (eg. teacher, subject, classroom) */
-                    let changesKeysArr = Object.keys(changes);
+                    let changesKeysArr = Object.keys(changes ? changes : {});
                     // if that's a substitution for user selected class or teacher and is not an empty substitution
                     if((classIDs.includes(reqClass) || tList.includes(reqClass)) && (oneSub.cancelled[0] || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
                         if(oneSub.cancelled[0]){
