@@ -28,7 +28,7 @@ var adm2 = config.adm2;
 /*
 webhookEvents
 */
-//message text true false 
+//message text true false
 //is_echo: true false
 //attachments: true false
 //postcall true fasle
@@ -62,12 +62,12 @@ function messageDistribution(mess){
             if(mess["echo"] != true){
                 //postback function
                 console.log("postback");
-                
+
                 serverDB.save(mess,function(e,r){
                      if(!e){
                         console.log('Saving  users\'s message',r["result"]);
                          if(r["result"]["nModified"]!=0){
-                            analizePostback(mess); 
+                            analizePostback(mess);
                          }
                     }
                     else{
@@ -85,7 +85,7 @@ function messageDistribution(mess){
                 //console.log('Saving to user message');
                 serverDB.save(mess,function(e,r){
                     if(!e){
-                        console.log('Saving  server\'s message',r["result"]);    
+                        console.log('Saving  server\'s message',r["result"]);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);
@@ -104,7 +104,7 @@ function messageDistribution(mess){
                         //analizeAttachments(mess);
                         //console.log("atta",mess);
                     }
-                            console.log('Saving users\'s message',r["result"]);    
+                            console.log('Saving users\'s message',r["result"]);
                         }
                         else{
                             console.log("Error in saving user\'s message",e);
@@ -140,12 +140,12 @@ function token(text,mess){
 						});
 					}
 				});
-			}    
+			}
 }
 /**
  * Connects user's Messenger id with their Facebook id and enables auto notifications
  * @param {Mess} mess object passed from moduleSwitch and messageDistribution
- * 
+ *
 */
 function sendToMessengerBtn(mess){
 	var senderID = mess.sender;
@@ -181,7 +181,7 @@ function sendToMessengerBtn(mess){
 function analizeText(mess){
     var text = mess.text.toLowerCase().split(' ');
     if(text[0]=="4"){
-        token(text,mess);        
+        token(text,mess);
     }
     else if(text.length == 2){
         if (mess.text[0] == "2"){
@@ -326,11 +326,11 @@ function analizePostback(mess) {
 	var recipientID = event.recipient.id;
 	var timeOfPostback = event.timestamp;
 
-	// The 'payload' param is a developer-defined field which is set in a postback 
-	// button for Structured Messages. 
+	// The 'payload' param is a developer-defined field which is set in a postback
+	// button for Structured Messages.
 	var payload = event.postback.payload;
 
-	console.log("Received postback for user %d and page %d with payload '%s' " + 
+	console.log("Received postback for user %d and page %d with payload '%s' " +
 	"at %d", senderID, recipientID, payload, timeOfPostback);
 
 	sendList(senderID, payload);*/
@@ -468,7 +468,7 @@ function attachments(event){
     var link = event.message.attachment.payload.url;
     console.log('Got attachments: '+type);
     console.log('Location: '+link);
-    
+
 }
 function delivered(event){
     //var mid = event.delivery.mids.mid;
@@ -486,7 +486,7 @@ function echo(event){
     { sender: { id: '285771075161320' },
   recipient: { id: '1383716548353914' },
   timestamp: 1507658404809,
-  message: 
+  message:
    { is_echo: true,
      app_id: 190695904771523,
      mid: 'mid.$cAAFZG6pxbEtlOLbbyVfB3GR6JHPM',
@@ -517,7 +517,7 @@ function getChanges(body,callback){ //resposne app's format changes
             objToSend['substitution']=obj['substitution'];
             if(obj['date'] == undefined){obj['date']='31-12-2016';}
             objToSend['date']=obj['date'];
-        } 
+        }
         else {
             objToSend['substitution']='';
 			objToSend['date']='ERROR';
@@ -561,11 +561,16 @@ function changesForMessenger(reqClass, day, callback){
                     return value.toLowerCase();
                 });
                 if(classIDs){
-                    if((classIDs.includes(reqClass) || tList.includes(reqClass)) && (oneSub.cancelled[0] || oneSub.substitution_types)){
+                    /** Array of changes in this substitution (eg. teacher, subject, classroom) */
+                    let changesKeysArr = Object.keys(changes);
+                    // if that's a substitution for user selected class or teacher and is not an empty substitution
+                    if((classIDs.includes(reqClass) || tList.includes(reqClass)) && (oneSub.cancelled[0] || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
                         if(oneSub.cancelled[0]){
                             msg+='anulowanie';
-                        }else {
+                        }else if(oneSub.substitution_types) {
                             msg+='Typ: ' + oneSub.substitution_types;
+                        } else {
+                            msg += `Typ: ${changesKeysArr.includes("classrooms") ? "przesunięcie do sali" : "zastępstwo" }`;
                         }
                         msg+='\nLekcja: ' + oneSub.periods;
                         msg+='\nNauczyciel: ' + oneSub.teachers;
