@@ -570,7 +570,7 @@ function changesForMessenger(reqClass, day, callback){
                         }else if(oneSub.substitution_types) {
                             msg+='Typ: ' + oneSub.substitution_types;
                         } else {
-                            msg += `Typ: ${changesKeysArr.includes("classrooms") ? "przesunięcie do sali" : "zastępstwo" }`;
+                            msg += `Typ: ${(changesKeysArr.includes("classrooms") && changesKeysArr.length == 1) ? "przesunięcie do sali" : "zastępstwo" }`;
                         }
                         msg+='\nLekcja: ' + oneSub.periods;
                         msg+='\nNauczyciel: ' + oneSub.teachers;
