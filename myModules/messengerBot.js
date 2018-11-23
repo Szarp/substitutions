@@ -343,7 +343,7 @@ function substitutionNotification(day, date, callback){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
 										/** Array of changes in this substitution (eg. teacher, subject, classroom) */
-										let changesKeysArr = Object.keys(changes ? changes : {});
+										let changesKeysArr = Object.keys(oneSub.changes ? oneSub.changes : {});
 										if((oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher) && (oneSub.cancelled[0] || oneSub.substitution_types || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
@@ -369,7 +369,7 @@ function substitutionNotification(day, date, callback){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
 										/** Array of changes in this substitution (eg. teacher, subject, classroom) */
-										let changesKeysArr = Object.keys(changes ? changes : {});
+										let changesKeysArr = Object.keys(oneSub.changes ? oneSub.changes : {});
 										if((oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher) && (oneSub.cancelled[0] || oneSub.substitution_types || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
@@ -404,7 +404,7 @@ function messengerTypeChange(oneSub, uId, callback){
 			msg+='anulowanie';
 		}else{
 			/** Array of changes in this substitution (eg. teacher, subject, classroom) */
-			let changesKeysArr = Object.keys(changes ? changes : {});
+			let changesKeysArr = Object.keys(oneSub.changes ? oneSub.changes : {});
 			/** @type {string} Type of this  substitution */
 			var subType;
 			if(oneSub.substitution_types){
