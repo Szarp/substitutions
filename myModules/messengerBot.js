@@ -60,7 +60,7 @@ function createButtons(tab, callback){
 }
 
 function sendSubstitutions(senderID, message){
-    var day ='today';
+	var day ='today';
 	var body = {
 		'mode': 'classList',
 		'param': 'today'
@@ -154,18 +154,18 @@ function sendSubstitutions(senderID, message){
 			break;
 		default:
 			day='';
-            callSendAPI(mess.helpPage(senderID));
+			callSendAPI(mess.helpPage(senderID));
 			break;
 	};
 	if(day != ''){
-        if(opt == 0){
+		if(opt == 0){
 			var dayToMSG = 'Dzisiaj';
 		}else{
 			var dayToMSG = 'Jutro';
 		}
-        callFunc.changesForMessenger(reqClass,day,function(allChanges){
-            if(allChanges.length != 0){
-                createButtons([['postback', message, 'Wyślij na czacie']], function(buttons){
+		callFunc.changesForMessenger(reqClass,day,function(allChanges){
+			if(allChanges.length != 0){
+				createButtons([['postback', message, 'Wyślij na czacie']], function(buttons){
 					dayToMSG += ' są zastępstwa dla klasy ' + reqClass;
 					var content={
 						text: dayToMSG,
@@ -175,8 +175,8 @@ function sendSubstitutions(senderID, message){
 						callSendAPI(messageTS);
 					});
 				});
-            }
-            else{
+			}
+			else{
 				callFunc.changesTeacherForMessenger(reqTeacher.toLowerCase(),day,function(allChanges){
 					if(allChanges.length != 0){
 						createButtons([['web_url', config.url, 'Sprawdź na stronie'],['postback', message, 'Wyślij na czacie']], function(buttons){
@@ -247,9 +247,9 @@ function sendSubstitutions(senderID, message){
 						}
 					}
 				});
-            }
-        });
-    }
+			}
+		});
+	}
 }
 
 function differencesBetweenSubs(date, callback){
@@ -317,8 +317,8 @@ function substitutionNotification(day, date, callback){
 
 
 	differencesBetweenSubs(date, function(newAndOld){
-        var newSub=newAndOld[0];
-        var oldSub=newAndOld[1];
+		var newSub=newAndOld[0];
+		var oldSub=newAndOld[1];
 		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true, "personal.settings.setTeacher": true}, 'person', function(usersList){
 			if(usersList){
 				for(var a = 0; a < usersList.length; a++){
@@ -342,7 +342,9 @@ function substitutionNotification(day, date, callback){
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if((oneSub.substitution_types || oneSub.cancelled[0]) && (oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher)){
+										/** Array of changes in this substitution (eg. teacher, subject, classroom) */
+										let changesKeysArr = Object.keys(changes ? changes : {});
+										if((oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher) && (oneSub.cancelled[0] || oneSub.substitution_types || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Nowe zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
@@ -366,7 +368,9 @@ function substitutionNotification(day, date, callback){
 								if(classIDs){
 									for(var n = 0; n < classIDs.length; n++){
 										var oneClass = classIDs[n];
-										if((oneSub.substitution_types || oneSub.cancelled[0]) && (oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher)){
+										/** Array of changes in this substitution (eg. teacher, subject, classroom) */
+										let changesKeysArr = Object.keys(changes ? changes : {});
+										if((oneClass == uClass || teacherIDs == uTeacher || altTeacherIDs == uTeacher) && (oneSub.cancelled[0] || oneSub.substitution_types || changesKeysArr.length > 1 || (changesKeysArr.length == 1 && !changesKeysArr.includes("classes")))){
 											messengerTypeChange(oneSub, receipentId, function(subMsg, uId){
 												var msg = "Usunięte zastępstwo na " + day + ":\n" + subMsg;
 												createMessage('text', uId, msg, function(messageTS){
@@ -382,14 +386,14 @@ function substitutionNotification(day, date, callback){
 				}
 			}
 		});
-        setImmediate(function(){
-            callback("Sent substitutions: " + newAndOld);
-        });
-    })
+		setImmediate(function(){
+			callback("Sent substitutions: " + newAndOld);
+		});
+	})
 }
 function messengerTypeChange(oneSub, uId, callback){
-    var changes = oneSub['changes'];
-    var msg = "";
+	var changes = oneSub['changes'];
+	var msg = "";
 	var classIDs = oneSub.classes;
 	if(classIDs){
 		var oneClass = classIDs[0];
@@ -398,8 +402,19 @@ function messengerTypeChange(oneSub, uId, callback){
 		}
 		if(oneSub.cancelled[0]){
 			msg+='anulowanie';
-		}else {
-			msg+='Typ: ' + oneSub.substitution_types;
+		}else{
+			/** Array of changes in this substitution (eg. teacher, subject, classroom) */
+			let changesKeysArr = Object.keys(changes ? changes : {});
+			/** @type {string} Type of this  substitution */
+			var subType;
+			if(oneSub.substitution_types){
+				subType = oneSub.substitution_types;
+			} else if(changesKeysArr.length == 1 && changesKeysArr.includes("classrooms")){
+				subType = "przesunięcie do sali";
+			} else {
+				subType = "zastępstwo";
+			}
+			msg+=`Typ: ${subType}`;
 		}
 		msg+='\nLekcja: ' + oneSub.periods;
 		msg+='\nNauczyciel: ' + oneSub.teachers;
@@ -432,43 +447,43 @@ function messengerTypeChange(oneSub, uId, callback){
 			}
 		}
 	}
-    setImmediate(function(){
+	setImmediate(function(){
 		callback(msg, uId);
 	});
 }
   function notificationList(callback){
-     var name='person';
-        //[collection,{data}]
-        //var collectionName = collection;
-        //var data = paramsToModify;
-        //var url = 'mongodb://localhost:27017/test2';
-        mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
-            //console.log(a);
-            var list=[];
-            var arr={};
-            for(var i=0;i<a.length;i++){
-                arr['id']=a[i].personal['id'];
-                arr['class']=a[i].personal.settings['setClass'];
-                arr['teacher']='---'
-                if(a[i].personal.settings['setTeacher']){
-                    arr['teacher']=a[i].personal.settings['setTeacher'];
-                }
-                list[i]=arr;
-                arr={};
-            }
+	 var name='person';
+		//[collection,{data}]
+		//var collectionName = collection;
+		//var data = paramsToModify;
+		//var url = 'mongodb://localhost:27017/test2';
+		mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
+			//console.log(a);
+			var list=[];
+			var arr={};
+			for(var i=0;i<a.length;i++){
+				arr['id']=a[i].personal['id'];
+				arr['class']=a[i].personal.settings['setClass'];
+				arr['teacher']='---'
+				if(a[i].personal.settings['setTeacher']){
+					arr['teacher']=a[i].personal.settings['setTeacher'];
+				}
+				list[i]=arr;
+				arr={};
+			}
 
-            setImmediate(function(){
+			setImmediate(function(){
 					callback(list);
-            });
+			});
 
-        })
+		})
 
 
-        //db.close();
+		//db.close();
  }
 
 function sendList(senderID, message){
-    var day = 'today';
+	var day = 'today';
 	if(message=='example'){
 		createMessage('text', senderID, 'Chcę sprawdzić zastępstwa na dzisaj dla klasy 1b:\n0 1b', function(messageTS){
 			callSendAPI(messageTS);
@@ -533,7 +548,7 @@ function sendList(senderID, message){
 		if(reqClass[1]=='g'){
 			reqClass += message[4];
 		}
-        callFunc.changesForMessenger(reqClass,day,function(allChanges){
+		callFunc.changesForMessenger(reqClass,day,function(allChanges){
 			if(allChanges.length != 0){
 				for(var i=0;i<allChanges.length;i++){
 					createMessage('text', senderID, allChanges[i], function(messageTS){
@@ -550,7 +565,7 @@ function sendList(senderID, message){
 					}
 				});
 			}
-        })
+		})
 	}
 }
 
@@ -597,25 +612,24 @@ function callSendAPIwC(messageData, callback){
 }
 
 function callSendAPI(messageData) {
-  request({
-    uri: 'https://graph.facebook.com/v2.9/me/messages',
-    qs: { access_token: config.pageToken },
-    method: 'POST',
-    json: messageData
+	request({
+		uri: 'https://graph.facebook.com/v2.9/me/messages',
+		qs: { access_token: config.pageToken },
+		method: 'POST',
+		json: messageData
+	}, function (error, response, body) {
+		if (!error && response.statusCode == 200) {
+			var recipientId = body.recipient_id;
+			var messageId = body.message_id;
 
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      console.log("Successfully sent generic message with id %s to recipient %s",
-        messageId, recipientId);
-    } else {
-      console.error("Unable to send message.");
-      console.error(response);
-      console.error(error);
-    }
-  });
+			console.log("Successfully sent generic message with id %s to recipient %s",
+				messageId, recipientId);
+		} else {
+			console.error("Unable to send message.");
+			console.error(response);
+			console.error(error);
+		}
+	});
 }
 
 function sendToMessengerBtn(event){
