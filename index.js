@@ -98,6 +98,7 @@ app.post('/webhook', function (req, res) {
 var data = req.body;
 if (data.object === 'page') {
 	// Iterate over each entry - there may be multiple if batched
+if(data.entry){
 	data.entry.forEach(function(entry) {
 		var pageID = entry.id;
 		var timeOfEvent = entry.time;
@@ -135,6 +136,7 @@ if (data.object === 'page') {
             webhook.messageLogistic(messParams,event);
 		});
 	});
+}
 	//send 200 within 20s to inform Facebook that message was received successfully
 	res.sendStatus(200);
 	}
