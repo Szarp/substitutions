@@ -296,7 +296,7 @@ function convertToSubstitutions(data,callback){
 	});
 }
 
-function getGPIDandGSH (data,callback){ //take params to send request
+function getGPIDandGSH_ (data,callback){ //take params to send request
 	var a=data.indexOf('gsh');
 	var gpidIndex;
 	var gshIndex;
@@ -318,7 +318,34 @@ function getGPIDandGSH (data,callback){ //take params to send request
 		callback([gpid,gsh]);
 	});
 }
-
+function getGPIDandGSH (data,callback){ //take params to send request
+	var tuSzukamy = data; // źródło
+	var regexp = /ASC.gsechash="(?<gsh>[\w]*?)";/g;
+	var gsh = regexp.exec(tuSzukamy).groups.gsh;
+	var gpid = "no param";
+/*
+	var a=data.indexOf('gsh');
+	var gpidIndex;
+	var gshIndex;
+	for (var i=0; i<11;i++){
+		if (data.charAt(a-i)=='='){
+			gpidIndex=a-i;
+			break;
+		}
+	}
+	for (var i=0; i<20;i++){
+		if (data.charAt(a+i)=='"'){
+			gshIndex=a+i;
+			break;
+		}
+	}
+	var gpid=data.slice(gpidIndex+1,a-1);
+	var gsh=data.slice(a+4,gshIndex);
+	*/
+	setImmediate(function() {
+		callback([gpid,gsh]);
+	});
+}
 function arrayEqual(array0, array){
 	if (array0.length != array.length){
 		return false;
