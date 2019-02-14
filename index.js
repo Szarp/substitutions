@@ -5,6 +5,7 @@ var express = require('express'),
 	cookieParser = require('cookie-parser'),
 	compression = require('compression'),
 	helmet = require('helmet'),
+	crypto = require("crypto"),
 	mangeUsers = require(__dirname+'/myModules/manageUsers.js'),
 	session = require(__dirname + '/myModules/userSession.js'),
 	link = require(__dirname+'/myModules/fbLinks.js'),
@@ -26,6 +27,7 @@ var opts = {
 };
 //set up express app
 app.use(express.static(__dirname + '/public'));
+app.post("/webhook", bodyParser.json({ verify: verifyRequestSignature })); // Webhook request verification
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false })); // for parsing
 app.use(cookieParser());
@@ -38,12 +40,12 @@ app.use(helmet({
 		includeSubDomains: true,
 		preload: true
 	}
-}));  
+}));
 
 //setting cookie on first login
 app.use(function (req, res, next) {
     var disabled=['/webhook','/dataflow','/login'];
-    if (disabled.indexOf(req.path) != -1) 
+    if (disabled.indexOf(req.path) != -1)
         return next();
     //check if client sent cookie
     var cookie = req.cookies.cookieName;
@@ -53,11 +55,11 @@ app.use(function (req, res, next) {
         randomNumber=randomNumber.substring(2,randomNumber.length);
         res.cookie('cookieName',randomNumber, { maxAge: 1000*60*60*24*30, httpOnly: false });
         console.log('cookie created successfully');
-    } 
+    }
     else{
-    // yes, cookie was already present 
+    // yes, cookie was already present
         console.log('cookie exists', cookie);
-    } 
+    }
     next(); // <-- important!
 });
 app.get('/login', function (req, res) {
@@ -132,7 +134,7 @@ if(data.entry){
                 messParams["read"]=true;
             if(event.delivery)
                     messParams["delivery"]=true;
-            
+
             webhook.messageLogistic(messParams,event);
 		});
 	});
@@ -213,6 +215,35 @@ app.get('/STMbtn', function(req, res){ //respond to GET request on /STMbtn
 		res.send(ifrTS);
 	}
 });
+
+/*
+ * Verify that the callback came from Facebook. Using the App Secret from
+ * the App Dashboard, we can verify the signature that is sent with each
+ * callback in the x-hub-signature field, located in the header.
+ *
+ * https://developers.facebook.com/docs/graph-api/webhooks#setup
+ *
+ * Using code from: https://github.com/fbsamples/messenger-platform-samples/blob/724abbde42a63dedac65f67bf7a828cfcd1a8ca6/node/app.js#L153
+ *
+ */
+function verifyRequestSignature(req, res, buf) {
+	let signature = req.headers["x-hub-signature"];
+
+	if (!signature) {
+		throw new Error("Couldn't validate the signature. No \"x-hub-signature\" header.");
+	} else {
+		let elements = signature.split("=");
+		let signatureHash = elements[1];
+		let expectedHash = crypto.createHmac("sha1", config.appSecret)
+			.update(buf)
+			.digest("hex");
+
+		if (signatureHash != expectedHash) {
+			throw new Error("Couldn't validate the request signature. Signatures don't match");
+		}
+	}
+}
+
 //Timers
 setInterval(function(){
     download.all();
