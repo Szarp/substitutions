@@ -1,5 +1,5 @@
 //moduleSwitch.js
-var zckioz = require("./zckioz_mesLogistic.js");
+//var zckioz = require("./zckioz_mesLogistic.js");
 var CE = require("./zso11_mesLogistic.js");
 function messageLogistic(params,event){
     var mess={};
@@ -51,10 +51,10 @@ function messageLogistic(params,event){
 
 
 function moduleSwitch(messParams){
-    if(zckioz.checkId(messParams.page)){
+    /*if(zckioz.checkId(messParams.page)){
         //zckioz.messageDistribution(messParams);
     }
-    else if(CE.checkId(messParams.page)){
+    else */if(CE.checkId(messParams.page)){
         CE.messageDistribution(messParams);
     }
     else{

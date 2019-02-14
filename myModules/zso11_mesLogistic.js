@@ -528,7 +528,7 @@ function getChanges(body,callback){ //resposne app's format changes
     });
 }
 /**
- * Creates an array of messages **(plain text, not an object which can be send)** containing substitutions data. One element per substitution.
+ * Creates an array of messages **(plain text, not an object which could be sent)** containing substitutions data. One element per substitution.
  * @param {string|string[]} reqClass Array containing class on index 1 or teachers name (index 1 and all after (if there are more elements than 2)) **OR** a string (if coming from postback)
  * @param {string} day can be "TDAT", "today" or anything else (then it means today)
  * @param {Function} callback callback to execute - 2 parameters passed: string[] - array of messages, string - day of week eg. "Pon", "Pt"

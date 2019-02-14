@@ -62,7 +62,7 @@ function modifyById(id,collectionName,paramsToModify,callback){
 			{upsert:true}, // options
 			function(err, object) {
 				if (err){
-					//console.warn(err.message);  // returns error if no matching object found
+					console.error(err.message);  // returns error if no matching object found
 				}else{
 					setImmediate(function() {
 						callback();
@@ -81,7 +81,7 @@ function findById(id,collectionName,callback){
 		collection.findOne({_id:id},function(err1, doc) {
 			setImmediate(function() {
 				callback(err1,doc);
-			});   
+			});
 			db.close();
 		});
 	})

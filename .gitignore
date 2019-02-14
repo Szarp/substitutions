@@ -50,3 +50,10 @@ jspm_packages
 # Linters settings
 .eslintrc.json
 .jshintrc
+.eslintignore
+.jshintignore
+jsconfig.json
+
+/devAndTest/revEng
+/devAndTest/outTest*
+/devAndTest/testingScripts

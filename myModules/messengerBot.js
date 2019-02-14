@@ -312,6 +312,8 @@ function substitutionNotification(day, date, callback){
 		day = days[now.getDay()];
 	} else if(day == 'TDAT'){
 		day = days[(now.getDay() + 2)%7];
+	} else if (day === null){
+		day = days[new Date(date).getDay()];
 	}
 
 
