@@ -574,7 +574,7 @@ class EduPageSubstitutions {
 	/**
 	 * Download, parse and save substitutions for a given day.
 	 * @param {string} date Date as a string in `yyyy-dd-mm` format - for that day the substitutions will be downloaded
-	 * @returns {Promise<void>} Resolves to nothing regardless whether it succeeds or fails - in some cases it rejects, but the result of saving to database is not passed 😢
+	 * @returns {Promise<void>} Resolves to nothing, if something fails it rejects (it *should*).
 	 */
 	async downloadAndSave(date) {
 		let subStudentArr;
@@ -608,10 +608,13 @@ class EduPageSubstitutions {
 		// Call function updating teachers list
 		this.updateDBTeachersList(teachers);
 		// Save the substitutions
-		mongo.modifyById(date, "substitutions", objectForDB, () => {
-			// mdifyById function doesn't indicate error in any way, so it's not possible wheter it succeeded
-			console.info(`${new Date().toLocaleString()}: Substitutions for ${this.pageUrl} were (probably) updated.`);
-		});
+		try {
+			await mongo.modifyById2(date, "substitutions", objectForDB);
+			console.info(`${new Date().toLocaleString()}: Substitutions for website ${this.pageUrl} and date ${date} were updated.`);
+			return;
+		} catch (error) {
+			throw (error);
+		}
 	}
 }
 

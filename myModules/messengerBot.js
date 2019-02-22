@@ -254,53 +254,55 @@ function sendSubstitutions(senderID, message){
 
 function differencesBetweenSubs(date, callback){
 	mongo.findById(date, 'substitutions', function(err, newSubObj){
-		var newSub = newSubObj.substitution;
-		var copyOfNew = JSON.parse(JSON.stringify(newSub));
-		mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
-			if(oldSubObj && oldSubObj.substitution){
-				var oldSub = oldSubObj.substitution;
-			} else {
-				var oldSub = [];
-			}
-			if(newSub == '' || newSub == 'no substitutions'){
-				newSub = [];
-			}
-			if(oldSub == '' || oldSub == 'no substitutions'){
-				oldSub = [];
-			}
-			//var copyOfOld = oldSub;
-			for(var i = newSub.length-1; i >= 0; i--){
-				var newEl = JSON.stringify(newSub[i]);
-				for(var e = 0; e < oldSub.length; e++){
-					var oldEl = JSON.stringify(oldSub[e]);
-					if(newEl == oldEl){
-						newSub.splice(i, 1);
-						oldSub.splice(e, 1);
-					}
+		if (!err && newSubObj && newSubObj.substitution) {
+			var newSub = newSubObj.substitution;
+			var copyOfNew = JSON.parse(JSON.stringify(newSub));
+			mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
+				if(oldSubObj && oldSubObj.substitution){
+					var oldSub = oldSubObj.substitution;
+				} else {
+					var oldSub = [];
 				}
-			}
-			/*if(newSub.length > 0){
-				for(var i = copyOfOld.length-1; i >= 0; i--){
-					var cOldEl = JSON.stringify(copyOfOld[i]);
-					for(var e = 0; e < newSub.length; e++){
-						var cNewEl = JSON.stringify(newSub[e]);
-						if(cNewEl == cOldEl){
-							newSub.splice(e, 1);
+				if(newSub == '' || newSub == 'no substitutions'){
+					newSub = [];
+				}
+				if(oldSub == '' || oldSub == 'no substitutions'){
+					oldSub = [];
+				}
+				//var copyOfOld = oldSub;
+				for(var i = newSub.length-1; i >= 0; i--){
+					var newEl = JSON.stringify(newSub[i]);
+					for(var e = 0; e < oldSub.length; e++){
+						var oldEl = JSON.stringify(oldSub[e]);
+						if(newEl == oldEl){
+							newSub.splice(i, 1);
+							oldSub.splice(e, 1);
 						}
 					}
 				}
-			}*/
-			setImmediate(function(){
-				callback([newSub,oldSub]);
-				var dataToSave = {
-					substitution: copyOfNew,
-					date: date
-				}
-				mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
-					//console.log("Saved to buffer");
+				/*if(newSub.length > 0){
+					for(var i = copyOfOld.length-1; i >= 0; i--){
+						var cOldEl = JSON.stringify(copyOfOld[i]);
+						for(var e = 0; e < newSub.length; e++){
+							var cNewEl = JSON.stringify(newSub[e]);
+							if(cNewEl == cOldEl){
+								newSub.splice(e, 1);
+							}
+						}
+					}
+				}*/
+				setImmediate(function(){
+					callback([newSub,oldSub]);
+					var dataToSave = {
+						substitution: copyOfNew,
+						date: date
+					}
+					mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
+						//console.log("Saved to buffer");
+					});
 				});
 			});
-		});
+		}
 	});
 }
 function substitutionNotification(day, date, callback){

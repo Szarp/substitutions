@@ -73,6 +73,19 @@ function modifyById(id,collectionName,paramsToModify,callback){
 	})
 }
 
+async function modifyById2(id, collectionName, paramsToModify) {
+	try {
+		let client = await MongoClient.connect(url);
+		let db = await client.db(config.db);
+		let collection = await db.collection(collectionName);
+		await collection.findOneAndUpdate({ _id: id }, { $set: paramsToModify }, { upsert: true });
+		await client.close();
+		return;
+	} catch (e) {
+		throw (e);
+	}
+}
+
 function findById(id,collectionName,callback){
 	//var url = 'mongodb://localhost:27017/test2';
 	MongoClient.connect(url, function(err, db) {
@@ -89,6 +102,7 @@ function findById(id,collectionName,callback){
 
 exports.findById=findById;
 exports.modifyById=modifyById;
+exports.modifyById2=modifyById2;
 exports.save=saveToCollection;
 exports.findByParam=findByParam;
 //exports.url = url;
