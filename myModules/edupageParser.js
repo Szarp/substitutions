@@ -468,7 +468,7 @@ class EduPageSubstitutions {
 					if (teacherName !== "") teachers.add(teacherName);
 				}
 				// If there are changes there may be also another teacher
-				if (sub.changes) {
+				if (sub.changes && sub.changes.teachers) {
 					for (const teacherName of sub.changes.teachers) {
 						teachers.add(teacherName);
 					}
