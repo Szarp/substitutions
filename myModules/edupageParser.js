@@ -108,8 +108,8 @@ class EduPageSubstitutions {
 	 * @returns {SingleSubstitution | null} Single substitution object
 	 */
 	substitutionRowStudentsParser(singleSubstitutionHTML, className) {
-		/** Selects lesson number (or name) in the first (and only) capture group. If the lesson is cancelled the number is in `()` */
-		const lessonRegExp = /<div class="period">[\s\r\n]*<span class="print-font-resizable">\(?(\w*)\)?<\/span>/;
+		/** Selects lesson number (or name) in the first (and only) capture group. If the lesson is cancelled the number is in `()`. It may also contain a few hours - "a - b", from a to b */
+		const lessonRegExp = /<div class="period">[\s\r\n]*<span class="print-font-resizable">\(?([\w -]*)\)?<\/span>/;
 		/** Selects content of span with substitution data in the first (and only) capture group */
 		const substitutionStringRegExp = /<div class="info">[\s\r\n]*<span class="print-font-resizable">([\w\W]*)<\/span>/;
 		/** Matches known cancelled lesson pattern and saves group name (optional) and lesson subject. It saves also a "note" if such exists */
@@ -257,8 +257,8 @@ class EduPageSubstitutions {
 	 * @returns {SingleSubstitution | null} Single substitution object
 	 */
 	substitutionRowTeachersParser(singleSubstitutionHTML, teacherName) {
-		/** Selects lesson number (or name) in the first (and only) capture group. If the lesson is cancelled the number is in `()` */
-		const lessonRegExp = /<div class="period">[\s\r\n]*<span class="print-font-resizable">\(?(\w*)\)?<\/span>/;
+		/** Selects lesson number (or name) in the first (and only) capture group. If the lesson is cancelled the number is in `()`. It may also contain a few hours - "a - b", from a to b */
+		const lessonRegExp = /<div class="period">[\s\r\n]*<span class="print-font-resizable">\(?([\w -]*)\)?<\/span>/;
 		/** Selects content of span with substitution data in the first (and only) capture group */
 		const substitutionStringRegExp = /<div class="info">[\s\r\n]*<span class="print-font-resizable">([\w\W]*)<\/span>/;
 		/** Matches known cancelled lesson pattern and saves classes with group name and lesson subject. It saves also a "note" if such exists */
