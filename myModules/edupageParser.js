@@ -401,12 +401,13 @@ class EduPageSubstitutions {
 						if (!singleSub.cancelled[0] && // Is NOT cancelled (in this case we have not enough data for other chcks to pass) AND
 							singleSub.periods[0] === singleSubstitutionObject.periods[0] && // Takes place during the same lesson AND
 							singleSub.subjects[0] === singleSubstitutionObject.subjects[0] && // The subject is the same AND
+							singleSub.note[0] === singleSubstitutionObject.note[0] && // The nots are the same (can be empty) AND
 							((
 								singleSub.teachers[0] !== "" && // The teacher name is given AND
 								singleSub.teachers[0] == singleSubstitutionObject.teachers[0] // it is the same for both substitutions
 							) || ( // OR
 								singleSub.classrooms[0] !== "" && // The classroom is given AND
-								singleSub.classrooms[0] == singleSubstitutionObject.teachers[0] // it's the same for both substtutions
+								singleSub.classrooms[0] == singleSubstitutionObject.classrooms[0] // it's the same for both substtutions
 							))
 						) {
 							// Add the class name to list of classes affected by the substitution
@@ -545,7 +546,7 @@ class EduPageSubstitutions {
 						// Add teacher HTML
 						singleStudentSubstitution.rawTHTML = singleTeacherSubstitution.rawTHTML;
 						// As the teacher substitution is now a duplicate it can be removed from the array
-						teacherSubstitutions.splice(i, 1);
+						teacherSubstitutions.splice(n, 1);
 					}
 				}
 			}
