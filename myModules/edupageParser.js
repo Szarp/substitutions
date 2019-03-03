@@ -289,7 +289,7 @@ class EduPageSubstitutions {
 		 * - `classroom2` - classroom number/name if there is no classroom change
 		 * - `note` - additional note/comment provided by school.
 		 */
-		const allInOneReExp = /^(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Substitution for: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*))?(?:, (?<note>[\w\W]*))?$/;
+		const allInOneReExp = /^(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Substitution for: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*?))?(?:, (?<note>[\w\W]*))?$/;
 
 		/** Lesson number */
 		let lesson = lessonRegExp.exec(singleSubstitutionHTML)[1];
