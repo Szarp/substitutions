@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 var express = require("express"),
 	fs = require("fs"),
-	https = require("spdy"),
+	spdy = require("spdy"),
 	http = require("http"),
 	bodyParser = require("body-parser"),
 	cookieParser = require("cookie-parser"),
@@ -20,11 +20,11 @@ var cookie = new session.sessionCreator();
 //set up certificates for HTTPS
 var opts = {
 	// Specify the key file for the server
-	key: fs.readFileSync("cert/wsskey.pem"),
+	key: fs.readFileSync(config.privkeyPath),
 	// Specify the certificate file
-	cert: fs.readFileSync("cert/wsscert.pem"),
+	cert: fs.readFileSync(config.certPath),
 	// Specify the Certificate Authority certificate
-	ca: fs.readFileSync("cert/cacert.pem"),
+	ca: fs.readFileSync(config.chainPath),
 };
 //set up express app
 app.use(express.static(__dirname + "/public"));
@@ -255,8 +255,34 @@ setTimeout(function () {
 	download.all();
 }, 1000); //download substitutions 1 second after start
 
-https.createServer(opts, app).listen(443, () => {
+var mainServer = spdy.createServer(opts, app).listen(443, () => {
 	console.log("Server started on port 443");
+});
+
+function getMajorNodeVersion() {
+	return parseInt(process.version.substr(1).split(".")[0]);
+}
+
+/** @type {NodeJS.Timeout} Certificate reload timeout. Using debounce, as `fs.watchFile()` may be called multiple times by OS during single file modification */
+var certReloadTimeout;
+// `fs.watchFile()` is used here instead of more efficient `fs.watch()`, because it will be triggered also when file is removed and created again
+fs.watchFile(config.certPath, () => {
+	clearTimeout(certReloadTimeout);
+	certReloadTimeout = setTimeout(() => {
+		if (getMajorNodeVersion() >= 11) {
+			// In version 11.0.0 setSecureContext was added: https://nodejs.org/api/tls.html#tls_server_setsecurecontext_options
+			mainServer.setSecureContext({
+				key: fs.readFileSync(config.privkeyPath),
+				cert: fs.readFileSync(config.certPath),
+			});
+		} else {
+			// Hack for earlier versions (based on https://github.com/nodejs/node/issues/4464#issuecomment-357975317)
+			// @ts-ignore
+			mainServer._sharedCreds.context.setCert(fs.readFileSync(config.certPath));
+			// @ts-ignore
+			mainServer._sharedCreds.context.setKey(fs.readFileSync(config.privkeyPath));
+		}
+	}, 1000);
 });
 
 http.createServer((_req, res) => {
