@@ -1,6 +1,7 @@
 var express = require('express'),
 	fs= require('fs'),
 	https =require('spdy'),
+	http = require("http"),
 	bodyParser = require('body-parser'),
 	cookieParser = require('cookie-parser'),
 	compression = require('compression'),
@@ -253,9 +254,12 @@ setTimeout(function () {
     download.all();
 }, 1000); //download substitutions 1 second after start
 
-setTimeout(function(){
-	cookie.deleteOld();
-},1000*60*60*24*30); //remove cookies (session) after 30 days
+https.createServer(opts, app).listen(443, () => {
+	console.log("Server started on port 443");
+});
 
-https.createServer(opts, app).listen(8088);
-console.log('Started port 8088');
+http.createServer((_req, res) => {
+	res.writeHead(301, { "Location": config.url });
+}).listen(80, () => {
+	console.log("HTTPS redirect running on port 80");
+});
