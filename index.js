@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 var express = require("express"),
 	fs = require("fs"),
+	path = require("path"),
 	spdy = require("spdy"),
 	http = require("http"),
 	bodyParser = require("body-parser"),
@@ -263,30 +264,59 @@ function getMajorNodeVersion() {
 	return parseInt(process.version.substr(1).split(".")[0]);
 }
 
-/** @type {NodeJS.Timeout} Certificate reload timeout. Using debounce, as `fs.watchFile()` may be called multiple times by OS during single file modification */
+/**
+ * @type {NodeJS.Timeout} Certificate reload timeout. Using debounce, as `fs.watch()`
+ * will be called multiple times by OS as many files should be modified (cert and privkey)
+ * */
 var certReloadTimeout;
-// `fs.watchFile()` is used here instead of more efficient `fs.watch()`, because it will be triggered also when file is removed and created again
-fs.watchFile(config.certPath, () => {
+/**
+ * @param {boolean | string} isSyml Boolean `true` if called from dir watcher; string with event type if called directly by `fs.watch()`
+ */
+function certWatcherAction(isSyml) {
 	clearTimeout(certReloadTimeout);
 	certReloadTimeout = setTimeout(() => {
-		if (getMajorNodeVersion() >= 11) {
-			// In version 11.0.0 setSecureContext was added: https://nodejs.org/api/tls.html#tls_server_setsecurecontext_options
-			mainServer.setSecureContext({
-				key: fs.readFileSync(config.privkeyPath),
-				cert: fs.readFileSync(config.certPath),
-			});
-		} else {
-			// Hack for earlier versions (based on https://github.com/nodejs/node/issues/4464#issuecomment-357975317)
-			// @ts-ignore
-			mainServer._sharedCreds.context.setCert(fs.readFileSync(config.certPath));
-			// @ts-ignore
-			mainServer._sharedCreds.context.setKey(fs.readFileSync(config.privkeyPath));
+		try {
+			if (getMajorNodeVersion() >= 11) {
+				// In version 11.0.0 setSecureContext was added: https://nodejs.org/api/tls.html#tls_server_setsecurecontext_options
+				mainServer.setSecureContext({
+					key: fs.readFileSync(config.privkeyPath),
+					cert: fs.readFileSync(config.certPath),
+					ca: fs.readFileSync(config.chainPath)
+				});
+			} else {
+				// Hack for earlier versions (based on https://github.com/nodejs/node/issues/4464#issuecomment-357975317)
+				// @ts-ignore
+				mainServer._sharedCreds.context.setCert(fs.readFileSync(config.certPath));
+				// @ts-ignore
+				mainServer._sharedCreds.context.setKey(fs.readFileSync(config.privkeyPath));
+			}
+			if (isSyml === true) {
+				// If the symlink "destination" changes, close current cert file `fs.watch()` and start new watcher for the new "destination"
+				certFileWatcher.close();
+				certFileWatcher = fs.watch(config.certPath, certWatcherAction);
+			}
+		} catch (e) {
+			console.error("An error occured while reloading TLS secure context", e);
 		}
 	}, 1000);
-});
+}
+// Watch cert file for changes
+var certFileWatcher = fs.watch(config.certPath, certWatcherAction);
+/*	If the `config.cert` points to a symbolic link then its parent directory is watched and events are filtered
+	(only changes made to the symlink cause `certWatcherAction()` to be called).
+	It is recommended to store cerificate and privkey in a directory which doesn't contain any other files,
+	because the watch callback wont't be triggered by changes in other files in the same directory
+ */
+if (fs.lstatSync(config.certPath).isSymbolicLink()) {
+	fs.watch(path.dirname(config.certPath), (_event, filename) => {
+		if (filename === path.basename(config.certPath)) {
+			certWatcherAction(true);
+		}
+	});
+}
 
-http.createServer((_req, res) => {
-	res.writeHead(301, { "Location": config.url });
+http.createServer((req, res) => {
+	res.writeHead(301, { "Location": config.url + (req.url || "/") });
 }).listen(80, () => {
 	console.log("HTTPS redirect running on port 80");
 });
