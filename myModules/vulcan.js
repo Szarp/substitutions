@@ -272,7 +272,7 @@ Substitutions.prototype.getSubstitutions = function(callback){
 				if (details[1] == "Uczniowie zwolnieni do domu" || details[1] == "Uczniowie przychodzą później"){
 					// lesson is cancelled
 					cSub.cancelled[0] = true;
-				} else if (!isNaN(details[1]) | nscNum.includes(details[1])){
+				} else if (!isNaN(details[1]) || nscNum.includes(details[1])){
 					// It's a number or is included in nscNum - so it has to be a classroom number
 					cSub.classrooms[0] = details[1];
 				} else if (details[1] != undefined && details[1].length > 0){
@@ -373,12 +373,12 @@ function findFile(){
 /**
  * Check if there is an object in DB with data for day specified as `day` parameter.
  * If reading DB fails it tries to recover 5 times (with a minute long timeout between recovery attempts).
- * 
+ *
  * Should be executed:
- * 
+ *
  * - at least once a day (every 12h is OK), with day parameter pointing at the day after the next day (the day after tomorrow)
  * - when server starts, with day parameter pointing at current day, the next day, and the day after the next day
- * 
+ *
  * @param {string} day date in `yyyy-mm-dd` format
  * @param {Function} callback callback to execute. INFO: it executes always after first attempt, regardless of any possible failures in `checkDay()`/`verify()`
 */

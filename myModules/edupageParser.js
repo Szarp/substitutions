@@ -343,6 +343,18 @@ class EduPageSubstitutions {
 	}
 
 	/**
+	 * Remove double spaces and do `.trim()` on teacher name to ensure that it is stored everywhere in the same format
+	 * @param {SingleSubstitution} singleSubstitution Single substitution object
+	 */
+	formatTeacherName(singleSubstitution) {
+		if (singleSubstitution.teachers[0] != "")
+			singleSubstitution.teachers[0] = singleSubstitution.teachers[0].replace(/ {2,}/, " ").trim();
+		if (singleSubstitution.changes && singleSubstitution.changes.teachers)
+			singleSubstitution.changes.teachers[0] = singleSubstitution.changes.teachers[0].replace(/ {2,}/, " ").trim();
+		return singleSubstitution;
+	}
+
+	/**
 	 * Parses substitution data (by class or teacher - depending on `forTeachers`) received from EduPage.
 	 *
 	 * If `rawData` is not a valid JSON or it doesn't contain `r` key this function will throw.
@@ -385,10 +397,12 @@ class EduPageSubstitutions {
 				let singleSubData = singleClassSubDataArr[0];
 				// If a class or teacher is absent whole day just skip their data. Maybe their substitutions will be obtained from data in other format.
 				if (allDayCancelledRegExp.test(singleSubData)) continue;
-				/** Single substitution object for class/taecher by appropriate parser */
+				/** Single substitution object for class/teacher by appropriate parser */
 				let singleSubstitutionObject = forTeachers ? this.substitutionRowTeachersParser(singleSubData, className) : this.substitutionRowStudentsParser(singleSubData, className);
 				// If the substitution is undefined (doesn't match any known format) it should be ignored
 				if (!singleSubstitutionObject) continue; // Go to the next element in loop
+				// Format teacher name
+				singleSubstitutionObject = this.formatTeacherName(singleSubstitutionObject);
 				/** Substitution isn't a duplicate and can be pushed to array*/
 				let canPush = true;
 				// There should be no duplicates in substituttions for teachers

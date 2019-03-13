@@ -76,8 +76,7 @@ function modifyById(id,collectionName,paramsToModify,callback){
 async function modifyById2(id, collectionName, paramsToModify) {
 	try {
 		let client = await MongoClient.connect(url);
-		let db = await client.db(config.db);
-		let collection = await db.collection(collectionName);
+		let collection = client.db(config.db).collection(collectionName);
 		await collection.findOneAndUpdate({ _id: id }, { $set: paramsToModify }, { upsert: true });
 		await client.close();
 		return;
