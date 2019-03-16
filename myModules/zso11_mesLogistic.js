@@ -61,8 +61,8 @@ function messageDistribution(mess){
 
                 mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                      if(!e){
-                        console.log('Saving  users\'s message',r["result"]);
-                         if(r["result"]["nModified"]!=0){
+                        console.log('Saving  users\'s message', r);
+                         if(r.lastErrorObject && r.lastErrorObject.n !=0){
                             analizePostback(mess);
                          }
                     }
@@ -81,7 +81,7 @@ function messageDistribution(mess){
                 //console.log('Saving to user message');
                 mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                     if(!e){
-                        console.log('Saving  server\'s message',r["result"]);
+                        console.log('Saving  server\'s message', r);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);
@@ -92,7 +92,7 @@ function messageDistribution(mess){
                 mongo3.modifyById(mess.timestamp, "userMessages", mess, function (e, r) {
                     if (!e) {
                         if (!mess["attachments"]) {
-                            if (r["result"]["nModified"] != 0) {
+                            if (r.lastErrorObject && r.lastErrorObject.n != 0) {
                                 analizeText(mess);
                             }
                         }
@@ -100,7 +100,7 @@ function messageDistribution(mess){
                             //analizeAttachments(mess);
                             //console.log("atta",mess);
                         }
-                        console.log('Saving users\'s message', r["result"]);
+                        console.log('Saving users\'s message', r);
                     }
                     else {
                         console.log("Error in saving user\'s message", e);

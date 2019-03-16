@@ -15,24 +15,18 @@ function redirect(req,callback){
             facebook.getInfoAboutToken(token,function(returnData){
                 console.log('return data',returnData);
                 var id=returnData['data'].user_id; //id
-                //cookie.addNewSession(id,reqCookie);
-                console.log('id: '+id);
-                console.log('token: '+token);
-                //if()
-                //mongo.findById(id,)
-                console.log('test id',id);    
                 facebook.addName(token,function(name){
                     console.log('test name',name);
                     facebook.getPicture(token,function(picture){
                         console.log('test pic',picture);
                         facebook.facebookSavePerson(id,name,picture,function(){
-                            
+
                             setImmediate(function() {
                                 callback(id);
                             });
-                        })    
+                        })
                     })
-                    //in the future will get name        
+                    //in the future will get name
                 });
                 /*
                 facebook.checkIfLongTokenExist(id,function(comunicat){
@@ -40,22 +34,22 @@ function redirect(req,callback){
                         facebook.tokenToLongLife(token,function(x){
                             console.log('some long');
                             console.log(x);
-                        
-                            mongo.modifyById(id,'person',{longToken:x},function(){})    
-                            
+
+                            mongo.modifyById(id,'person',{longToken:x},function(){})
+
                         });
-                        
+
                         mongo.findById(id,'person',function(z){
                             console.log(z);
                         })
                     }
-                    
+
                 });
                 */
                 //data['user_id']=returnData['data'].user_id;
-                //facebook.saveIdAndAccesToken 
-            }); 
-        });  
+                //facebook.saveIdAndAccesToken
+            });
+        });
 }
 
 var matchingModes ={
@@ -86,12 +80,12 @@ var matchingModes ={
     generateToken:{
         name:'generateToken',
         description:'Responses token for user'
-    
+
     },
     checkToken:{
         name:'checkToken',
         description:'Responses if there is match for tokens'
-    
+
     },
 	teachersList:{
 		name: 'teachersList',
@@ -114,13 +108,13 @@ function postCall(userId,body,callback){
     if(matchingModes[body.mode] != undefined){
     //console.log('Mode: '+req.body['mode']);
     //var body=req.body;
-    
+
         if(body.mode=='getSettings'){
             callFunc.getSettings(userId,function(resText){
                 setImmediate(function() {
                     callback(resText);
                 });
-            });        
+            });
         }
         else if(body.mode=='getChanges'){
             callFunc.getChanges(body,function(resText){
@@ -128,14 +122,14 @@ function postCall(userId,body,callback){
                     callback(resText);
                 });
             });
-        }         
+        }
         else if(body.mode=='classList'){
             callFunc.classList(body,function(resText){
                 setImmediate(function() {
                     callback(resText);
                 });
             });
-        }          
+        }
         else if(body.mode=='message'){
             callFunc.message(userId,body,function(resText){
                 setImmediate(function() {
@@ -201,7 +195,7 @@ function postCall(userId,body,callback){
     };
         //console.log('hi',res);
 
-    
+
 }
 exports.postCall = postCall;
 exports.redirect = redirect;

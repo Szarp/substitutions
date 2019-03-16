@@ -24,7 +24,7 @@ const dbName = config.db;
  * });
  */
 function findByParam(query, paramsToDisplay, collectionName, callback, userDbName = dbName) {
-	const mongoClient = new MongoClient(url);
+	const mongoClient = new MongoClient(url, { useNewUrlParser: true });
 	mongoClient.connect((err, client) => {
 		if (!err) {
 			const collection = client.db(userDbName || dbName).collection(collectionName);
@@ -55,7 +55,7 @@ function findByParam(query, paramsToDisplay, collectionName, callback, userDbNam
  * });
  */
 function saveToCollection([collectionName, data], callback, userDbName = dbName) {
-	const mongoClient = new MongoClient(url);
+	const mongoClient = new MongoClient(url, { useNewUrlParser: true });
 	mongoClient.connect((err, client) => {
 		if (!err) {
 			const collection = client.db(userDbName || dbName).collection(collectionName);
@@ -99,7 +99,7 @@ function saveToCollection([collectionName, data], callback, userDbName = dbName)
  * 	});
  */
 function modifyById(id, collectionName, paramsToModify, callback, userDbName = dbName) {
-	const mongoClient = new MongoClient(url);
+	const mongoClient = new MongoClient(url, { useNewUrlParser: true });
 	if (typeof callback === "function") {
 		mongoClient.connect((err, client) => {
 			if (!err) {
@@ -154,7 +154,7 @@ function modifyById(id, collectionName, paramsToModify, callback, userDbName = d
  * });
  */
 function findById(id, collectionName, callback, userDbName = dbName) {
-	const mongoClient = new MongoClient(url);
+	const mongoClient = new MongoClient(url, { useNewUrlParser: true });
 	mongoClient.connect((err, client) => {
 		if (!err) {
 			const collection = client.db(userDbName || dbName).collection(collectionName);
