@@ -4,7 +4,7 @@ var request = require('request');
 var facebook = require('./facebookComunication.js');
 var callFunc = require('./postCallFunctions.js');
 var secretToken = require('./secretTokenGenerator.js');
-var mongo = require('./mongoFunctions.js');
+const mongo3 = require("./mongoFunctions3");
 var mess = require('./messTemplates.js');
 //mongo.url("ZSO11");
 var adm1 = config.adm1;
@@ -197,7 +197,12 @@ function sendSubstitutions(senderID, message){
 							});
 						}
 						else{
-							mongo.findById('all', 'teachers', function(err, obj){
+							mongo3.findById("all", "teachers", function(err, obj){
+								if(err){
+									console.error(err);
+									createMessage("text", senderID, "Wystąpił błąd. Spróbuj ponownie później");
+									return;
+								}
 								var tList = obj.teachers;
 								var exist = false;
 								var tExist = false;
@@ -253,11 +258,14 @@ function sendSubstitutions(senderID, message){
 }
 
 function differencesBetweenSubs(date, callback){
-	mongo.findById(date, 'substitutions', function(err, newSubObj){
+	mongo3.findById(date, "substitutions", function(err, newSubObj){
 		if (!err && newSubObj && newSubObj.substitution) {
 			var newSub = newSubObj.substitution;
 			var copyOfNew = JSON.parse(JSON.stringify(newSub));
-			mongo.findById(date, 'substitutionsBuffer', function(err, oldSubObj){
+			mongo3.findById(date, "substitutionsBuffer", function(err, oldSubObj){
+				if(err){
+					console.error(err);
+				}
 				if(oldSubObj && oldSubObj.substitution){
 					var oldSub = oldSubObj.substitution;
 				} else {
@@ -280,28 +288,19 @@ function differencesBetweenSubs(date, callback){
 						}
 					}
 				}
-				/*if(newSub.length > 0){
-					for(var i = copyOfOld.length-1; i >= 0; i--){
-						var cOldEl = JSON.stringify(copyOfOld[i]);
-						for(var e = 0; e < newSub.length; e++){
-							var cNewEl = JSON.stringify(newSub[e]);
-							if(cNewEl == cOldEl){
-								newSub.splice(e, 1);
-							}
-						}
-					}
-				}*/
 				setImmediate(function(){
 					callback([newSub,oldSub]);
 					var dataToSave = {
 						substitution: copyOfNew,
 						date: date
-					}
-					mongo.modifyById(date,'substitutionsBuffer',dataToSave,function(){
-						//console.log("Saved to buffer");
+					};
+					mongo3.modifyById(date, "substitutionsBuffer", dataToSave, function (err) {
+						if (err) console.error("Saving to buffer failed:", err);
 					});
 				});
 			});
+		} else if (err){
+			console.error(err);
 		}
 	});
 }
@@ -323,8 +322,8 @@ function substitutionNotification(day, date, callback){
 	differencesBetweenSubs(date, function(newAndOld){
 		var newSub=newAndOld[0];
 		var oldSub=newAndOld[1];
-		mongo.findByParam({"system.connected": true, "personal.settings.notification": "yes"}, {"personal.id": true, "personal.settings.setClass": true, "personal.settings.setTeacher": true}, 'person', function(usersList){
-			if(usersList){
+		mongo3.findByParam({ "system.connected": true, "personal.settings.notification": "yes" }, { "personal.id": 1, "personal.settings.setClass": 1, "personal.settings.setTeacher": 1 }, "person", function (err, usersList) {
+			if (!err && usersList) {
 				for(var a = 0; a < usersList.length; a++){
 					var oneUser = usersList[a];
 					if(oneUser && oneUser.personal && oneUser.personal.id && oneUser.personal.settings.setClass){
@@ -388,6 +387,8 @@ function substitutionNotification(day, date, callback){
 						}
 					}
 				}
+			} else if (err) {
+				console.error(err);
 			}
 		});
 		setImmediate(function(){
@@ -455,36 +456,6 @@ function messengerTypeChange(oneSub, uId, callback){
 		callback(msg, uId);
 	});
 }
-  function notificationList(callback){
-	 var name='person';
-		//[collection,{data}]
-		//var collectionName = collection;
-		//var data = paramsToModify;
-		//var url = 'mongodb://localhost:27017/test2';
-		mongo.findByParam({"personal.settings.notification":'yes',"system.connected":true},{"personal.id":1,"personal.settings":1},name,function(a){
-			//console.log(a);
-			var list=[];
-			var arr={};
-			for(var i=0;i<a.length;i++){
-				arr['id']=a[i].personal['id'];
-				arr['class']=a[i].personal.settings['setClass'];
-				arr['teacher']='---'
-				if(a[i].personal.settings['setTeacher']){
-					arr['teacher']=a[i].personal.settings['setTeacher'];
-				}
-				list[i]=arr;
-				arr={};
-			}
-
-			setImmediate(function(){
-					callback(list);
-			});
-
-		})
-
-
-		//db.close();
- }
 
 function sendList(senderID, message){
 	var day = 'today';
@@ -505,29 +476,12 @@ function sendList(senderID, message){
 			callSendAPI(messageTS);
 		});
 	}else if (message=='teachers'){
-		mongo.findById('all', 'teachers', function(err, obj){
+		mongo3.findById("all", "teachers", function(err, obj){
 			if(!err){
-				/*var a = 0;
-				var msg = 'Dostępni nauczyciele to: ';
-				for(var i = 0; i < obj.teachers.length; i++){
-					msg += '\n' + obj.teachers[i];
-					a++;
-					if(a == 10){
-						createMessage('text', senderID, msg, function(messageTS){
-							callSendAPI(messageTS);
-						});
-						a = 0;
-						msg = '';
-					} else if (i == (obj.teachers.length-1)){
-						createMessage('text', senderID, msg, function(messageTS){
-							callSendAPI(messageTS);
-						});
-					}
-				}*/
 				sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, senderID);
 			} else {
 				console.log("Error getting teachers list");
-				createMessage('text', senderID, 'Wystąpił błąd, spróbuj ponownie', function(messageTS){
+				createMessage("text", senderID, "Wystąpił błąd, spróbuj ponownie", function(messageTS){
 					callSendAPI(messageTS);
 				});
 			}
@@ -636,31 +590,35 @@ function callSendAPI(messageData) {
 	});
 }
 
-function sendToMessengerBtn(event){
+function sendToMessengerBtn(event) {
 	var senderID = event.sender.id;
 	var recipientID = event.recipient.id;
 	var timeOfAuth = event.timestamp;
 	var passThroughParam = event.optin.ref;
 	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
-	if(!(passThroughParam)){
+	if (!(passThroughParam)) {
 		console.error("no passThroughParam received");
 	} else {
-	var fbUID = passThroughParam;
-	secretToken.connectAccounts(fbUID, senderID, function () {
-		console.log("Accounts connected!");
-		mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
-			console.log("Notifications for", fbUID, "are on.");
-			createButtons([['postback', 'help', 'Więcej']], function(buttons){
-				var content={
-					text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
-					buttons: buttons
+		var fbUID = passThroughParam;
+		secretToken.connectAccounts(fbUID, senderID, function () {
+			console.log("Accounts connected!");
+			mongo3.modifyById(fbUID, "person", { "personal.settings.notification": "yes" }, function (err) {
+				if (err) {
+					console.error("Enabling messenger notifications failed:", err);
+				} else {
+					console.log("Notifications for", fbUID, "are on.");
 				}
-				createMessage('generic', senderID, content, function(messageTS){
-					callSendAPI(messageTS);
+				createButtons([["postback", "help", "Więcej"]], function (buttons) {
+					var content = {
+						text: `Konta zostały połączone. Odwiedź ${config.url} i ${err ? "ustaw `Notification on Messenger` na `yes` oraz " : ""}wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.`,
+						buttons: buttons
+					};
+					createMessage("generic", senderID, content, function (messageTS) {
+						callSendAPI(messageTS);
+					});
 				});
 			});
-		})
-	});
+		});
 	}
 }
 

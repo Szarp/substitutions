@@ -1,5 +1,5 @@
 const request = require("request");
-const mongo = require("./mongoFunctions.js");
+const mongo3 = require("./mongoFunctions3");
 
 /**
  * @class
@@ -502,7 +502,7 @@ class EduPageSubstitutions {
 	 */
 	updateDBTeachersList(teachersFromSub) {
 		// Get current list of teachers from database
-		mongo.findById("all", "teachers", (e, obj) => {
+		mongo3.findById("all", "teachers", (e, obj) => {
 			if (e) {
 				console.error(`${new Date().toLocaleString()}: Can't update teachers list in db - an error occured when downloading the old one:\n${e}`);
 			} else {
@@ -515,10 +515,14 @@ class EduPageSubstitutions {
 				// If there is any content to be added
 				if (newTeachersArray.length && newTeachersArray.length > teachersFromDB.length) {
 					// Update the database entry
-					mongo.modifyById("all", "teachers", { teachers: newTeachersArray }, () => {
-						// Log the event
-						console.log("Teachers array was updated (probably - saving data might have failed, but I can't check that). Full list below:");
-						console.log(newTeachersArray);
+					mongo3.modifyById("all", "teachers", { teachers: newTeachersArray }, (err) => {
+						if (!err) {
+							// Log the event
+							console.log("Teachers array was updated. Full list below:");
+							console.log(newTeachersArray);
+						} else {
+							console.error("Saving updated teachers array failed:", err);
+						}
 					});
 				}
 			}
@@ -624,7 +628,7 @@ class EduPageSubstitutions {
 		this.updateDBTeachersList(teachers);
 		// Save the substitutions
 		try {
-			await mongo.modifyById2(date, "substitutions", objectForDB);
+			await mongo3.modifyById(date, "substitutions", objectForDB);
 			console.info(`${new Date().toLocaleString()}: Substitutions for website ${this.pageUrl} and date ${date} were updated.`);
 			return;
 		} catch (error) {

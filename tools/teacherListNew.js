@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-const { promisify } = require("util");
 const request = require("request");
 const mongodb = require("mongodb");
 const MongoClient = mongodb.MongoClient;
@@ -51,9 +50,7 @@ async function updateNotificationSetting({ mappedNames }) {
 		/** @type {Promise<mongodb.UpdateWriteOpResult | void>[]} */
 		let updateArray = [];
 		let cursor = collection.find({ "personal.settings.setTeacher": { $exists: true, $ne: "---" } }).project({ "personal.settings.setTeacher": 1 });
-		// cursor.forEach supports promises since mongodb driver 3.1.0: https://jira.mongodb.org/browse/NODE-1231
-		cursor.forEachPromise = promisify(cursor.forEach);
-		await cursor.forEachPromise((doc) => {
+		await cursor.forEach((doc) => {
 			if (mappedNames.has(doc.personal.settings.setTeacher)) {
 				let updatedName = mappedNames.get(doc.personal.settings.setTeacher);
 				updateArray.push(collection.updateOne({ _id: doc._id }, { $set: { "personal.settings.setTeacher": updatedName } }));

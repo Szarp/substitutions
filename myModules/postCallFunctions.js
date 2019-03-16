@@ -1,12 +1,8 @@
 var setTime = require('./setTime.js'),
-	mongo = require('./mongoFunctions.js'),
-	secretToken = require('./secretTokenGenerator.js'),
-    mongo_v2= require ('./mongoConnection.js');
-var config = require('./config');
+	secretToken = require('./secretTokenGenerator.js');
+const mongo3 = require("./mongoFunctions3");
 
 var time = new setTime();
-var mongoPerson= new mongo_v2.person(config.db);
-var mongoSub= new mongo_v2.substitutions(config.db);
 var pageSettings = {
     fields:{
         cancelled:'typ',
@@ -27,7 +23,7 @@ var pageSettings = {
             'substitution':[['navbar_substitution','navbar_substitutionD'],'substitutionList'],
             'about':[['navbar_photo','navbar_photoD'],'about1'],
             'settings':[['navbar_settings','navbar_settingsD'],'settingsMenu']
-            
+
         }
     },
     events:['homePage','substitutionList','settingsMenu','about1'],
@@ -37,23 +33,33 @@ var pageSettings = {
     console.log("005: ",r);
 })*/
 //mongoPerson.collectionCheck();
-function getSettings(userId,callback){
-    mongoPerson.readSettings(userId,function(e,r){
-        //console.log("r",r);
-        var table=[];
-        table[0]=r.settings.setClass;
-        table[1]=r.settings.notification;
-        table[2]=r.settings.setTeacher;
-        pageSettings['formValues']=table;
-        res = pageSettings; 
-        setImmediate(function() {
-            callback(res);
-        });
-    })
+function getSettings(userId, callback) {
+    mongo3.findById(userId, "person", (err, doc) => {
+        if (!err) {
+            try {
+                pageSettings.formValues = [doc.personal.settings.setClass, doc.personal.settings.notification, doc.personal.settings.setTeacher];
+                setImmediate(function () {
+                    callback(pageSettings);
+                });
+            } catch (e) {
+                console.error(e);
+                pageSettings.formValues = ["all", "no"];
+                setImmediate(function () {
+                    callback(pageSettings);
+                });
+            }
+        } else {
+            console.error(err);
+            pageSettings.formValues = ["all", "no"];
+            setImmediate(function () {
+                callback(pageSettings);
+            });
+        }
+    });
 }
 function getSettings_old(userId,callback){
-    mongo.findById(userId,'person',function(err,doc){
-        if (err){console.log('prolem with settings: ',userId)};
+    mongo3.findById(userId,'person',function(err,doc){
+        if (err){console.error('prolem with settings: ',userId)};
         //console.log('Settings file: ',doc);
         var params = (doc.personal['settings']);
         if(params == ''){params={setClass:'all',notification:'no'}}
@@ -64,12 +70,12 @@ function getSettings_old(userId,callback){
 			table[2]=params.setTeacher;
 		}
         pageSettings['formValues']=table;
-        res = pageSettings; 
+        res = pageSettings;
         setImmediate(function() {
             callback(res);
         });
                 //console.log('response Settings',res);
-    })        
+    })
 }
 
 /*getChanges({param:"today"},function(res){ //getchanges test
@@ -85,7 +91,7 @@ function getChanges(body,callback){ //resposne app's format changes
     }
     var day = time.displayWeekDay();
     //console.log('requested date: ',time.displayTime());
-    mongoSub.find({_id:time.displayTime()},{},function(err,elems){
+    mongo3.findByParam({ _id: time.displayTime() }, {}, "substitutions", function (err, elems) {
         var obj = elems[0];
         if(err){console.log('err in sending substitutions')}
         var objToSend={};
@@ -93,7 +99,7 @@ function getChanges(body,callback){ //resposne app's format changes
             objToSend['substitution']=obj['substitution'];
             if(obj['date'] == undefined){obj['date']='31-12-2016'}
             objToSend['date']=obj['date'];
-        } 
+        }
         else {
             objToSend['substitution']='';
 			objToSend['date']='ERROR';
@@ -112,14 +118,14 @@ function getChanges_old(body,callback){ //resposne app's format changes
         time.tommorowIs();
     }
     console.log('requested date: ',time.displayTime());
-    mongo.findById(time.displayTime(),'substitutions',function(err,obj){
+    mongo3.findById(time.displayTime(),'substitutions',function(err,obj){
         if(err){console.log('err in sending substitutions')}
         var objToSend={};
         if(obj){
             objToSend['substitution']=obj['substitution'];
             if(obj['date'] == undefined){obj['date']='31-12-2016'}
             objToSend['date']=obj['date'];
-        } 
+        }
         else {
             objToSend['substitution']='';
 			objToSend['date']='ERROR';
@@ -132,12 +138,12 @@ function getChanges_old(body,callback){ //resposne app's format changes
 }
 
 function allTeachers_new(callback){
-    
-    
+
+
 }
 
 function allTeachers(callback){
-	mongo.findById('all', 'teachers', function(err, obj){
+	mongo3.findById('all', 'teachers', function(err, obj){
 		if(err){
 			console.log('Error getting teachersList');
 		} else {
@@ -158,7 +164,7 @@ function teachersList(body,callback){
 	} else {
 		time.tommorowIs();
 	}
-	mongoSub.find({_id:time.displayTime()},{},function(err, obj){
+    mongo3.findByParam({ _id: time.displayTime() }, {}, "substitutions", function (err, obj) {
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
@@ -176,7 +182,7 @@ function teachersList_old(body, callback){
 	} else {
 		time.tommorowIs();
 	}
-	mongo.findById(time.displayTime(), 'substitutions', function(err, obj){
+	mongo3.findById(time.displayTime(), 'substitutions', function(err, obj){
 		if(err){
 			console.log('Error getting substitutions');
 		} else {
@@ -201,7 +207,7 @@ function classList(body,callback){ //response classList from day
         time.tommorowIs();
     }
     //console.log('requested date: ',time.displayTime());
-    mongoSub.find({_id:time.displayTime()},{},function(err,obj){
+    mongo3.findByParam({ _id: time.displayTime() }, {}, "substitutions", function (err, obj) {
         //console.log(err,obj);
         if(err){console.log('err in sending substitutions')}
         //console.log("etst: ",obj);
@@ -222,7 +228,7 @@ function classList_old(body,callback){ //response classList from day
         time.tommorowIs();
     }
     //console.log('requested date: ',time.displayTime());
-    mongo.findById(time.displayTime(),'substitutions',function(err,obj){
+    mongo3.findById(time.displayTime(), "substitutions", function (err, obj) {
         //console.log(err,obj);
         if(err){console.log('err in sending substitutions')}
         res = obj['userList'];
@@ -232,13 +238,13 @@ function classList_old(body,callback){ //response classList from day
     });
 }
 //res:text
-function message(userId,body,callback){ //saves message from app
-    mongo.save(['messages',{id:userId,message:body.param,time:new Date()}],function(){
-        res = 'Dziękujemy za wiadomość';
-        setImmediate(function() {
-            callback(res);
+function message(userId, body, callback) { //saves message from app
+    mongo3.save(["messages", { id: userId, message: body.param, time: new Date() }], function (err) {
+        if (err) console.error(err);
+        setImmediate(function () {
+            callback(err ? "Wystąpił błąd. Spróbuj ponownie" : "Dziękujemy za wiadomość");
         });
-    }); 
+    });
 }
 /* saveSettings test
 saveSettings('7k8zUbHw4YhXG',{setClass:"1b",notification:"yes",teacher:""},function(r){
@@ -247,49 +253,26 @@ saveSettings('7k8zUbHw4YhXG',{setClass:"1b",notification:"yes",teacher:""},funct
     })
 })*/
 
-function saveSettings(userId,body,callback){ //saves settings from app
+function saveSettings(userId, body, callback) { //saves settings from app
     //userId String
-    //body Array 
-    if(userId!="0000"){
-        console.log('saving chnges to: '+userId);
-        var form={};
+    //body Array
+    if (userId != "0000") {
+        console.log('saving chnges to: ' + userId);
+        var form = {};
         form['setClass'] = body.setClass;
         form['notification'] = body.notification;
-		form['setTeacher'] = body.teacher;
-         mongoPerson.update(userId,{"personal":{settings:form}},function(){
-            res = 'ok';
-            setImmediate(function() {
-                callback(res);
+        form['setTeacher'] = body.teacher;
+        mongo3.modifyById(userId, "person", { "personal": { settings: form } }, function (e) {
+            if(e) console.error(e);
+            setImmediate(function () {
+                callback(e ? "Not ok. A problem occured" : "ok");
             });
-         })
-        }
-    else{
-        res = 'ok';
-        setImmediate(function() {
-                callback(res);
         });
     }
-}
-function saveSettings_old(userId,body,callback){ //saves settings from app
-    //userId String
-    //body Array 
-    if(userId!="0000"){
-        console.log('saving chnges to: '+userId);
-        var form={};
-        form['setClass'] = body.setClass;
-        form['notification'] = body.notification;
-		form['setTeacher'] = body.teacher;
-         mongo.modifyById(userId,'person',{"personal.settings":form},function(){
-            res = 'ok';
-            setImmediate(function() {
-                callback(res);
-            });
-         })
-        }
-    else{
+    else {
         res = 'ok';
-        setImmediate(function() {
-                callback(res);
+        setImmediate(function () {
+            callback(res);
         });
     }
 }
@@ -298,30 +281,26 @@ function saveSettings_old(userId,body,callback){ //saves settings from app
 picture('7k8zUbHw4YhXG',function(res){ //picture test
     console.log("picture test: ",res);
 })*/
-function picture(userId,callback){ //res id's picture
+function picture(userId, callback) { //res id's picture
     //userId String
-    if(userId != "0000"){
-         mongoPerson.readPersonalData(userId,function(err,obj){
-        //console.log(err,obj);
-        if(err){console.log('err in sending picture')}
-             //console.log('some fond object:',obj.personal.picture); //found? weź się naucz anglijskiego
-        res = obj.picture;
-        setImmediate(function() {
-            callback(res);
+    if (userId != "0000") {
+        mongo3.findById(userId, "person", function (err, obj) {
+            if (err) console.error(err)
+            setImmediate(function () {
+                callback(err ? "/img/unknown.gif" : obj.personal.picture);
+            });
         });
-    });
     }
-    else{
-        res = '/img/unknown.gif';
-        setImmediate(function() {
-                callback(res);
+    else {
+        setImmediate(function () {
+            callback("/img/unknown.gif");
         });
     }
 }
 function picture_old(userId,callback){ //res id's picture
     //userId String
     if(userId != "0000"){
-         mongo.findById(userId,'person',function(err,obj){
+         mongo3.findById(userId,'person',function(err,obj){
         //console.log(err,obj);
         if(err){console.log('err in sending picture')}
              console.log('some fond object:',obj.personal.picture); //found? weź się naucz anglijskiego
@@ -422,7 +401,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
         time.tommorowIs();
     }
     var day = time.displayWeekDay();
-    mongoSub.find({_id:time.reverseTime()},{},function(e,obj){//console.log(e,obj)
+    mongo3.findByParam({ _id: time.reverseTime() }, {}, "substitutions", function (e, obj) {//console.log(e,obj)
         if(obj[0]!==undefined){
             obj=obj[0];
             var tableOfMesseges=[];
@@ -463,25 +442,25 @@ function tokenCheck(userId,body,callback){
             }
             else{
                 res = 'Token nieprawidłowy. Spróbuj jeszcze raz.';
-                
+
             }
             setImmediate(function() {
                 callback(res);
-            });    
+            });
         })
     }
     else {
         setImmediate(function() {
             callback('You must be loged in.');
-        });   
-    }   
+        });
+    }
 }
 function tokenGenerate(userId,callback){
     if(userId != "0000"){
         secretToken.appRequest(userId, function(tok){
             setImmediate(function() {
                 callback(tok);
-            });  
+            });
         })
     }
     else {
@@ -496,14 +475,16 @@ function checkLogin(userId, callback){
             callback({isLogged: false, connected: false});
         });
     } else {
-        mongoPerson.find({_id:userId},{}, function(err, obj){
-            if(!err){
-                setImmediate(function(){
-                    console.log("obj",obj);
-                    callback({isLogged: true, connected: obj[0].system.connected});
+        mongo3.findByParam({ _id: userId }, {}, "person", function (err, obj) {
+            if (!err) {
+                setImmediate(function () {
+                    console.log("obj", obj);
+                    callback({ isLogged: true, connected: obj[0].system.connected });
                 });
+            } else {
+                console.error(err);
             }
-        })
+        });
     }
 }
 function checkLogin_old(userId, callback){
@@ -512,7 +493,7 @@ function checkLogin_old(userId, callback){
             callback({isLogged: false, connected: false});
         });
     } else {
-        mongo.findById(userId, 'person', function(err, obj){
+        mongo3.findById(userId, 'person', function(err, obj){
             if(!err){
                 setImmediate(function(){
                     callback({isLogged: true, connected: obj.system.connected});

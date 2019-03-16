@@ -6,8 +6,8 @@
 */
 //require communication and time module
 var sTime = require('../myModules/setTime.js'),
-	mongo = require('../myModules/mongoFunctions.js'),
 	manageSubs = require('../myModules/zsoServerComunication.js');
+const mongo3 = require("../myModules/mongoFunctions3");
 
 var time = new sTime();
 time.todayIs(); //set today
@@ -21,8 +21,8 @@ var data = {
 };
 
 manageSubs.save(date, data, function(){
-	mongo.findById(date,'substitutions',function(err,x){
-		console.log('save substitution '+  x.userList,x.date);
+	mongo3.findById(date,"substitutions",function(err,x){
+		console.log("save substitution "+  x.userList,x.date);
 	});
 	console.log('removed');
 });

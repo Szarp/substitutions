@@ -4,8 +4,7 @@ var request=require('request');
 var config = require('./configs/zso11');
 //var splitText = require('./splitText.js');
 var mess = require('./messTemplates.js');
-var mongo =require('./mongoFunctions.js');
-var mon = require('./mongoConnection.js');
+const mongo3 = require("./mongoFunctions3");
 var callFunc = require('./postCallFunctions.js');
 var facebook = require('./facebookComunication.js');
 //messenger
@@ -33,9 +32,6 @@ webhookEvents
 //attachments: true false
 //postcall true fasle
 //delivery true false
-var serverDB = new mon.server(config.db);
-var userDB = new mon.user(config.db);
-var subDB = new mon.substitutions(config.db);
 var messenger = new messFunc.send(config.pageToken);
 //serverDB.init();
 //subDB.collectionList(function(e,r){console.log(r)});
@@ -63,7 +59,7 @@ function messageDistribution(mess){
                 //postback function
                 console.log("postback");
 
-                serverDB.save(mess,function(e,r){
+                mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                      if(!e){
                         console.log('Saving  users\'s message',r["result"]);
                          if(r["result"]["nModified"]!=0){
@@ -74,7 +70,7 @@ function messageDistribution(mess){
 						console.log("Error in saving users\'s message",e);
 						analizePostback(mess); //We still need to analyse the postback
                     }
-                });
+                }, config.db);
             }
         break;
         case "optin":
@@ -83,33 +79,33 @@ function messageDistribution(mess){
         default:
             if(mess["echo"]==true){
                 //console.log('Saving to user message');
-                serverDB.save(mess,function(e,r){
+                mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                     if(!e){
                         console.log('Saving  server\'s message',r["result"]);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);
                     }
-                });
+                }, config.db);
             }
-            else{
-                userDB.save(mess,function(e,r){
-                    if(!e){
-                        if(!mess["attachments"]){
-                            if(r["result"]["nModified"]!=0){
+            else {
+                mongo3.modifyById(mess.timestamp, "userMessages", mess, function (e, r) {
+                    if (!e) {
+                        if (!mess["attachments"]) {
+                            if (r["result"]["nModified"] != 0) {
                                 analizeText(mess);
                             }
-                    }
-                    else{
-                        //analizeAttachments(mess);
-                        //console.log("atta",mess);
-                    }
-                            console.log('Saving users\'s message',r["result"]);
                         }
-                        else{
-                            console.log("Error in saving user\'s message",e);
+                        else {
+                            //analizeAttachments(mess);
+                            //console.log("atta",mess);
                         }
-                });
+                        console.log('Saving users\'s message', r["result"]);
+                    }
+                    else {
+                        console.log("Error in saving user\'s message", e);
+                    }
+                }, config.db);
                 //console.log('Saving to users\'s message');
             }
         break;
@@ -147,31 +143,35 @@ function token(text,mess){
  * @param {Mess} mess object passed from moduleSwitch and messageDistribution
  *
 */
-function sendToMessengerBtn(mess){
+function sendToMessengerBtn(mess) {
 	var senderID = mess.sender;
 	var recipientID = mess.page;
-    var timeOfAuth = mess.timestamp;
+	var timeOfAuth = mess.timestamp;
 	var passThroughParam = mess.passThroughParam;
 	console.log("Received authentication for user %d and page %d with pass " + "through param '%s' at %d", senderID, recipientID, passThroughParam, timeOfAuth);
-	if(!(passThroughParam)){
+	if (!(passThroughParam)) {
 		console.error("no passThroughParam received");
 	} else {
-        var fbUID = passThroughParam;
-        secretToken.connectAccounts(fbUID, senderID, function () {
-            console.log("Accounts connected!");
-            mongo.modifyById(fbUID, 'person', {"personal.settings.notification": "yes"}, function(){
-                console.log("Notifications for", fbUID, "are on.");
-                messFunc.prepareBtn([['postback', 'help', 'Więcej']], function(buttons){
-                    var content = {
-                        text: "Konta zostały połączone. Odwiedź " + config.url + " i wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.",
-                        buttons: buttons
-                    };
-                    messFunc.preapreMessage('generic', senderID, content, function(messageTS){
-                        messenger.send(messageTS);
-                    });
-                });
-            });
-        });
+		var fbUID = passThroughParam;
+		secretToken.connectAccounts(fbUID, senderID, function () {
+			console.log("Accounts connected!");
+			mongo3.modifyById(fbUID, "person", { "personal.settings.notification": "yes" }, function (err) {
+				if (err) {
+					console.error("Enabling messenger notifications failed:", err);
+				} else {
+					console.log("Notifications for", fbUID, "are on.");
+				}
+				messFunc.prepareBtn([["postback", "help", "Więcej"]], function (buttons) {
+					var content = {
+						text: `Konta zostały połączone. Odwiedź ${config.url} i ${err ? "ustaw `Notification on Messenger` na `yes` oraz " : ""}wybierz klasę w ustawieniach, aby otrzymywać powiadomienia. Jeśli chcesz dowiedzieć się więcej, kliknij guzik poniżej.`,
+						buttons: buttons
+					};
+					messFunc.preapreMessage("generic", senderID, content, function (messageTS) {
+						messFunc.send(messageTS);
+					});
+				});
+			});
+		});
 	}
 }
 /**
@@ -305,7 +305,7 @@ function analizePostback(mess) {
             });
         break;
         case "teachers":
-            mongo.findById('all', 'teachers', function(err, obj){
+            mongo3.findById('all', 'teachers', function(err, obj){
                 if(!err){
                     sTL(obj.teachers, 'Dostępni nauczyciele to:', 0, mess.sender);
                 } else {
@@ -415,7 +415,7 @@ function commandValidation(text, callback){
             });
         }
     } else { //check if user asks for a teacher
-        mongo.findById('all', 'teachers', function(err, obj){
+        mongo3.findById('all', 'teachers', function(err, obj){
             if(!err && obj && obj.teachers){
                 var tList = obj.teachers.map(function(value) {
                     return value.toLowerCase();
@@ -509,7 +509,7 @@ function getChanges(body,callback){ //resposne app's format changes
     }
     var day = time.displayWeekDay();
     //console.log('requested date: ',time.displayTime());
-    subDB.find({_id:time.displayTime()},{},function(err,elems){
+    mongo3.findByParam({ _id: time.displayTime() }, {}, "substitutions", function (err, elems) {
         var obj = elems[0];
         if(err){console.log('err in sending substitutions');}
         var objToSend={};
@@ -525,7 +525,7 @@ function getChanges(body,callback){ //resposne app's format changes
         setImmediate(function(){
             callback(objToSend,day);
         });
-    });
+    }, config.db);
 }
 /**
  * Creates an array of messages **(plain text, not an object which could be sent)** containing substitutions data. One element per substitution.

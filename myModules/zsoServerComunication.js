@@ -1,6 +1,5 @@
 //save requests to files
-var mongo = require('./mongoFunctions.js'),
-	assert = require('assert'),
+var assert = require('assert'),
 	request= require('request'),
 	jsonFromHtml = require('./getJsonFromHtml.js'),
 	userMod = require('./getSubstitution.js'),
@@ -10,13 +9,13 @@ var mongo = require('./mongoFunctions.js'),
 	callFunc = require('./postCallFunctions.js'),
     mongo_v2 = require('./mongoConnection.js');
 var config = require('./configs/zso11');
+const mongo3 = require("./mongoFunctions3");
 
 /*
 	module to comunicate with ZSO11 server
 */
 
 var time = new setTime();
-var sub = new mongo_v2.substitutions(config.db);
 var getSomeSubstitution = function(date,callback){
 	time.tommorowIs();
 	var tomorrow = time.displayTime();
@@ -56,16 +55,20 @@ var getSomeSubstitution = function(date,callback){
 							});
 						//})
 					})
-					mongo.findById('all', 'teachers', function(erro, obj){
-						var beforeTe = obj.teachers;
-						var newTe = beforeTe.concat(teachers);
-						newTe = uniq(newTe);
-						if(!arrayEqual(newTe, beforeTe) && newTe.length > beforeTe.length){
-							mongo.modifyById('all', 'teachers', {'teachers': teachers}, function(){
-								console.log('Teachers list updated');
-							})
+					mongo3.findById("all", "teachers", function (erro, obj) {
+						if (erro) {
+							console.error(erro);
+						} else {
+							var beforeTe = obj.teachers;
+							var newTe = beforeTe.concat(teachers);
+							newTe = uniq(newTe);
+							if (!arrayEqual(newTe, beforeTe) && newTe.length > beforeTe.length) {
+								mongo3.modifyById("all", "teachers", { "teachers": teachers }, function (err) {
+									err ? console.error(err) : console.log("Teachers list updated");
+								});
+							}
 						}
-					})
+					});
 				})
 			})
 		})
@@ -160,9 +163,13 @@ function getParams(callback){
 					'gsh':params[1],
 					'cookie':cookie
 				}
-				mongo.save(['pageParams',data],function(){
-					console.log('data added: '+data);
-				})
+				mongo3.save(["pageParams", data], function (err) {
+					if (!err) {
+						console.log("data added: " + data);
+					} else {
+						console.error(err);
+					}
+				});
 			});
 			//save somewhere
 		}
@@ -174,7 +181,7 @@ function getParams(callback){
 
 function downloadData(date,callback){
 	var url1='http://zso11.edupage.org/gcall';
-	mongo.findById('params','pageParams',function(err1,params){
+	mongo3.findById("params", "pageParams",function(err1,params){
 		//console.log('params',params);
 		if(params == null){
 			getCookie(function(dt){
@@ -228,12 +235,12 @@ var getCookie=function(callback){
 					'cookie':cookie
 				}
 				console.log(JSON.stringify(data));
-				mongo.modifyById('params','pageParams',data,function(){
-					console.log('cookies saved: '+data);
-					setImmediate(function() {
+				mongo3.modifyById("params", "pageParams", data, function (err) {
+					err ? console.error(err) : console.log("cookies saved:", data);
+					setImmediate(function () {
 						callback(data);
 					});
-				})
+				});
 			});
 			//save somewhere
 		}
@@ -262,18 +269,18 @@ function checkIfAnySubstitutions(callback){
 		});
     });
 }*/
-function saveSubstitutions(date,data,callback){
-	var dataToSave={};
-		dataToSave['substitution']=data.substitution;
-		dataToSave['userList']=data.userList;
-		dataToSave['date']=date;
-		dataToSave['teachersList'] = data.teachersList;
-	mongo.modifyById(date,'substitutions',dataToSave,function(){
-		setImmediate(function() {
+function saveSubstitutions(date, data, callback) {
+	var dataToSave = {};
+	dataToSave["substitution"] = data.substitution;
+	dataToSave["userList"] = data.userList;
+	dataToSave["date"] = date;
+	dataToSave["teachersList"] = data.teachersList;
+	mongo3.modifyById(date, "substitutions", dataToSave, function (err) {
+		console.error(err);
+		setImmediate(function () {
 			callback(); //callback not necessary
 		});
-		//ok;
-	})
+	});
 }
 
 function convertToSubstitutions(data,callback){

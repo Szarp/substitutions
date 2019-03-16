@@ -1,6 +1,6 @@
 var config = require('./config');
 var request = require('request');
-var mongo = require('./mongoFunctions.js');
+const mongo3 = require("./mongoFunctions3");
 var link = require('./fbLinks.js');
 //var link=new linka();
 /*
@@ -9,7 +9,7 @@ Make requests to facebook server
 */
 
 function messengerUserInfo(id,callback){
-    
+
     request(link.messengerApi(id), function (e, r, body){
         if(e){console.log('req problem: '+e);}
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
@@ -34,55 +34,56 @@ function messengerSavePerson(id,callback){
             console.log('Person '+id+ ' '+status);
             setImmediate(function(){
 					callback(status);
-            }); 
+            });
         })
     });
 }
-function addPersonToCollection(collection,params,callback){
+
+function addPersonToCollection(collection, params, callback) {
     //var id = params.id;
     var time = new Date().getTime();
-    mongo.findById(params.id,collection,function(err,doc){
+    mongo3.findById(params.id, collection, function (err, doc) {
         //console.log('doc',doc);
-        var pattern ={
-            _id:params.id,
-            personal:{
+        var pattern = {
+            _id: params.id,
+            personal: {
                 id: params.id,
                 //token: token,
-                settings: { setClass: '', notification: 'no' },
+                settings: { setClass: "", notification: "no" },
                 name: params.name,
                 picture: params.picture
             },
-            system:{
-                secret : "",
-                connected : false,
-                lastLogin : time,
-                fromWhen : time
+            system: {
+                secret: "",
+                connected: false,
+                lastLogin: time,
+                fromWhen: time
             }
-        }
-        if(!doc){
-            mongo.save([collection,pattern],function(){
+        };
+        if (err || !doc) {
+            if (err) console.error(err);
+            mongo3.save([collection, pattern], function (err) {
+                if (err) console.error(err);
                 //console.log('person saved');
-                setImmediate(function() {
-                    callback('saved');
-                });    
+                setImmediate(function () {
+                    callback(err ? "saving user failed" : "saved");
+                });
+            });
+        } else {
+            mongo3.modifyById(params.id, collection, { "personal.name": params.name, "personal.picture": params.picture, "system.lastLogin": time }, function (err) {
+                if (err) console.error(err);
+                setImmediate(function () {
+                    callback(err ? "Error while updating user data on login" : "was before");
+                });
             });
         }
-        else{
-            mongo.modifyById(params.id,collection,{"personal.name":params.name,"personal.picture":params.picture,"system.lastLogin":time},function(){
-            //console.log('person was before');
-                setImmediate(function() {
-                    callback('was before');
-                });    
-            })
-        }
     });
-    
 }
 
 
 
 function createPersonToken(code,callback){
-    
+
     request(link.userAccesToken(code), function (e, r, body){
         if(e){console.log('req problem: '+e);}
         //console.log('body',JSON.parse(body)); // Show the HTML for the Modulus homepage.
@@ -95,25 +96,15 @@ function createPersonToken(code,callback){
         });
     });
 }
-function checkIfLongTokenExist(id,callback){
-    mongo.findById(id,'person',function(personInfo){
-        var returnInfo='sas';
-        /*
-        if(personInfo['long-token']){
-            var time =new Date.time;
-            if(personInfo['expiration']-time>0){
-            returnInfo='ok';
-            }
-        }
-        else{ returnInfo='create long token'}
-        
-        //console.log(personInfo);
-        */
-        setImmediate(function() {
-                callback(returnInfo);
+
+function checkIfLongTokenExist(id, callback) {
+    // This function is never called...
+    mongo3.findById(id, "person", function (err, personInfo) {
+        var returnInfo = "sas";
+        setImmediate(function () {
+            callback(returnInfo);
         });
-        
-    })   
+    });
 }
 /*
 function readPersonalSettings(id,callback){
@@ -147,13 +138,13 @@ function getPicture(token,callback){
             //console.log('saving name: ',json);
             setImmediate(function() {
                 callback(json.picture.data['url']);
-            }); 
-        
+            });
+
         }
-        
+
     });
-    
-    
+
+
 }
 /*
 var somePattern = {
@@ -183,7 +174,7 @@ function facebookSavePerson(id,name,picture,callback){
         console.log('Person '+id+ ' '+status);
         setImmediate(function() {
                 callback();
-        }); 
+        });
     })
 }
 /*
@@ -201,7 +192,7 @@ function tokenToLongLife(shortToken,callback){
                 callback(body);
         });
     });
-    
+
 }
 function addName(token,callback){
     personalData(token,'name',function(res){
@@ -225,7 +216,7 @@ function personalData(token,params,callback){
     request(link.userInfo(token,params), function (e, r, body){
         var parsed=JSON.parse(body);
         if(e){console.log('req problem with personalData: '+e);}
-        
+
         if(parsed['error']){
             console.log('personal data error',parsed);
             setImmediate(function() {
@@ -256,7 +247,7 @@ function createNotification(id,message,redirect,callback){
             setImmediate(function() {
                 callback(body);
             });
-            //console.log(body);  
+            //console.log(body);
         }
     );
 }
@@ -284,7 +275,7 @@ function whiteList(domain,callback){
             setImmediate(function() {
                 callback(body);
             });
-            //console.log(body);  
+            //console.log(body);
         }
     );
 }
@@ -314,7 +305,7 @@ function messCodes(callback){
             setImmediate(function() {
                 callback(body);
             });
-            //console.log(body);  
+            //console.log(body);
         }
     );
 }
@@ -336,7 +327,6 @@ exports.facebookSavePerson=facebookSavePerson;
 exports.addName=addName;
 exports.addPersonToCollection=addPersonToCollection;
 exports.getPicture=getPicture;
-exports.createPersonToken=createPersonToken;
 exports.createPersonToken=createPersonToken;
 exports.messengerUserInfo=messengerUserInfo;
 exports.messengerSavePerson=messengerSavePerson;

@@ -1,5 +1,5 @@
 const config = require("./config");
-const mongo = require("./mongoConnection.js");
+const mongo3 = require("./mongoFunctions3");
 const iconv = require("iconv-lite");
 const fs = require("fs");
 const jsdom = require("jsdom"); // this module takes some time to load :(
@@ -27,8 +27,6 @@ const singleSub = { // changes field not added; should look like: `"changes": { 
 const classNumbers = ["2GA", "2GB", "3GA", "3GB", "1La", "1Lb", "1Ls", "2La", "2Lb", "2Ls", "3La", "3Lb", "3Ls", "1Ta", "1Tb", "2Ta", "2Tb", "3Ta", "3Tb", "4Ta", "4Tb"]; //TODO: move to config (nscNum too)*/
 const nscNum = config.classrooms;
 const classNumbers = config.classes;
-/** Object which can read/modify `substitutions` collection elements in DB specified as param (see declaration below)  */
-const subDB = new mongo.substitutions(config.db);
 /**
  * Remove file passed as parameter. Does not return/callback
  * @param {string} file File to be removed (path)
@@ -318,11 +316,11 @@ Substitutions.prototype.parseAndSave = function(callback){
 		if (!err){
 			this.getSubstitutions((err) => {
 				if (!err){
-					subDB.save(this.subArr._id, this.subArr, () => {
+					mongo3.modifyById(this.subArr._id, "substitutions", this.subArr, () => {
 						setImmediate(() => {
 							callback(null, this.fileName);
 						});
-					});
+					}, config.db);
 				} else {
 					setImmediate((err) => {
 						callback(err, this.fileName);
@@ -384,7 +382,7 @@ function findFile(){
 */
 function checkDay(day, callback){
 	var didCB = false;
-	subDB.find({_id: day}, {"substitution": true}, (err, resp) => {
+	mongo3.findByParam({_id: day}, {"substitution": 1}, "substitutions", (err, resp) => {
 		if (!err){
 			const noSubs = {
 				"_id": day,
@@ -393,8 +391,8 @@ function checkDay(day, callback){
 				"date": day,
 				"teachersList": []
 			};
-			if (resp.substitution == []){
-				subDB.save(day, noSubs, () => {
+			if (resp[0].substitution == []){
+				mongo3.modifyById(day, "substitutions", noSubs, () => {
 					console.info("Created 'no substitutions' for day", day);
 					if (typeof callback === "function"){
 						setImmediate(() => {
@@ -404,7 +402,7 @@ function checkDay(day, callback){
 						console.error("Callback is not a function", callback);
 					}
 					didCB = true;
-				});
+				}, config.db);
 			}
 		} else if (arguments.length == 3 && arguments[2] < 5){ //If failed less than 5 times (including this failure) try again in a minute
 			setTimeout(() => {
@@ -422,7 +420,7 @@ function checkDay(day, callback){
 				callback();
 			});
 		}
-	});
+	}, config.db);
 }
 module.exports.scan = findFile;
 module.exports.verify = checkDay;

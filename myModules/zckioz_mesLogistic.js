@@ -2,7 +2,7 @@
 var request=require('request');
 var config = require('./configs/zckoiz');
 var mess = require('./messTemplates.js');
-var mon = require('./mongoConnection.js');
+const mongo3 = require("./mongoFunctions3");
 //messenger
 var template = require('./messTemplates.js');
 var messFunc = require('./messFunctions.js');
@@ -10,9 +10,6 @@ var secretToken = require('./secretTokenGenerator.js');
 var setTime = require('./setTime.js');
 var time = new setTime();
 
-var serverDB = new mon.server(config.db);
-var userDB = new mon.user(config.db);
-var subDB = new mon.substitutions(config.db);
 var messenger = new messFunc.send(config.pageToken);
 function isThisMe(pageId){
     return (pageId==config.pageId);
@@ -31,34 +28,40 @@ function messageDistribution(mess){
             if(mess["echo"] != true){
                 //postback function
                 console.log("postback");
-                
-                serverDB.save(mess,function(e,r){
+
+                let obj = { messages: {} };
+                obj.messages[mess["timestamp"]] = mess;
+                mongo3.modifyById("serverMessages", "serverMessages", obj, function (e, r) {
                      if(!e){
                         console.log('Saving  users\'s message',r["result"]);
                          if(r["result"]["nModified"]!=0){
-                            analizePostback(mess); 
+                            analizePostback(mess);
                          }
                     }
                     else{
                         console.log("Error in saving users\'s message",e);
                     }
-                });
+                }, config.db);
             }
         break;
         default:
             if(mess["echo"]==true){
                 //console.log('Saving to user message');
-                serverDB.save(mess,function(e,r){
+                let obj = { messages: {} };
+                obj.messages[mess["timestamp"]] = mess;
+                mongo3.modifyById("serverMessages", "serverMessages", obj, function (e, r) {
                     if(!e){
-                        console.log('Saving  server\'s message',r["result"]);    
+                        console.log('Saving  server\'s message',r["result"]);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);
                     }
-                });
+                }, config.db);
             }
             else{
-                userDB.save(mess,function(e,r){
+                let obj = {messages: {}};
+                obj.messages[mess["timestamp"]] = mess;
+                mongo3.modifyById("userMessages", "userMessages", obj, function(e,r){
                     if(!e){
                         if(!mess["attachments"]){
                             if(r["result"]["nModified"]!=0){
@@ -69,16 +72,16 @@ function messageDistribution(mess){
                         //analizeAttachments(mess);
                         //console.log("atta",mess);
                     }
-                            console.log('Saving users\'s message',r["result"]);    
+                            console.log('Saving users\'s message',r["result"]);
                         }
                         else{
                             console.log("Error in saving user\'s message",e);
                         }
-                })
+                }, config.db);
                 //console.log('Saving to users\'s message');
             }
         break;
-    }   
+    }
 }
 function analizeText(mess){
     mess.text=mess.text.toLowerCase();
@@ -205,8 +208,8 @@ function ifChanges(text,callback){
         changesForMessenger(text[1],day,function(allChanges,weekDay){
             setImmediate(function(){
                 callback(allChanges,weekDay);
-            });            
-        });    
+            });
+        });
     }
     else{
         setImmediate(function(){
@@ -220,7 +223,7 @@ function attachments(event){
     var link = event.message.attachment.payload.url;
     console.log('Got attachments: '+type)
     console.log('Location: '+link)
-    
+
 }
 function delivered(event){
     //var mid = event.delivery.mids.mid;
@@ -235,18 +238,18 @@ function delivered(event){
 /* -----------------------------------------------------*/
 /* -----------------------------------------------------*/
 //zckioz school communication
-var mongoSub = new mon.zckoizSubstitutions(config.db);
 //getChanges(function(){})
 function getChanges(callback){
     request("http://www.zckoiz.zabrze.pl/zastepstwa",function(err,res,body){
 		if(!err && body){
 			var convert = new zckioz(body);
 			convert.init();
-			mongoSub.save(assignId(convert.toSave),function(){
+            mongo3.modifyById(assignId(convert.toSave), "substitutions", function (err) {
+                if (err) console.error(err);
 				setImmediate(function(){
 					callback();
 				});
-			});
+			}, config.db);
 		} else if(err){
 			console.error("An error occured while downloading data (ZCKOIZ):", err);
 		} else {
@@ -284,14 +287,14 @@ function zckioz(body){
         self.toSave=self.save();
     }
     this.save=function(){
-        return {substitution:self.rawChanges,date:self.day.date}   
+        return {substitution:self.rawChanges,date:self.day.date}
     }
     this.convertText=function(text){
         var teacher="";
          text.split("<p").forEach(function(el){
             if (el.length<100){
                 el = el.replace("</p>","");
-                el = el.replace(/[\n\r]/g,"");// \n and \r deletion 
+                el = el.replace(/[\n\r]/g,"");// \n and \r deletion
                 el = el.substr(1);
                  if(el.indexOf("<strong>")>-1){
                      el = el.split("strong")[1];
@@ -304,7 +307,7 @@ function zckioz(body){
                      el = el.replace("<u>","");
                      el = el.replace("</u>","");
                      teacher = el;
-                     //console.log("Nauczyciel",el); 
+                     //console.log("Nauczyciel",el);
                  }
                  else{
                      self.rawChanges.push({text:el,teacher:teacher});
@@ -366,7 +369,7 @@ function zckioz(body){
     }
     this.findClass=function (text){
         var beg = text.indexOf(".");
-        var end = text.indexOf("–");//special charcode for - 
+        var end = text.indexOf("–");//special charcode for -
         return text.slice(beg+1, end-1).replace(" ","");
     }
 }
@@ -382,8 +385,9 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
         time.tommorowIs();
     }
     var day = time.displayWeekDay();
-    mongoSub.find({_id:time.reverseTime()},{},function(e,obj){//console.log(e,obj)
-        if(obj[0]!==undefined){
+    mongo3.findByParam({ _id: time.reverseTime() }, {}, "substitutions", function (e, obj) {//console.log(e,obj)
+        if (e) console.error(e);
+        if(obj && obj[0]!==undefined){
             obj=obj[0];
             var tableOfMesseges=[];
             var msg = "";
@@ -412,7 +416,7 @@ function changesForMessenger(reqClass,day,callback){ //response Messenger's form
                 callback([],day);
             });
         }
-    });
+    }, config.db);
 }
 exports.subs = getChanges;
 exports.messengerChanges=changesForMessenger;
