@@ -295,6 +295,7 @@ function certWatcherAction(isSyml) {
 				certFileWatcher.close();
 				certFileWatcher = fs.watch(config.certPath, certWatcherAction);
 			}
+			console.log(new Date().toLocaleString(), "TLS certificates were successfully reloaded");
 		} catch (e) {
 			console.error("An error occured while reloading TLS secure context", e);
 		}
