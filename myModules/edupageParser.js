@@ -142,7 +142,7 @@ class EduPageSubstitutions {
 		 * **WARNING!** It's not a completely tested functionality (for sure it doesn't break anything) as not enough data was available.
 		 * That's why I call it a ***BETA*** feature.
 		 */
-		const allInOneReExp = /^(?:(?<groupName>[\w\W]*): )?(?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Zastępstwa: \((?<teacher>[\w\W]*?)\) ➔ (?<newTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:, (?<note>[\w\W]*))?$/;
+		const allInOneReExp = /^(?<time>\d{1,2}:\d\d-\d{1,2}:\d\d), (?:(?<groupName>[\w\W]*): )?(?:<s>(?<subject>[\w\W]*)<\/s> ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Zastępstwa: <s>(?<teacher>[\w\W]*?)<\/s> ➔ (?<newTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: <s>(?<classroom>[\w\W]*)<\/s> ➔ (?<newClassroom>[\w\W]*?))?(?:, (?<note>[\w\W]*))?$/;
 
 		/** Lesson number */
 		let lesson = lessonRegExp.exec(singleSubstitutionHTML)[1];

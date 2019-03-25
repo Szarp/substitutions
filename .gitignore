@@ -58,3 +58,4 @@ jsconfig.json
 /devAndTest/revEng
 /devAndTest/outTest*
 /devAndTest/testingScripts
+*.service
