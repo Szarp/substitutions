@@ -289,7 +289,7 @@ class EduPageSubstitutions {
 		 * - `classroom2` - classroom number/name if there is no classroom change
 		 * - `note` - additional note/comment provided by school.
 		 */
-		const allInOneReExp = /^(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Substitution for: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*?))?(?:, (?<note>[\w\W]*))?$/;
+		const allInOneReExp = /^(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Substitution for: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*?))?(?:, (?<note>[\w\W]*?))?(?:<div class="signature">\s<\/div>)?$/;
 
 		/** Lesson number */
 		let lesson = lessonRegExp.exec(singleSubstitutionHTML)[1];
@@ -336,6 +336,10 @@ class EduPageSubstitutions {
 				if (prevTeacher) singleSubstitutionObject.changes.teachers = [teacherName]; // If there is a `prevTeacher` there must also be a new teacher
 				if (newClassroom) singleSubstitutionObject.changes.classrooms = [newClassroom];
 			}
+		} else if (contentString.includes(" - Substituting: ")) {
+			// Skip substitution - it doesn't contain any important data; everything should be listed in other substitutions
+			// This means that the teacher is absent, but other teacher is substituting them (and the "new" teacher has a substitution with even more data)
+			// console.debug("Skipping \"Substituting\" substitution"); // Uncomment this if needed
 		} else {
 			console.error(`${new Date().toLocaleString()}: The substitution doesn't match any known format. Logging data:\n`, singleSubstitutionHTML);
 		}
