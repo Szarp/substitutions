@@ -14,7 +14,8 @@ var express = require("express"),
 	link = require("./myModules/fbLinks.js"),
 	config = require("./myModules/config"),
 	webhook = require("./myModules/moduleSwitch.js"),
-	download = require("./myModules/downloadChanges.js");
+	download = require("./myModules/downloadChanges.js"),
+	strikeNotify = require("./myModules/strikeNewsNotify");
 
 var app = express();
 var cookie = new session.sessionCreator();
@@ -251,6 +252,14 @@ function verifyRequestSignature(req, res, buf) {
 setInterval(function () {
 	download.all();
 }, 1000 * 60 * 10); //now running once per 10 minutes
+
+// Check for news about strike every 90s
+setInterval(() => {
+	strikeNotify()
+		.catch(e => {
+			console.error("Error in strikeNotify", e);
+		});
+}, 1000 * 90);
 
 setTimeout(function () {
 	download.all();
