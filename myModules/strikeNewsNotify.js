@@ -94,10 +94,10 @@ async function savePost(postData) {
 	}
 }
 
-function checkUpdate(postDate, savedModificationDate) {
-	let modificationDate = new Date(postDate);
-	savedModificationDate = new Date(savedModificationDate);
-	if (modificationDate > savedModificationDate) return true;
+function checkUpdate(newPost, savedPost) {
+	let modificationDate = new Date(newPost.modified);
+	let savedModificationDate = new Date(savedPost);
+	if (modificationDate > savedModificationDate && prepareMessageText(newPost) !== prepareMessageText(savedPost)) return true;
 	return false;
 }
 
@@ -203,7 +203,7 @@ async function checkForNewOrUpdated(postsArray) {
 				let savedVersion = await getSavedPost(id);
 				if (savedVersion && savedVersion.modified) {
 					// If previous post was modified
-					if (checkUpdate(post.modified, savedVersion.modified)) {
+					if (checkUpdate(post, savedVersion)) {
 						let usersList = finalUserList();
 						if (post._links) delete post._links;
 						savePost(post);
