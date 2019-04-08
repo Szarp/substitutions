@@ -102,11 +102,11 @@ function checkUpdate(postDate, savedModificationDate) {
 }
 
 function prepareMessageText(postData) {
-	if (!postData.title || !postData.title.rendered) throw new Error("The post has no title!");
+	if (!(postData.title && postData.title.rendered)) throw new Error("The post has no title!");
 	let title = postData.title.rendered;
-	if (!postData.excerpt || !postData.excerpt.rendered) throw new Error("The post has no excerpt!");
+	if (!(postData.excerpt && postData.excerpt.rendered)) throw new Error("The post has no excerpt!");
 	let content = postData.excerpt.rendered;
-	content = content.substring(0, content.indexOf("&hellip; <a"));
+	if (content.indexOf("&hellip; <a") !== -1) content = content.substring(0, content.indexOf("&hellip; <a"));
 	content = content.replace(/<\/?.*?>/g, "").trim();
 	return `PILNE! Nowa/zmodyfikowana wiadomość nt. strajku!\nTytuł: *${title}*\n\n${content}…`;
 }
