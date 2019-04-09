@@ -1,6 +1,7 @@
 const request = require("request");
 const { MongoClient } = require("mongodb");
 const { db: dbName, pageToken, adm2: adminId } = require("./config");
+const htmlDecoder = require("./util_HTMLCharDecoder");
 
 const dbURL = "mongodb://localhost:27017";
 const postsURL = "https://www.zso11.zabrze.pl/wp-json/wp/v2/posts/?per_page=3&after=2019-04-05T16:00:00";
@@ -107,11 +108,20 @@ function prepareMessageText(postData, wasModified = false) {
 	if (!(postData.excerpt && postData.excerpt.rendered)) throw new Error("The post has no excerpt!");
 	let content = postData.excerpt.rendered;
 	let ellipsis = false;
-	if (content.indexOf("&hellip; <a") !== -1){
-		content = content.substring(0, content.indexOf("&hellip; <a"));
-		ellipsis = true;
+	if (content.indexOf("&hellip; <a") !== -1) {
+		if (!(postData.content && postData.content.rendered)) throw new Error("The post has no content!");
+		let fullText = htmlDecoder(postData.content.rendered.replace(/<\/?.*?>/g, "")).trim();
+		if (fullText.length < 1700) {
+			// If the excerpt doesn't contain the full text and the text is shorter than 1700 chars (message limit = 2000)
+			// replace the excerpt with full post content
+			content = fullText;
+		} else {
+			content = content.substring(0, content.indexOf("&hellip; <a")).replace(/<\/?.*?>/g, "").trim();
+			ellipsis = true;
+		}
+	} else {
+		content = content.replace(/<\/?.*?>/g, "").trim();
 	}
-	content = content.replace(/<\/?.*?>/g, "").trim();
 	return `PILNE! ${wasModified ? "Zmieniona" : "Nowa"} wiadomość nt. strajku!\nTytuł: *${title}*\n\n${content}${ellipsis ? " (…)" : ""}`;
 }
 
