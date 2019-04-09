@@ -101,14 +101,18 @@ function checkUpdate(newPost, savedPost) {
 	return false;
 }
 
-function prepareMessageText(postData) {
+function prepareMessageText(postData, wasModified = false) {
 	if (!(postData.title && postData.title.rendered)) throw new Error("The post has no title!");
 	let title = postData.title.rendered;
 	if (!(postData.excerpt && postData.excerpt.rendered)) throw new Error("The post has no excerpt!");
 	let content = postData.excerpt.rendered;
-	if (content.indexOf("&hellip; <a") !== -1) content = content.substring(0, content.indexOf("&hellip; <a"));
+	let ellipsis = false;
+	if (content.indexOf("&hellip; <a") !== -1){
+		content = content.substring(0, content.indexOf("&hellip; <a"));
+		ellipsis = true;
+	}
 	content = content.replace(/<\/?.*?>/g, "").trim();
-	return `PILNE! Nowa/zmodyfikowana wiadomość nt. strajku!\nTytuł: *${title}*\n\n${content}…`;
+	return `PILNE! ${wasModified ? "Zmieniona" : "Nowa"} wiadomość nt. strajku!\nTytuł: *${title}*\n\n${content}${ellipsis ? " (…)" : ""}`;
 }
 
 function linkToPost(postData) {
@@ -165,10 +169,10 @@ function callSendAPI(messageData) {
 	});
 }
 
-function prepareMessagesAndSend(users, postData) {
+function prepareMessagesAndSend(users, postData, wasModified = false) {
 	try {
 		let buttons = prepareButtons([{ type: "web_url", payload: linkToPost(postData), title: "Przeczytaj" }]);
-		let text = prepareMessageText(postData);
+		let text = prepareMessageText(postData, wasModified);
 		let messageTemplate = {
 			recipient: {
 				id: ""
@@ -208,7 +212,7 @@ async function checkForNewOrUpdated(postsArray) {
 						if (post._links) delete post._links;
 						savePost(post);
 						//SEND NOTIFICATION
-						prepareMessagesAndSend(await usersList, post);
+						prepareMessagesAndSend(await usersList, post, true);
 					}
 				} else if (!savedVersion && id == 4505) {
 					// Known previous status post. Don't notify about it if it isn't modified
