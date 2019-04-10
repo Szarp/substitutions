@@ -58,10 +58,16 @@ async function messagedSinceMigration() {
 	try {
 		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("userMessages");
-		const documents = await collection.find({ "timestamp": { $gte: 1552859279499 } }).project({ "sender": 1 }).toArray();
+		const documents = collection.find({ "timestamp": { $gte: 1552859279499 } }).project({ "sender": 1 }).toArray();
+		const collection2 = client.db(dbName).collection("serverMessages");
+		const documents2 = collection2.find({ "timestamp": { $gte: 1552859324879 } }).project({ "sender": 1 }).toArray();
+		await Promise.all([documents, documents2]);
 		client.close();
 		let userSet = new Set();
-		for (const doc of documents) {
+		for (const doc of await documents) {
+			if (doc.sender) userSet.add(doc.sender);
+		}
+		for (const doc of await documents2) {
 			if (doc.sender) userSet.add(doc.sender);
 		}
 		return userSet;
