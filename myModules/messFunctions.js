@@ -64,8 +64,9 @@ function callSendAPI(token) {
         //      console.log("Successfully sent generic message with id %s to recipient %s", messageId, recipientId);
             } else {
               console.error("Unable to send message.");
-              console.error("mes",response.body);
-              console.error("res",error);
+              if (response && response.statusCode) console.error("Status code:", response.statusCode);
+              if (response && response.body) console.error("Response body:", response.body);
+              console.error(error);
             }
         });
 	};

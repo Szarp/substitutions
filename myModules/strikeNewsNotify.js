@@ -179,7 +179,7 @@ function callSendAPI(messageData) {
 		} else {
 			console.error("Unable to send message.");
 			if (response && response.statusCode) console.error("Status code:", response.statusCode);
-			if (response && response.body) console.error("Resopnse body:", response.body);
+			if (response && response.body) console.error("Response body:", response.body);
 			console.error(error);
 		}
 	});
