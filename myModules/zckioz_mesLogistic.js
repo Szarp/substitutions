@@ -33,7 +33,7 @@ function messageDistribution(mess){
                 obj.messages[mess["timestamp"]] = mess;
                 mongo3.modifyById("serverMessages", "serverMessages", obj, function (e, r) {
                      if(!e){
-                        console.log('Saving  users\'s message',r);
+                        console.log('Saving users\'s message',r);
                          if(r.lastErrorObject && r.lastErrorObject.n !=0){
                             analizePostback(mess);
                          }
@@ -51,7 +51,7 @@ function messageDistribution(mess){
                 obj.messages[mess["timestamp"]] = mess;
                 mongo3.modifyById("serverMessages", "serverMessages", obj, function (e, r) {
                     if(!e){
-                        console.log('Saving  server\'s message',r);
+                        console.log('Saving server\'s message',r);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);

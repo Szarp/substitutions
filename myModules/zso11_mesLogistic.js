@@ -61,7 +61,7 @@ function messageDistribution(mess){
 
                 mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                      if(!e){
-                        console.log('Saving  users\'s message', r);
+                        console.log('Saving users\'s message', r);
                          if(r.lastErrorObject && r.lastErrorObject.n !=0){
                             analizePostback(mess);
                          }
@@ -81,7 +81,7 @@ function messageDistribution(mess){
                 //console.log('Saving to user message');
                 mongo3.modifyById(mess.timestamp, "serverMessages", mess, function (e, r) {
                     if(!e){
-                        console.log('Saving  server\'s message', r);
+                        console.log('Saving server\'s message', r);
                     }
                     else{
                         console.log("Error in saving server\'s message",e);
@@ -236,7 +236,7 @@ function checkSubstitutions(text, mess) {
                     if (changes.length > 0) {
                         messFunc.prepareBtn([['postback', '{"type":"changes","day":"' + text[0] + '","class":"' + text.slice(1).join(" ") + '"}', 'Wyślij na czacie']], function (buttons) {
                             var content = {
-                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")),
+                                text: 'Są zastępstwa na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ") + 1),
                                 buttons: buttons
                             };
                             messFunc.preapreMessage('generic', mess.sender, content, function (messageTS) {
@@ -245,7 +245,7 @@ function checkSubstitutions(text, mess) {
                         });
                     }
                     else {
-                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ")), function (messageTS) {
+                        messFunc.preapreMessage('text', mess.sender, 'Brak zastępstw na ' + weekDay + ' dla ' + mess.text.substring(mess.text.indexOf(" ") + 1), function (messageTS) {
                             messenger.send(messageTS);
                         });
                     }

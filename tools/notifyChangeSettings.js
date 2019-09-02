@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 const config = require("../myModules/config.js");
 const messFunc = require("../myModules/messFunctions.js");
-const messSender = messFunc.send(config.pageToken);
+const messSender = new messFunc.send(config.pageToken);
 
 const client = new MongoClient("mongodb://localhost:27017", { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect()

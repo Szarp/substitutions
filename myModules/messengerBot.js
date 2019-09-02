@@ -410,7 +410,7 @@ function messengerTypeChange(oneSub, uId, callback){
 		}else{
 			/** Array of changes in this substitution (eg. teacher, subject, classroom) */
 			let changesKeysArr = Object.keys(oneSub.changes ? oneSub.changes : {});
-			/** @type {string} Type of this  substitution */
+			/** @type {string} Type of this substitution */
 			var subType;
 			if(oneSub.substitution_types){
 				subType = oneSub.substitution_types;
