@@ -418,7 +418,7 @@ function sendObj (url,json_obj,callback){
     http.send(string_obj);
 }
 function filtrEvents(){
-	var allClasses = ["1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","2e","2f","3a","3b","3c","3d","3ga","3gb","3gc","3gd"];
+	var allClasses = ["1na","1nb","1nc","1nd","1ne","1nf","1a","1b","1c","1d","1e","1f","2a","2b","2c","2d","2e", "2f","3a","3b","3c","3d","3e", "3f"];
 	for(var i=0; i<allClasses.length; i++){
 		var el = document.getElementById(allClasses[i]);
 		var new_element = el.cloneNode(true);
