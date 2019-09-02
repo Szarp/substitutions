@@ -4,7 +4,7 @@ const { db: dbName, pageToken, adm2: adminId } = require("./config");
 const htmlDecoder = require("./util_HTMLCharDecoder");
 
 const dbURL = "mongodb://localhost:27017";
-const postsURL = "https://www.zso11.zabrze.pl/wp-json/wp/v2/posts/?per_page=3&after=2019-04-05T16:00:00";
+const postsURL = "https://www.zso11.zabrze.pl/wp-json/wp/v2/posts/?per_page=3&after=2019-09-09T00:00:00";
 //const previousStatusURL = "https://www.zso11.zabrze.pl/wp-json/wp/v2/posts/4505";
 
 function makeAPIRequest(url) {
@@ -58,9 +58,9 @@ async function messagedSinceMigration() {
 	try {
 		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("userMessages");
-		const documents = collection.find({ "timestamp": { $gte: 1552859279499 } }).project({ "sender": 1 }).toArray();
+		const documents = collection.find({ "timestamp": { $gte: 1567987200000 } }).project({ "sender": 1 }).toArray();
 		const collection2 = client.db(dbName).collection("serverMessages");
-		const documents2 = collection2.find({ "timestamp": { $gte: 1552859324879 } }).project({ "sender": 1 }).toArray();
+		const documents2 = collection2.find({ "timestamp": { $gte: 1567987200000 } }).project({ "sender": 1 }).toArray();
 		await Promise.all([documents, documents2]);
 		client.close();
 		let userSet = new Set();
@@ -78,13 +78,9 @@ async function messagedSinceMigration() {
 }
 
 async function finalUserList() {
-	try {
-		let subscribed = subscribedUsersList();
-		let messaged = messagedSinceMigration();
-		return new Set([...await subscribed, ...await messaged]);
-	} catch (err) {
-		throw (err);
-	}
+	let subscribed = subscribedUsersList();
+	let messaged = messagedSinceMigration();
+	return new Set([...await subscribed, ...await messaged]);
 }
 
 async function savePost(postData) {
@@ -186,66 +182,58 @@ function callSendAPI(messageData) {
 }
 
 function prepareMessagesAndSend(users, postData, wasModified = false) {
-	try {
-		let buttons = prepareButtons([{ type: "web_url", payload: linkToPost(postData), title: "Przeczytaj" }]);
-		let text = prepareMessageText(postData, wasModified);
-		let messageTemplate = {
-			recipient: {
-				id: ""
-			},
-			message: {
-				attachment: {
-					type: "template",
-					payload: {
-						template_type: "button",
-						text: text,
-						buttons: buttons
-					}
+	let buttons = prepareButtons([{ type: "web_url", payload: linkToPost(postData), title: "Przeczytaj" }]);
+	let text = prepareMessageText(postData, wasModified);
+	let messageTemplate = {
+		recipient: {
+			id: ""
+		},
+		message: {
+			attachment: {
+				type: "template",
+				payload: {
+					template_type: "button",
+					text: text,
+					buttons: buttons
 				}
 			}
-		};
-		for (const userId of users) {
-			messageTemplate.recipient.id = userId;
-			callSendAPI(messageTemplate);
 		}
-		return;
-	} catch (e) {
-		throw e;
+	};
+	for (const userId of users) {
+		messageTemplate.recipient.id = userId;
+		callSendAPI(messageTemplate);
 	}
+	return;
 }
 
 async function checkForNewOrUpdated(postsArray) {
-	try {
-		if (postsArray && postsArray instanceof Array && postsArray.length > 0) {
-			for (let post of postsArray) {
-				let { id } = post;
-				if (!id) throw new Error("Post id is empty/undefined");
-				let savedVersion = await getSavedPost(id);
-				if (savedVersion && savedVersion.modified) {
-					// If previous post was modified
-					if (checkUpdate(post, savedVersion)) {
-						let usersList = finalUserList();
-						if (post._links) delete post._links;
-						savePost(post);
-						//SEND NOTIFICATION
-						prepareMessagesAndSend(await usersList, post, true);
-					}
-				} else if (!savedVersion && id == 4505) {
-					// Known previous status post. Don't notify about it if it isn't modified
-					if (post._links) delete post._links;
-					savePost(post);
-				} else if (!savedVersion && ((post.content && post.content.rendered && /strajk/i.test(post.content.rendered)) || post.title && post.title.rendered && /strajk/i.test(post.title.rendered))) {
-					// A new post constaining string "strajk" (case insensitive); Save it and notify users
+	if (postsArray && postsArray instanceof Array && postsArray.length > 0) {
+		for (let post of postsArray) {
+			let { id } = post;
+			if (!id) throw new Error("Post id is empty/undefined");
+			let savedVersion = await getSavedPost(id);
+			if (savedVersion && savedVersion.modified) {
+				// If previous post was modified
+				if (checkUpdate(post, savedVersion)) {
 					let usersList = finalUserList();
 					if (post._links) delete post._links;
 					savePost(post);
 					//SEND NOTIFICATION
-					prepareMessagesAndSend(await usersList, post);
+					prepareMessagesAndSend(await usersList, post, true);
 				}
+			} else if (!savedVersion && id == 4505) {
+				// Known previous status post. Don't notify about it if it isn't modified
+				if (post._links) delete post._links;
+				savePost(post);
+			} else if (!savedVersion && ((post.content && post.content.rendered && /strajk/i.test(post.content.rendered)) || post.title && post.title.rendered && /strajk/i.test(post.title.rendered))) {
+				// A new post constaining string "strajk" (case insensitive); Save it and notify users
+				let usersList = finalUserList();
+				if (post._links) delete post._links;
+				savePost(post);
+				//SEND NOTIFICATION
+				prepareMessagesAndSend(await usersList, post);
 			}
 		}
-	} catch (err) {
-		throw err;
 	}
 }
 
