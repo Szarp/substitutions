@@ -387,7 +387,7 @@ function changesTeacherForMessenger(reqTeacher, day, callback){
 }
 
 //res: Table of messages to send
-changesForMessenger("IR","tommorow",function(a,b){console.log(a,b)});
+//changesForMessenger("IR","tommorow",function(a,b){console.log(a,b)});
 function changesForMessenger(reqClass,day,callback){ //response Messenger's format changes
     reqClass=reqClass.toUpperCase();
     //reqClass String [class]
