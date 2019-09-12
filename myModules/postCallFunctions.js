@@ -262,7 +262,7 @@ function saveSettings(userId, body, callback) { //saves settings from app
         form['setClass'] = body.setClass;
         form['notification'] = body.notification;
         form['setTeacher'] = body.teacher;
-        mongo3.modifyById(userId, "person", { "personal": { settings: form } }, function (e) {
+        mongo3.modifyById(userId, "person", { "personal.settings": form }, function (e) {
             if(e) console.error(e);
             setImmediate(function () {
                 callback(e ? "Not ok. A problem occured" : "ok");
