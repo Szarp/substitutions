@@ -45,7 +45,7 @@ function parse(data) {
  */
 async function updateNotificationSetting({ mappedNames }) {
 	try {
-		const client = await MongoClient.connect("mongodb://localhost:27017/", { useNewUrlParser: true });
+		const client = await MongoClient.connect("mongodb://localhost:27017/");
 		const collection = client.db("ZSO11").collection("person");
 		/** @type {Promise<mongodb.UpdateWriteOpResult | void>[]} */
 		let updateArray = [];
@@ -73,7 +73,7 @@ async function updateNotificationSetting({ mappedNames }) {
  */
 async function updateTeachersList({ allNames }) {
 	try {
-		const client = await MongoClient.connect("mongodb://localhost:27017/", { useNewUrlParser: true });
+		const client = await MongoClient.connect("mongodb://localhost:27017/");
 		const collection = client.db("ZSO11").collection("teachers");
 		await collection.findOneAndReplace({ _id: "all" }, { teachers: [...allNames] });
 		await client.close();

@@ -24,7 +24,7 @@ function makeAPIRequest(url) {
 async function getSavedPost(postId) {
 	let client;
 	try {
-		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+		client = await MongoClient.connect(dbURL, { useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("school_posts");
 		const document = await collection.findOne({ postId });
 		client.close();
@@ -38,7 +38,7 @@ async function getSavedPost(postId) {
 async function subscribedUsersList() {
 	let client;
 	try {
-		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+		client = await MongoClient.connect(dbURL, { useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("person");
 		const documents = await collection.find({ "system.connected": true, "personal.settings.notification": "yes", "personal.settings.setClass": { $ne: "" } }).project({ "personal.id": 1 }).toArray();
 		client.close();
@@ -56,7 +56,7 @@ async function subscribedUsersList() {
 async function messagedSinceMigration() {
 	let client;
 	try {
-		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+		client = await MongoClient.connect(dbURL, { useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("userMessages");
 		const documents = collection.find({ "timestamp": { $gte: 1567987200000 } }).project({ "sender": 1 }).toArray();
 		const collection2 = client.db(dbName).collection("serverMessages");
@@ -86,7 +86,7 @@ async function finalUserList() {
 async function savePost(postData) {
 	let client;
 	try {
-		client = await MongoClient.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true });
+		client = await MongoClient.connect(dbURL, { useUnifiedTopology: true });
 		const collection = client.db(dbName).collection("school_posts");
 		collection.findOneAndUpdate({ postId: postData.id }, { $set: postData }, { upsert: true });
 		client.close();

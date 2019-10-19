@@ -3,7 +3,7 @@ const config = require("../myModules/config.js");
 const messFunc = require("../myModules/messFunctions.js");
 const messSender = new messFunc.send(config.pageToken);
 
-const client = new MongoClient("mongodb://localhost:27017", { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient("mongodb://localhost:27017", { useUnifiedTopology: true });
 client.connect()
 	.then(clientt => {
 		const collection = clientt.db(config.db).collection("person");
