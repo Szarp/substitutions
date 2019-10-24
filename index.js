@@ -2,7 +2,7 @@
 var express = require("express"),
 	fs = require("fs"),
 	path = require("path"),
-	spdy = require("spdy"),
+	https = require("https"),
 	http = require("http"),
 	bodyParser = require("body-parser"),
 	cookieParser = require("cookie-parser"),
@@ -265,7 +265,7 @@ setTimeout(function () {
 	download.all();
 }, 1000); //download substitutions 1 second after start
 
-var mainServer = spdy.createServer(opts, app).listen(443, () => {
+var mainServer = https.createServer(opts, app).listen(443, () => {
 	console.log("Server started on port 443");
 });
 
