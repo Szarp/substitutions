@@ -279,17 +279,19 @@ class EduPageSubstitutions {
 		 * Classes and groups are saved as one element - there is no clear separator between a class and group as they are separated with space and they can contain spaces.
 		 *
 		 * The result (of `.exec()`) contains following groups:
+		 * - `time` - when the lesson takes place. Format: (PHP) `G:i-G:i`, `[H]H:mm-[H]H:mm` eg. `9:05-9:50`
 		 * - `classesAndGroups` - contains classes and groups that take part in a lesson
 		 * - `subject` - (old) subject of the lesson if there is a change of subject
 		 * - `newSubject` - new subject of the lesson if there is a change of subject
 		 * - `subject2` - subject of the lesson if the subject doesn't change
 		 * - `prevTeacher` - teacher who is absent and substitutied
+		 * - `type` - substitution type type eg. paid
 		 * - `classroom` - classroom number/name if students have to change the classroom
 		 * - `newClassroom` - new classroom number - where the students should go
 		 * - `classroom2` - classroom number/name if there is no classroom change
 		 * - `note` - additional note/comment provided by school.
 		 */
-		const allInOneReExp = /^(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Substitution for: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*?))?(?:, (?<note>[\w\W]*?))?(?:<div class="signature">\s<\/div>)?$/;
+		const allInOneReExp = /^(?:(?<time>\d\d?:\d\d-\d\d?:\d\d), )?(?<classesAndGroups>[\w\W]*): (?:\((?<subject>[\w\W]*)\) ➔ (?<newSubject>[\w\W]*)|(?<subject2>[\w\W]*)) - (?:Zastępstwo za: (?<prevTeacher>[\w\W]*?))?(?:, )?(?:Rodzaj zastępstwa: (?<type>[\w\W]*?))?(?:, )?(?:Zmień salę lekcyjną: \((?<classroom>[\w\W]*)\) ➔ (?<newClassroom>[\w\W]*?))?(?:Sala szkolna: (?<classroom2>[\w\W]*?))?(?:, (?<note>[\w\W]*?))?(?:<div class="signature">\s<\/div>)?$/;
 
 		/** Lesson number */
 		let lesson = lessonRegExp.exec(singleSubstitutionHTML)[1];
@@ -377,14 +379,14 @@ class EduPageSubstitutions {
 		if (noSubstitutions) {
 			return { substitution: "no substitutions", date: date };
 		}
-		/** Allows extracting substitutions for one class (or teacher): @see https://regexr.com/481gp */
-		const subsForClassRegExp = /(?<=<div class="section print-nobreak">)[\w\W]*?<\/div>[\s\r\n]*<\/div>(?![\s\r\n]*<div class="row">)/g;
+		/** Allows extracting substitutions for one class (or teacher): @see https://regexr.com/4tfk3 and https://regexr.com/481gp for earlier version */
+		const subsForClassRegExp = /(?<=<div class="section print-nobreak">)[\w\W]*?<\/div>[\s\r\n]*<\/div>(?![\s\r\n]*<div class="row(?: change| remove| absent)?">)/g;
 		/** @type {RegExpExecArray} Substitutions for one class (or teacher) result array */
 		var substitutionsByClassArr;
 		/** Selects class/teacher name: @see https://regexr.com/481il */
 		const classNameRegExp = /<div class="header"><span class="print-font-resizable">([\w\W]*?)<\/span><\/div>/;
 		/** Selects single substitution (global): @see https://regexr.com/481ja */
-		const singleSubstitutionData = /(?<=<div class="row">)[\w\W]*?<\/div>(?=[\s\r\n]*<\/div>)/g;
+		const singleSubstitutionData = /(?<=<div class="row(?: change| remove| absent)?">)[\w\W]*?<\/div>(?=[\s\r\n]*<\/div>)/g;
 		/** Matches if a class or teacher is absent during all (of their) lessons */
 		const allDayCancelledRegExp = /<div class="period">[\s\r\n]*<span class="print-font-resizable">Cały dzień<\/span>/;
 		/** @type {SingleSubstitution[]} Array of substitutions */
@@ -631,13 +633,9 @@ class EduPageSubstitutions {
 		// Call function updating teachers list
 		this.updateDBTeachersList(teachers);
 		// Save the substitutions
-		try {
-			await mongo3.modifyById(date, "substitutions", objectForDB);
-			console.info(`${new Date().toLocaleString()}: Substitutions for website ${this.pageUrl} and date ${date} were updated.`);
-			return;
-		} catch (error) {
-			throw (error);
-		}
+		await mongo3.modifyById(date, "substitutions", objectForDB);
+		console.info(`${new Date().toLocaleString()}: Substitutions for website ${this.pageUrl} and date ${date} were updated.`);
+		return;
 	}
 }
 

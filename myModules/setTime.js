@@ -7,7 +7,7 @@ function setTime(){
     this.month;
     this.year;
     this.weekday;
-    this.month; 
+    this.month;
     this.displayTime=function(){
         return self.year+'-'+self.month+'-'+self.day;
     }
@@ -18,7 +18,7 @@ function setTime(){
         //var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         var days = ['Nd','Pon','Wt','Śr','Czw','Pt','Sob'];
         return days[self.Today.getDay()];
-        
+
     }
     this.updateTime=function(){
         self.year = self.Today.getFullYear();
@@ -45,7 +45,7 @@ function setTime(){
         self.updateTime();
     }
     this.nextSchoolDay = function(){
-        var day = new Date().getDay;
+        var day = new Date().getDay();
         var howManyDays = 1;
         if(day == 5) //Friday
             howManyDays = 3;
