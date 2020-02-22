@@ -326,7 +326,7 @@ if (fs.lstatSync(config.certPath).isSymbolicLink()) {
 }
 
 http.createServer((req, res) => {
-	res.writeHead(301, { "Location": config.url + (req.url || "/") });
+	res.writeHead(301, { "Location": config.url + (req.url || "/") }).end();
 }).listen(80, () => {
 	console.log("HTTPS redirect running on port 80");
 });
