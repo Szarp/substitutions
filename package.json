@@ -27,10 +27,10 @@
 		"messenger"
 	],
 	"dependencies": {
-		"body-parser": "^1.18.3",
+		"body-parser": "^1.19.2",
 		"compression": "^1.7.3",
 		"cookie-parser": "^1.4.4",
-		"express": "^4.16.4",
+		"express": "^4.17.3",
 		"helmet": "^3.15.1",
 		"mongodb": "^2.2.36",
 		"request": "^2.88.0",
